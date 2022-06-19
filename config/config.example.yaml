@@ -3,5 +3,5 @@ app:
   debug: true
 
 service:
-  auth: localhost:3001
-  samithiwat: localhost:3002
+  backend: localhost:3001
+  auth: localhost:3002

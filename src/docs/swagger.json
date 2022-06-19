@@ -1,0 +1,71 @@
+{
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "# RNKM API\r\nThis is the documentation for https://rabnongkaomai.com",
+        "title": "RNKM Backend",
+        "contact": {
+            "name": "ISD Team",
+            "email": "sd.team.sgcu@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Check is service heath is ok",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health check"
+                ],
+                "summary": "health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "AuthToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "description": "# Health Check Tag API Documentation\r\n**Health Check** functions goes here",
+            "name": "health check"
+        },
+        {
+            "description": "# User Tag API Documentation\r\n**User** functions goes here",
+            "name": "user"
+        },
+        {
+            "description": "# Group Tag API Documentation\r\n**Group** functions goes here",
+            "name": "group"
+        },
+        {
+            "description": "# Baan Tag API Documentation\r\n**Baan** functions goes here",
+            "name": "baan"
+        },
+        {
+            "description": "# Event Tag API Documentation\r\n**Event** functions goes here",
+            "name": "event"
+        }
+    ]
+}

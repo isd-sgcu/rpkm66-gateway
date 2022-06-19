@@ -14,7 +14,7 @@ These instructions will get you a copy of the project up and running on your loc
 - makefile
 
 ### Installing
-1. Clone the project from [RNKM65 Backend](https://github.com/isd-sgcu/rnkm65-backend)
+1. Clone the project from [RNKM65 Gateway](https://github.com/isd-sgcu/rnkm65-gateway)
 2. Import project
 3. Copy `config.example.yaml` in `config` and paste it in the same location then remove `.example` from its name.
 

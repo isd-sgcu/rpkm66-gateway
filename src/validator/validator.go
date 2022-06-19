@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/pkg/errors"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
+	"github.com/samithiwat/rnkm65-gateway/src/dto"
 )
 
 type DtoValidator struct {

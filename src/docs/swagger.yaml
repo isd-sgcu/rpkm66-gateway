@@ -1,0 +1,45 @@
+info:
+  contact:
+    email: sd.team.sgcu@gmail.com
+    name: ISD Team
+  description: "# RNKM API\r\nThis is the documentation for https://rabnongkaomai.com"
+  title: RNKM Backend
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Check is service heath is ok
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: health check
+      tags:
+      - health check
+schemes:
+- https
+- http
+securityDefinitions:
+  AuthToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: "# Health Check Tag API Documentation\r\n**Health Check** functions
+    goes here"
+  name: health check
+- description: "# User Tag API Documentation\r\n**User** functions goes here"
+  name: user
+- description: "# Group Tag API Documentation\r\n**Group** functions goes here"
+  name: group
+- description: "# Baan Tag API Documentation\r\n**Baan** functions goes here"
+  name: baan
+- description: "# Event Tag API Documentation\r\n**Event** functions goes here"
+  name: event
