@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  rnkm-service-local:
+    image: ghcr.io/isd-sgcu/rnkm65-backend:dev
+    container_name: rnkm65-service-local
+    restart: unless-stopped
+    networks:
+      - rnkm-local
+      - database
+    volumes:
+      - ./service/local/backend:/app/config
+    ports:
+      - "3001:3001"
+
+  local-db:
+    image: mysql:8.0.28-oracle
+    container_name: rnkm-local-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rnkm-db
+    volumes:
+      - ./volumes/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  local-cache:
+    image: bitnami/redis:6.2.6
+    container_name: rnkm-cache
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: localhost
+      ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "6379:6379"
+
+
+networks:
+  rnkm-local:
+    name: rnkm-local
+  database:
+    name: database
