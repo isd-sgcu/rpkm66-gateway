@@ -5,10 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/google/uuid"
 )
 
 type FiberRouter struct {
 	*fiber.App
+	user fiber.Router
 }
 
 func NewFiberRouter() *FiberRouter {
@@ -22,11 +24,17 @@ func NewFiberRouter() *FiberRouter {
 
 	r.Get("/docs/*", swagger.HandlerDefault)
 
-	return &FiberRouter{r}
+	user := r.Group("/user")
+
+	return &FiberRouter{r, user}
 }
 
 type FiberCtx struct {
 	*fiber.Ctx
+}
+
+func (c *FiberCtx) UserID() string {
+	return c.Ctx.Locals("UserId").(string)
 }
 
 func NewFiberCtx(c *fiber.Ctx) *FiberCtx {
@@ -41,8 +49,13 @@ func (c *FiberCtx) JSON(statusCode int, v interface{}) {
 	c.Ctx.Status(statusCode).JSON(v)
 }
 
-func (c *FiberCtx) ID() (id int32, err error) {
-	v, err := c.ParamsInt("id")
+func (c *FiberCtx) ID() (id string, err error) {
+	id = c.Params("id")
 
-	return int32(v), err
+	_, err = uuid.Parse(id)
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
