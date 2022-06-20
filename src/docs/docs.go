@@ -42,6 +42,446 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user": {
+            "get": {
+                "description": "Return the user dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get the current user data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the user dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create new user if it doesn't exist and Update the user data if exists",
+                "parameters": [
+                    {
+                        "description": "user dto",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the user dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create new user",
+                "parameters": [
+                    {
+                        "description": "User DTO",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/proto.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the user dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update the existing user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "user dto",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the user dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete the user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "bool"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ResponseErr": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserDto": {
+            "type": "object",
+            "required": [
+                "faculty",
+                "firstname",
+                "lastname",
+                "line_id",
+                "nickname",
+                "phone",
+                "student_id",
+                "year"
+            ],
+            "properties": {
+                "allergy_food": {
+                    "type": "string"
+                },
+                "allergy_medicine": {
+                    "type": "string"
+                },
+                "disease": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "faculty": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "food_restriction": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "line_id": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "vaccine_certificate_url": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.User": {
+            "type": "object",
+            "properties": {
+                "allergyFood": {
+                    "type": "string"
+                },
+                "allergyMedicine": {
+                    "type": "string"
+                },
+                "disease": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "faculty": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "foodRestriction": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "lineID": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "studentID": {
+                    "type": "string"
+                },
+                "vaccineCertificateUrl": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {

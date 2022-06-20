@@ -1,16 +1,16 @@
-package handler
+package health_check
 
 import "net/http"
 
-type HealthCheckHandler struct {
+type Handler struct {
 }
 
-type HealthCheckContext interface {
+type Context interface {
 	JSON(statusCode int, v interface{})
 }
 
-func NewHealthCheckHandler() *HealthCheckHandler {
-	return &HealthCheckHandler{}
+func NewHandler() *Handler {
+	return &Handler{}
 }
 
 // HealthCheck is a function that use to check is service health is ok
@@ -21,7 +21,7 @@ func NewHealthCheckHandler() *HealthCheckHandler {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router / [get]
-func (h *HealthCheckHandler) HealthCheck(c HealthCheckContext) {
+func (h *Handler) HealthCheck(c Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"Health": "OK!",
 	})

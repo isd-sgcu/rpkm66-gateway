@@ -3,11 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/samithiwat/rnkm65-gateway/src/config"
-	_ "github.com/samithiwat/rnkm65-gateway/src/docs"
-	"github.com/samithiwat/rnkm65-gateway/src/handler"
-	"github.com/samithiwat/rnkm65-gateway/src/router"
-	"github.com/samithiwat/rnkm65-gateway/src/validator"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
+	usrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/router"
+	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
+	"github.com/isd-sgcu/rnkm65-gateway/src/config"
+	_ "github.com/isd-sgcu/rnkm65-gateway/src/docs"
+	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/validator"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net/http"
 	"os"
@@ -52,16 +57,31 @@ func main() {
 		log.Fatal("Cannot load config", err.Error())
 	}
 
-	_, err = validator.NewValidator()
+	v, err := validator.NewValidator()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
+	backendConn, err := grpc.Dial(conf.Service.Backend, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Cannot connect to rnkm65 backend service: ", err.Error())
+	}
+
 	r := router.NewFiberRouter()
 
-	hc := handler.NewHealthCheckHandler()
+	hc := health_check.NewHandler()
+
+	uClient := proto.NewUserServiceClient(backendConn)
+	uSrv := usrSrv.NewService(uClient)
+	uHdr := usrHdr.NewHandler(uSrv, v)
 
 	r.GetHealthCheck("/", hc.HealthCheck)
+
+	r.GetUser("/", uHdr.FindOne)
+	r.PostUser("/", uHdr.Create)
+	r.PutUser("/:id", uHdr.Update)
+	r.PutUser("/", uHdr.CreateOrUpdate)
+	r.DeleteUser("/:id", uHdr.Delete)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

@@ -5,8 +5,9 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
+	"github.com/google/uuid"
+	"github.com/isd-sgcu/rnkm65-gateway/src/dto"
 	"github.com/pkg/errors"
-	"github.com/samithiwat/rnkm65-gateway/src/dto"
 )
 
 type DtoValidator struct {
@@ -23,7 +24,6 @@ func (v *DtoValidator) Validate(in interface{}) []*dto.BadReqErrResponse {
 			element := dto.BadReqErrResponse{
 				Message:     e.Translate(v.trans),
 				FailedField: e.StructField(),
-				Tag:         e.Tag(),
 				Value:       e.Value(),
 			}
 
@@ -64,6 +64,22 @@ func NewValidator() (*DtoValidator, error) {
 
 	_ = v.RegisterValidation("password", func(fl validator.FieldLevel) bool {
 		return len(fl.Field().String()) >= 8
+	})
+
+	_ = v.RegisterTranslation("uuid_optional", trans, func(ut ut.Translator) error {
+		return ut.Add("uuid_optional", "{0} is not uuid", true) // see universal-translator for details
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("uuid_optional", fe.Field())
+		return t
+	})
+
+	_ = v.RegisterValidation("uuid_optional", func(fl validator.FieldLevel) bool {
+		content := fl.Field().String()
+		if len(content) > 0 {
+			_, err := uuid.Parse(content)
+			return err == nil
+		}
+		return true
 	})
 
 	return &DtoValidator{

@@ -1,3 +1,91 @@
+definitions:
+  dto.ResponseErr:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.UserDto:
+    properties:
+      allergy_food:
+        type: string
+      allergy_medicine:
+        type: string
+      disease:
+        type: string
+      email:
+        type: string
+      faculty:
+        type: string
+      firstname:
+        type: string
+      food_restriction:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      lastname:
+        type: string
+      line_id:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      student_id:
+        type: string
+      vaccine_certificate_url:
+        type: string
+      year:
+        type: string
+    required:
+    - faculty
+    - firstname
+    - lastname
+    - line_id
+    - nickname
+    - phone
+    - student_id
+    - year
+    type: object
+  proto.User:
+    properties:
+      allergyFood:
+        type: string
+      allergyMedicine:
+        type: string
+      disease:
+        type: string
+      email:
+        type: string
+      faculty:
+        type: string
+      firstname:
+        type: string
+      foodRestriction:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      lastname:
+        type: string
+      lineID:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      studentID:
+        type: string
+      vaccineCertificateUrl:
+        type: string
+      year:
+        type: string
+    type: object
 info:
   contact:
     email: sd.team.sgcu@gmail.com
@@ -22,6 +110,206 @@ paths:
       summary: health check
       tags:
       - health check
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get the current user data
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: User DTO
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Create new user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Create new user if it doesn't exist and Update the user data if exists
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: bool
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Delete the user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Update the existing user
+      tags:
+      - user
 schemes:
 - https
 - http
