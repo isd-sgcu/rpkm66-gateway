@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/google/uuid"
-	"github.com/isd-sgcu/rnkm65-gateway/src/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/pkg/errors"
 )
 

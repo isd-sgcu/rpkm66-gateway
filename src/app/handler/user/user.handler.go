@@ -2,9 +2,9 @@ package user
 
 import (
 	"fmt"
-	"github.com/isd-sgcu/rnkm65-gateway/src/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/validator"
 	"net/http"
 )
 

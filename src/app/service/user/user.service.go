@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"github.com/isd-sgcu/rnkm65-gateway/src/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
