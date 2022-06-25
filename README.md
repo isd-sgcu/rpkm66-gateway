@@ -1,4 +1,4 @@
-# RNKM65 Backend
+# RNKM65 Gateway
 
 ## Stacks
 - golang
