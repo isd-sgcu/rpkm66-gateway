@@ -89,7 +89,7 @@ func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.Response
 
 func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	cancel()
+	defer cancel()
 
 	usrDto := &proto.User{
 		Id:                    id,
@@ -141,7 +141,7 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 
 func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	cancel()
+	defer cancel()
 
 	usrDto := &proto.User{
 		Id:                    in.ID,
@@ -193,7 +193,7 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 
 func (s *Service) Delete(id string) (result bool, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	cancel()
+	defer cancel()
 
 	res, errRes := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
 	if errRes != nil {
