@@ -20,6 +20,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: rnkm-db
+    networks:
+      - database
     volumes:
       - ./volumes/mysql:/var/lib/mysql
     ports:
@@ -32,6 +34,8 @@ services:
     environment:
       REDIS_HOST: localhost
       ALLOW_EMPTY_PASSWORD: "yes"
+    networks:
+      - database
     ports:
       - "6379:6379"
 
