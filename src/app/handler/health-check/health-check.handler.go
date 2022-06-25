@@ -5,7 +5,7 @@ import "net/http"
 type Handler struct {
 }
 
-type Context interface {
+type IContext interface {
 	JSON(statusCode int, v interface{})
 }
 
@@ -21,7 +21,7 @@ func NewHandler() *Handler {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router / [get]
-func (h *Handler) HealthCheck(c Context) {
+func (h *Handler) HealthCheck(c IContext) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"Health": "OK!",
 	})
