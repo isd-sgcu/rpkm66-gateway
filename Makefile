@@ -1,5 +1,6 @@
 proto:
 	protoc --proto_path=src/proto --go_out=plugins=grpc:. user.proto
+	protoc --proto_path=src/proto --go_out=plugins=grpc:. auth.proto
 
 create-doc:
 	swag init -d ./src -o ./src/docs -md ./src/docs/markdown

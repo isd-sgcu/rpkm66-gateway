@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	authHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
 	usrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/router"
+	authSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/auth"
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/config"
@@ -67,6 +69,11 @@ func main() {
 		log.Fatal("Cannot connect to rnkm65 backend service: ", err.Error())
 	}
 
+	authConn, err := grpc.Dial(conf.Service.Backend, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Cannot connect to rnkm65 backend service: ", err.Error())
+	}
+
 	r := router.NewFiberRouter()
 
 	hc := health_check.NewHandler()
@@ -75,6 +82,10 @@ func main() {
 	uSrv := usrSrv.NewService(uClient)
 	uHdr := usrHdr.NewHandler(uSrv, v)
 
+	aClient := proto.NewAuthServiceClient(authConn)
+	aSrv := authSrv.NewService(aClient)
+	aHdr := authHdr.NewHandler(aSrv, uSrv, v)
+
 	r.GetHealthCheck("/", hc.HealthCheck)
 
 	r.GetUser("/", uHdr.FindOne)
@@ -82,6 +93,10 @@ func main() {
 	r.PutUser("/:id", uHdr.Update)
 	r.PutUser("/", uHdr.CreateOrUpdate)
 	r.DeleteUser("/:id", uHdr.Delete)
+
+	r.GetAuth("/user", aHdr.Validate)
+	r.PostAuth("/verify", aHdr.VerifyTicket)
+	r.PostAuth("/refreshToken", aHdr.RefreshToken)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {
