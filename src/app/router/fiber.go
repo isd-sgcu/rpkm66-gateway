@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/google/uuid"
+	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
 )
 
 type FiberRouter struct {
@@ -14,7 +15,11 @@ type FiberRouter struct {
 	auth fiber.Router
 }
 
-func NewFiberRouter() *FiberRouter {
+type IGuard interface {
+	Validate(guard.IContext)
+}
+
+func NewFiberRouter(authGuard IGuard) *FiberRouter {
 	r := fiber.New(fiber.Config{
 		StrictRouting: true,
 		AppName:       "RNKM65 API",
@@ -25,10 +30,17 @@ func NewFiberRouter() *FiberRouter {
 
 	r.Get("/docs/*", swagger.HandlerDefault)
 
-	user := r.Group("/user")
-	auth := r.Group("/auth")
+	user := NewGroupRouteWithAuthMiddleware(r, "/user", authGuard.Validate)
+	auth := NewGroupRouteWithAuthMiddleware(r, "/auth", authGuard.Validate)
 
 	return &FiberRouter{r, user, auth}
+}
+
+func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx guard.IContext)) fiber.Router {
+	return r.Group(path, func(c *fiber.Ctx) error {
+		middleware(NewFiberCtx(c))
+		return nil
+	})
 }
 
 type FiberCtx struct {
@@ -60,4 +72,24 @@ func (c *FiberCtx) ID() (id string, err error) {
 	}
 
 	return id, nil
+}
+
+func (c *FiberCtx) Token() string {
+	return c.Ctx.Get(fiber.HeaderAuthorization, "")
+}
+
+func (c *FiberCtx) Method() string {
+	return c.Ctx.Method()
+}
+
+func (c *FiberCtx) Path() string {
+	return c.Ctx.Path()
+}
+
+func (c *FiberCtx) StoreValue(k string, v string) {
+	c.Locals(k, v)
+}
+
+func (c *FiberCtx) Next() {
+	c.Ctx.Next()
 }

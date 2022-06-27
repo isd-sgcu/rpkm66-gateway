@@ -2,6 +2,7 @@ package router
 
 import (
 	health_check "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
+	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -30,7 +31,9 @@ func (t *HealthCheckRouterTest) TestHealthCheckRouter() {
 		},
 	}
 
-	r := NewFiberRouter()
+	g := mock.GuardMock{}
+
+	r := NewFiberRouter(&g)
 
 	r.GetHealthCheck("/", func(ctx health_check.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
