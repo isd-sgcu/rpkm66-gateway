@@ -11,6 +11,7 @@ import (
 type ContextMock struct {
 	mock.Mock
 	V               interface{}
+	Header          map[string]string
 	VerifyTicketDto *dto.VerifyTicket
 	RefreshTokenDto *dto.RedeemNewToken
 }
@@ -36,6 +37,36 @@ func (c *ContextMock) UserID() string {
 	args := c.Called()
 
 	return args.String(0)
+}
+
+func (c *ContextMock) Token() string {
+	args := c.Called()
+
+	return args.String(0)
+}
+
+func (c *ContextMock) StoreValue(key string, val string) {
+	_ = c.Called(key, val)
+
+	c.Header = map[string]string{key: val}
+}
+
+func (c *ContextMock) Method() string {
+	args := c.Called()
+
+	return args.String(0)
+}
+
+func (c *ContextMock) Path() string {
+	args := c.Called()
+
+	return args.String(0)
+}
+
+func (c *ContextMock) Next() {
+	_ = c.Called()
+
+	return
 }
 
 type ClientMock struct {

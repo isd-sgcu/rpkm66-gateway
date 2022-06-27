@@ -6,11 +6,13 @@ import (
 	authHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
 	usrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
+	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/router"
 	authSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/auth"
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/config"
+	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
 	_ "github.com/isd-sgcu/rnkm65-gateway/src/docs"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"google.golang.org/grpc"
@@ -74,8 +76,6 @@ func main() {
 		log.Fatal("Cannot connect to rnkm65 backend service: ", err.Error())
 	}
 
-	r := router.NewFiberRouter()
-
 	hc := health_check.NewHandler()
 
 	uClient := proto.NewUserServiceClient(backendConn)
@@ -85,6 +85,10 @@ func main() {
 	aClient := proto.NewAuthServiceClient(authConn)
 	aSrv := authSrv.NewService(aClient)
 	aHdr := authHdr.NewHandler(aSrv, uSrv, v)
+
+	authGuard := guard.NewAuthGuard(aSrv, constant.AuthExcludePath)
+
+	r := router.NewFiberRouter(&authGuard)
 
 	r.GetHealthCheck("/", hc.HealthCheck)
 
