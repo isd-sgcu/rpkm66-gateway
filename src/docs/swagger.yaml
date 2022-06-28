@@ -1,4 +1,11 @@
 definitions:
+  dto.RedeemNewToken:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   dto.ResponseErr:
     properties:
       data: {}
@@ -51,6 +58,15 @@ definitions:
     - student_id
     - year
     type: object
+  proto.Credential:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      refreshToken:
+        type: string
+    type: object
   proto.User:
     properties:
       allergyFood:
@@ -90,7 +106,9 @@ info:
   contact:
     email: sd.team.sgcu@gmail.com
     name: ISD Team
-  description: "# RNKM API\r\nThis is the documentation for https://rabnongkaomai.com"
+  description: |-
+    # RNKM API
+    This is the documentation for https://rabnongkaomai.com
   title: RNKM Backend
   version: "1.0"
 paths:
@@ -110,6 +128,69 @@ paths:
       summary: health check
       tags:
       - health check
+  /auth/token:
+    post:
+      consumes:
+      - application/json
+      description: Return the credentials if successfully
+      parameters:
+      - description: refresh token dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RedeemNewToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Credential'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Invalid refresh token
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "500":
+          description: Internal service error
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Redeem new token
+      tags:
+      - auth
+  /auth/verify:
+    post:
+      consumes:
+      - application/json
+      description: Return the credential if successfully
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Credential'
+        "500":
+          description: Internal service error
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Verify ticket and get credential
+      tags:
+      - auth
   /user:
     get:
       consumes:
@@ -320,14 +401,23 @@ securityDefinitions:
     type: apiKey
 swagger: "2.0"
 tags:
-- description: "# Health Check Tag API Documentation\r\n**Health Check** functions
-    goes here"
+- description: |-
+    # Health Check Tag API Documentation
+    **Health Check** functions goes here
   name: health check
-- description: "# User Tag API Documentation\r\n**User** functions goes here"
+- description: |-
+    # User Tag API Documentation
+    **User** functions goes here
   name: user
-- description: "# Group Tag API Documentation\r\n**Group** functions goes here"
+- description: |-
+    # Group Tag API Documentation
+    **Group** functions goes here
   name: group
-- description: "# Baan Tag API Documentation\r\n**Baan** functions goes here"
+- description: |-
+    # Baan Tag API Documentation
+    **Baan** functions goes here
   name: baan
-- description: "# Event Tag API Documentation\r\n**Event** functions goes here"
+- description: |-
+    # Event Tag API Documentation
+    **Event** functions goes here
   name: event

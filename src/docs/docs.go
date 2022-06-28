@@ -43,6 +43,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/token": {
+            "post": {
+                "description": "Return the credentials if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Redeem new token",
+                "parameters": [
+                    {
+                        "description": "refresh token dto",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RedeemNewToken"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Credential"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid refresh token",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal service error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify": {
+            "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the credential if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Verify ticket and get credential",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Credential"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal service error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "get": {
                 "description": "Return the user dto if successfully",
@@ -355,6 +453,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.RedeemNewToken": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ResponseErr": {
             "type": "object",
             "properties": {
@@ -430,6 +539,20 @@ const docTemplate = `{
                 }
             }
         },
+        "proto.Credential": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "type": "integer"
+                },
+                "refreshToken": {
+                    "type": "string"
+                }
+            }
+        },
         "proto.User": {
             "type": "object",
             "properties": {
@@ -493,23 +616,23 @@ const docTemplate = `{
     },
     "tags": [
         {
-            "description": "# Health Check Tag API Documentation\r\n**Health Check** functions goes here",
+            "description": "# Health Check Tag API Documentation\n**Health Check** functions goes here",
             "name": "health check"
         },
         {
-            "description": "# User Tag API Documentation\r\n**User** functions goes here",
+            "description": "# User Tag API Documentation\n**User** functions goes here",
             "name": "user"
         },
         {
-            "description": "# Group Tag API Documentation\r\n**Group** functions goes here",
+            "description": "# Group Tag API Documentation\n**Group** functions goes here",
             "name": "group"
         },
         {
-            "description": "# Baan Tag API Documentation\r\n**Baan** functions goes here",
+            "description": "# Baan Tag API Documentation\n**Baan** functions goes here",
             "name": "baan"
         },
         {
-            "description": "# Event Tag API Documentation\r\n**Event** functions goes here",
+            "description": "# Event Tag API Documentation\n**Event** functions goes here",
             "name": "event"
         }
     ]
@@ -522,7 +645,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"https", "http"},
 	Title:            "RNKM Backend",
-	Description:      "# RNKM API\r\nThis is the documentation for https://rabnongkaomai.com",
+	Description:      "# RNKM API\nThis is the documentation for https://rabnongkaomai.com",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

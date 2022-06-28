@@ -46,13 +46,21 @@ type IService interface {
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 401 {object} dto.ResponseErr Unauthorized
 // @Failure 503 {object} dto.ResponseErr Service is down
-// @Router /user [get]
+// @Router /user/{id} [get]
 func (h *Handler) FindOne(ctx IContext) {
-	id := ctx.UserID()
-
-	user, err := h.service.FindOne(id)
+	id, err := ctx.ID()
 	if err != nil {
-		ctx.JSON(err.StatusCode, err)
+		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Invalid ID",
+			Data:       nil,
+		})
+		return
+	}
+
+	user, errRes := h.service.FindOne(id)
+	if errRes != nil {
+		ctx.JSON(errRes.StatusCode, errRes)
 		return
 	}
 

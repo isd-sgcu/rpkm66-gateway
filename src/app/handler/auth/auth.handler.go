@@ -37,6 +37,17 @@ func NewHandler(service IService, usrService IUserService, validate *validate.Dt
 	}
 }
 
+// VerifyTicket is a function that send ticket to verify at chula sso and generate the new credential
+// @Summary Verify ticket and get credential
+// @Description Return the credential if successfully
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.Credential
+// @Failure 500 {object} dto.ResponseErr "Internal service error"
+// @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
+// @Router /auth/verify [post]
 func (h *Handler) VerifyTicket(c IContext) {
 	verifyTicket := dto.VerifyTicket{}
 
@@ -59,6 +70,17 @@ func (h *Handler) VerifyTicket(c IContext) {
 	c.JSON(http.StatusOK, credential)
 }
 
+// Validate is a function check the user token and return user dto
+// @Summary Check user status and user info
+// @Description Return the user dto if successfully
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 201 {object} proto.User
+// @Failure 401 {object} dto.ResponseErr "Invalid token"
+// @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
+// @Router /user [get]
 func (h *Handler) Validate(c IContext) {
 	userId := c.UserID()
 
@@ -79,6 +101,19 @@ func (h *Handler) Validate(c IContext) {
 	c.JSON(http.StatusOK, usr)
 }
 
+// RefreshToken is a function that redeem new credentials
+// @Summary Redeem new token
+// @Description Return the credentials if successfully
+// @Param register body dto.RedeemNewToken true "refresh token dto"
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.Credential
+// @Failure 400 {object} dto.ResponseErr "Invalid request body"
+// @Failure 401 {object} dto.ResponseErr "Invalid refresh token"
+// @Failure 500 {object} dto.ResponseErr "Internal service error"
+// @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Router /auth/token [post]
 func (h *Handler) RefreshToken(c IContext) {
 	refreshToken := dto.RedeemNewToken{}
 

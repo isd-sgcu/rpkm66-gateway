@@ -12,6 +12,8 @@ These instructions will get you a copy of the project up and running on your loc
 - golang 1.18 or [later](https://go.dev)
 - docker
 - makefile
+- go-swagger
+- protoc
 
 ### Installing
 1. Clone the project from [RNKM65 Gateway](https://github.com/isd-sgcu/rnkm65-gateway)

@@ -93,7 +93,7 @@ func (t *UserHandlerTest) TestFindOneUser() {
 		User:    t.User,
 		UserDto: t.UserDto,
 	}
-	c.On("UserID").Return(t.User.Id)
+	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -113,7 +113,31 @@ func (t *UserHandlerTest) TestFindOneFoundErr() {
 		User:    t.User,
 		UserDto: t.UserDto,
 	}
-	c.On("UserID").Return(t.User.Id)
+	c.On("ID").Return(t.User.Id, nil)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.FindOne(c)
+
+	assert.Equal(t.T(), want, c.V)
+}
+
+func (t *UserHandlerTest) TestFindOneInternalErr() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusInternalServerError,
+		Message:    "Invalid ID",
+		Data:       nil,
+	}
+
+	srv := new(mock.ServiceMock)
+	srv.On("FindOne", t.User.Id).Return(nil, t.ServiceDownErr)
+
+	c := &mock.ContextMock{
+		User:    t.User,
+		UserDto: t.UserDto,
+	}
+	c.On("ID").Return("", errors.New("Cannot parse id"))
 
 	v, _ := validator.NewValidator()
 
@@ -133,7 +157,7 @@ func (t *UserHandlerTest) TestFindOneGrpcErr() {
 		User:    t.User,
 		UserDto: t.UserDto,
 	}
-	c.On("UserID").Return(t.User.Id)
+	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
 
