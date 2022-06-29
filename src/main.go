@@ -86,7 +86,7 @@ func main() {
 	aSrv := authSrv.NewService(aClient)
 	aHdr := authHdr.NewHandler(aSrv, uSrv, v)
 
-	authGuard := guard.NewAuthGuard(aSrv, constant.AuthExcludePath)
+	authGuard := guard.NewAuthGuard(aSrv, constant.AuthExcludePath, conf.Guard.Phase)
 
 	r := router.NewFiberRouter(&authGuard)
 

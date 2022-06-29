@@ -15,9 +15,14 @@ type App struct {
 	Debug bool `mapstructure:"debug"`
 }
 
+type Guard struct {
+	Phase string `mapstructure:"phase"`
+}
+
 type Config struct {
 	Service Service `mapstructure:"service"`
 	App     App     `mapstructure:"app"`
+	Guard   Guard   `mapstructure:"guard"`
 }
 
 func LoadConfig() (config *Config, err error) {
