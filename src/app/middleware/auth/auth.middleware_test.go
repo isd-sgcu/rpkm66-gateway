@@ -18,6 +18,7 @@ type AuthGuardTest struct {
 	Token           string
 	UnauthorizedErr *dto.ResponseErr
 	ServiceDownErr  *dto.ResponseErr
+	ForbiddenErr    *dto.ResponseErr
 }
 
 func TestAuthGuard(t *testing.T) {
@@ -34,6 +35,12 @@ func (u *AuthGuardTest) SetupTest() {
 	u.UnauthorizedErr = &dto.ResponseErr{
 		StatusCode: http.StatusUnauthorized,
 		Message:    "Invalid token",
+		Data:       nil,
+	}
+
+	u.ForbiddenErr = &dto.ResponseErr{
+		StatusCode: http.StatusForbidden,
+		Message:    "Forbidden Resource",
 		Data:       nil,
 	}
 
@@ -62,7 +69,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	c.On("StoreValue", "UserId", u.UserId)
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath)
+	h := NewAuthGuard(srv, u.ExcludePath, "register")
 	h.Validate(c)
 
 	actual := c.Header["UserId"]
@@ -80,7 +87,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePath() {
 	c.On("Token").Return("")
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath)
+	h := NewAuthGuard(srv, u.ExcludePath, "register")
 	h.Validate(c)
 
 	c.AssertNumberOfCalls(u.T(), "Next", 1)
@@ -96,7 +103,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePathWithID() {
 	c.On("Token").Return("")
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath)
+	h := NewAuthGuard(srv, u.ExcludePath, "register")
 	h.Validate(c)
 
 	c.AssertNumberOfCalls(u.T(), "Next", 1)
@@ -114,7 +121,7 @@ func (u *AuthGuardTest) TestValidateFailed() {
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(nil, u.UnauthorizedErr)
 
-	h := NewAuthGuard(srv, u.ExcludePath)
+	h := NewAuthGuard(srv, u.ExcludePath, "register")
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -131,7 +138,7 @@ func (u *AuthGuardTest) TestValidateTokenNotIncluded() {
 	c.On("Token").Return("")
 	srv.On("Validate")
 
-	h := NewAuthGuard(srv, u.ExcludePath)
+	h := NewAuthGuard(srv, u.ExcludePath, "register")
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -149,8 +156,55 @@ func (u *AuthGuardTest) TestValidateTokenGrpcErr() {
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(nil, u.ServiceDownErr)
 
-	h := NewAuthGuard(srv, u.ExcludePath)
+	h := NewAuthGuard(srv, u.ExcludePath, "register")
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
+}
+
+func testConfigSuccess(t *testing.T, u *AuthGuardTest, phs string, mth string, pth string) {
+	srv := new(auth.ServiceMock)
+	c := new(auth.ContextMock)
+
+	c.On("Method").Return(mth)
+	c.On("Path").Return(pth)
+	c.On("Next")
+
+	h := NewAuthGuard(srv, u.ExcludePath, phs)
+	h.CheckConfig(c)
+
+	c.AssertNumberOfCalls(t, "Next", 1)
+}
+
+func (u *AuthGuardTest) TestConfigSuccess() {
+	testConfigSuccess(u.T(), u, "register", "GET", "/user")
+	testConfigSuccess(u.T(), u, "register", "PUT", "/user")
+	testConfigSuccess(u.T(), u, "select", "GET", "/group/1")
+	testConfigSuccess(u.T(), u, "select", "DELETE", "/group/members/2")
+	testConfigSuccess(u.T(), u, "eventDay", "POST", "/qr/checkin/verify")
+	testConfigSuccess(u.T(), u, "eStamp", "POST", "/qr/estamp/confirm")
+}
+
+func testConfigFail(t *testing.T, u *AuthGuardTest, phs string, mth string, pth string) {
+	want := u.ForbiddenErr
+
+	srv := new(auth.ServiceMock)
+	c := new(auth.ContextMock)
+
+	c.On("Method").Return(mth)
+	c.On("Path").Return(pth)
+	c.On("Next")
+
+	h := NewAuthGuard(srv, u.ExcludePath, phs)
+	h.CheckConfig(c)
+
+	assert.Equal(t, want, c.V)
+}
+
+func (u *AuthGuardTest) TestConfigFail() {
+	testConfigFail(u.T(), u, "register", "GET", "/group")
+	testConfigFail(u.T(), u, "select", "PUT", "/file/image")
+	testConfigFail(u.T(), u, "select", "GET", "/estamp/1")
+	testConfigFail(u.T(), u, "eventDay", "PUT", "/group")
+	testConfigFail(u.T(), u, "eStamp", "GET", "/group")
 }
