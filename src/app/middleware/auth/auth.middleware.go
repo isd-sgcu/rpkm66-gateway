@@ -10,9 +10,10 @@ import (
 )
 
 type Guard struct {
-	service  auth.IService
-	excludes map[string]struct{}
-	phase    string
+	service    auth.IService
+	excludes   map[string]struct{}
+	phase      string
+	isValidate bool
 }
 
 type IContext interface {
@@ -26,15 +27,25 @@ type IContext interface {
 
 func NewAuthGuard(s auth.IService, e map[string]struct{}, p string) Guard {
 	return Guard{
-		service:  s,
-		excludes: e,
-		phase:    p,
+		service:    s,
+		excludes:   e,
+		phase:      p,
+		isValidate: true,
 	}
 }
 
 func (m *Guard) Use(ctx IContext) {
 	m.Validate(ctx)
+
+	if !m.isValidate {
+		return
+	}
+
 	m.CheckConfig(ctx)
+
+	if !m.isValidate {
+		return
+	}
 
 	ctx.Next()
 }
@@ -61,12 +72,14 @@ func (m *Guard) Validate(ctx IContext) {
 			StatusCode: http.StatusUnauthorized,
 			Message:    "Invalid token",
 		})
+		m.isValidate = false
 		return
 	}
 
 	payload, errRes := m.service.Validate(token)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
+		m.isValidate = false
 		return
 	}
 
@@ -117,4 +130,5 @@ func (m *Guard) CheckConfig(ctx IContext) {
 		Message:    "Forbidden Resource",
 		Data:       nil,
 	})
+	m.isValidate = false
 }
