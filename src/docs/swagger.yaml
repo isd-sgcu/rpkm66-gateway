@@ -58,6 +58,13 @@ definitions:
     - student_id
     - year
     type: object
+  dto.VerifyTicket:
+    properties:
+      ticket:
+        type: string
+    required:
+    - ticket
+    type: object
   proto.Credential:
     properties:
       accessToken:
@@ -128,7 +135,32 @@ paths:
       summary: health check
       tags:
       - health check
-  /auth/token:
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "401":
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Check user status and user info
+      tags:
+      - auth
+  /auth/refreshToken:
     post:
       consumes:
       - application/json
@@ -171,6 +203,13 @@ paths:
       consumes:
       - application/json
       description: Return the credential if successfully
+      parameters:
+      - description: refresh token dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyTicket'
       produces:
       - application/json
       responses:
@@ -192,36 +231,6 @@ paths:
       tags:
       - auth
   /user:
-    get:
-      consumes:
-      - application/json
-      description: Return the user dto if successfully
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/proto.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ResponseErr'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/dto.ResponseErr'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ResponseErr'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/dto.ResponseErr'
-      summary: Get the current user data
-      tags:
-      - user
     post:
       consumes:
       - application/json
@@ -310,7 +319,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -343,6 +352,42 @@ paths:
       summary: Delete the user
       tags:
       - user
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get the user data by id
+      tags:
+      - user
     put:
       consumes:
       - application/json
@@ -352,7 +397,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: user dto
         in: body
         name: user

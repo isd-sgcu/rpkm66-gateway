@@ -15,9 +15,9 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
 	_ "github.com/isd-sgcu/rnkm65-gateway/src/docs"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -58,22 +58,34 @@ import (
 func main() {
 	conf, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("Cannot load config", err.Error())
+		log.Fatal().
+			Err(err).
+			Str("service", "config").
+			Msg("Failed to start service")
 	}
 
 	v, err := validator.NewValidator()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal().
+			Err(err).
+			Str("service", "validator").
+			Msg("Failed to start service")
 	}
 
 	backendConn, err := grpc.Dial(conf.Service.Backend, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal("Cannot connect to rnkm65 backend service: ", err.Error())
+		log.Fatal().
+			Err(err).
+			Str("service", "rnkm-backend").
+			Msg("Cannot connect to service")
 	}
 
-	authConn, err := grpc.Dial(conf.Service.Backend, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	authConn, err := grpc.Dial(conf.Service.Auth, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal("Cannot connect to rnkm65 backend service: ", err.Error())
+		log.Fatal().
+			Err(err).
+			Str("service", "rnkm-auth").
+			Msg("Cannot connect to service")
 	}
 
 	hc := health_check.NewHandler()
@@ -88,23 +100,26 @@ func main() {
 
 	authGuard := guard.NewAuthGuard(aSrv, constant.AuthExcludePath, conf.Guard.Phase)
 
-	r := router.NewFiberRouter(&authGuard)
+	r := router.NewFiberRouter(&authGuard, conf.App.Debug)
 
 	r.GetHealthCheck("/", hc.HealthCheck)
 
-	r.GetUser("/", uHdr.FindOne)
+	r.GetUser("/:id", uHdr.FindOne)
 	r.PostUser("/", uHdr.Create)
 	r.PutUser("/:id", uHdr.Update)
 	r.PutUser("/", uHdr.CreateOrUpdate)
 	r.DeleteUser("/:id", uHdr.Delete)
 
-	r.GetAuth("/user", aHdr.Validate)
+	r.GetAuth("/me", aHdr.Validate)
 	r.PostAuth("/verify", aHdr.VerifyTicket)
 	r.PostAuth("/refreshToken", aHdr.RefreshToken)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %v\n", err)
+			log.Fatal().
+				Err(err).
+				Str("service", "rnkm-gateway").
+				Msg("Server not close properly")
 		}
 	}()
 
@@ -127,10 +142,14 @@ func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string
 		signal.Notify(s, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 		sig := <-s
 
-		log.Printf("got signal \"%v\" shutting down service", sig)
+		log.Info().
+			Str("service", "graceful shutdown").
+			Msgf("got signal \"%v\" shutting down service", sig)
 
 		timeoutFunc := time.AfterFunc(timeout, func() {
-			log.Printf("timeout %v ms has been elapsed, force exit", timeout.Milliseconds())
+			log.Error().
+				Str("service", "graceful shutdown").
+				Msgf("timeout %v ms has been elapsed, force exit", timeout.Milliseconds())
 			os.Exit(0)
 		})
 
@@ -145,13 +164,20 @@ func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string
 			go func() {
 				defer wg.Done()
 
-				log.Printf("cleaning up: %v", innerKey)
+				log.Info().
+					Str("service", "graceful shutdown").
+					Msgf("cleaning up: %v", innerKey)
 				if err := innerOp(ctx); err != nil {
-					log.Printf("%v: clean up failed: %v", innerKey, err.Error())
+					log.Error().
+						Str("service", "graceful shutdown").
+						Err(err).
+						Msgf("%v: clean up failed: %v", innerKey, err.Error())
 					return
 				}
 
-				log.Printf("%v was shutdown gracefully", innerKey)
+				log.Info().
+					Str("service", "graceful shutdown").
+					Msgf("%v was shutdown gracefully", innerKey)
 			}()
 		}
 

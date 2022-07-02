@@ -32,6 +32,13 @@ func NewAuthGuard(s auth.IService, e map[string]struct{}, p string) Guard {
 	}
 }
 
+func (m *Guard) Use(ctx IContext) {
+	m.Validate(ctx)
+	m.CheckConfig(ctx)
+
+	ctx.Next()
+}
+
 func (m *Guard) Validate(ctx IContext) {
 	method := ctx.Method()
 	path := ctx.Path()
@@ -57,13 +64,14 @@ func (m *Guard) Validate(ctx IContext) {
 		return
 	}
 
-	userId, errRes := m.service.Validate(token)
+	payload, errRes := m.service.Validate(token)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	ctx.StoreValue("UserId", userId.UserId)
+	ctx.StoreValue("UserId", payload.UserId)
+	ctx.StoreValue("Role", payload.Role)
 	ctx.Next()
 }
 
@@ -89,8 +97,15 @@ func (m *Guard) CheckConfig(ctx IContext) {
 	}
 
 	path = utils.FormatPath(method, path, id)
+
+	phses, ok := constant.MapPath2Phase[path]
+	if !ok {
+		ctx.Next()
+		return
+	}
+
 	currentPhase := m.phase
-	for _, phs := range constant.MapPath2Phase[path] {
+	for _, phs := range phses {
 		if phs == currentPhase {
 			ctx.Next()
 			return

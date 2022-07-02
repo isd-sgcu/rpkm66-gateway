@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
@@ -36,6 +37,13 @@ func (s *Service) FindOne(id string) (result *proto.User, err *dto.ResponseErr) 
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(errRes).
+					Str("service", "user").
+					Str("module", "findOne").
+					Msg("Error while connecting to service")
+
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -43,6 +51,13 @@ func (s *Service) FindOne(id string) (result *proto.User, err *dto.ResponseErr) 
 				}
 			}
 		}
+
+		log.Error().
+			Err(errRes).
+			Str("service", "user").
+			Str("module", "findOne").
+			Msg("Error while connecting to service")
+
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -77,6 +92,13 @@ func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.Response
 
 	res, errRes := s.client.Create(ctx, &proto.CreateUserRequest{User: usrDto})
 	if errRes != nil {
+
+		log.Error().
+			Err(errRes).
+			Str("service", "user").
+			Str("module", "create").
+			Msg("Error while connecting to service")
+
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -122,6 +144,13 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(errRes).
+					Str("service", "user").
+					Str("module", "update").
+					Msg("Error while connecting to service")
+
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -129,6 +158,13 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 				}
 			}
 		}
+
+		log.Error().
+			Err(errRes).
+			Str("service", "user").
+			Str("module", "update").
+			Msg("Error while connecting to service")
+
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -174,6 +210,13 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(errRes).
+					Str("service", "user").
+					Str("module", "create and update").
+					Msg("Error while connecting to service")
+
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -181,6 +224,13 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 				}
 			}
 		}
+
+		log.Error().
+			Err(errRes).
+			Str("service", "user").
+			Str("module", "create and update").
+			Msg("Error while connecting to service")
+
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -207,6 +257,13 @@ func (s *Service) Delete(id string) (result bool, err *dto.ResponseErr) {
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(errRes).
+					Str("service", "user").
+					Str("module", "delete").
+					Msg("Error while connecting to service")
+
 				return false, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -214,6 +271,13 @@ func (s *Service) Delete(id string) (result bool, err *dto.ResponseErr) {
 				}
 			}
 		}
+
+		log.Error().
+			Err(errRes).
+			Str("service", "user").
+			Str("module", "delete").
+			Msg("Error while connecting to service")
+
 		return false, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",

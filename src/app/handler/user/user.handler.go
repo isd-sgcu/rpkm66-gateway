@@ -35,9 +35,10 @@ type IService interface {
 	Delete(string) (bool, *dto.ResponseErr)
 }
 
-// FindOne is a function that get the current user data
-// @Summary Get the current user data
+// FindOne is a function that get the user data by id
+// @Summary Get the user data by id
 // @Description Return the user dto if successfully
+// @Param id path string true "id"
 // @Tags user
 // @Accept json
 // @Produce json
@@ -49,6 +50,7 @@ type IService interface {
 // @Router /user/{id} [get]
 func (h *Handler) FindOne(ctx IContext) {
 	id, err := ctx.ID()
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
 			StatusCode: http.StatusInternalServerError,
@@ -114,7 +116,7 @@ func (h *Handler) Create(ctx IContext) {
 // Update is a function that update the user
 // @Summary Update the existing user
 // @Description Return the user dto if successfully
-// @Param id path int true "id"
+// @Param id path string true "id"
 // @Param user body dto.UserDto true "user dto"
 // @Tags user
 // @Accept json
@@ -215,7 +217,7 @@ func (h *Handler) CreateOrUpdate(ctx IContext) {
 // Delete is a function that delete the user
 // @Summary Delete the user
 // @Description Return the user dto if successfully
-// @Param id path int true "id"
+// @Param id path string true "id"
 // @Tags user
 // @Accept json
 // @Produce json

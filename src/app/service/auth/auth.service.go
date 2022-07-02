@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
@@ -36,6 +37,13 @@ func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseE
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(err).
+					Str("service", "auth").
+					Str("module", "verify ticket").
+					Msg("Error while connecting to service")
+
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -43,7 +51,15 @@ func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseE
 				}
 			}
 		}
+
+		log.Error().
+			Err(err).
+			Str("service", "auth").
+			Str("module", "verify ticket").
+			Msg("Error while connecting to service")
+
 		return nil, &dto.ResponseErr{
+
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
 			Data:       nil,
@@ -69,6 +85,13 @@ func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseEr
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(err).
+					Str("service", "auth").
+					Str("module", "validate").
+					Msg("Error while connecting to service")
+
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -76,6 +99,13 @@ func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseEr
 				}
 			}
 		}
+
+		log.Error().
+			Err(err).
+			Str("service", "auth").
+			Str("module", "validate").
+			Msg("Error while connecting to service")
+		
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -105,6 +135,13 @@ func (s *Service) RefreshToken(token string) (*proto.Credential, *dto.ResponseEr
 					Data:       nil,
 				}
 			default:
+
+				log.Error().
+					Err(err).
+					Str("service", "auth").
+					Str("module", "refresh token").
+					Msg("Error while connecting to service")
+
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
@@ -112,6 +149,13 @@ func (s *Service) RefreshToken(token string) (*proto.Credential, *dto.ResponseEr
 				}
 			}
 		}
+
+		log.Error().
+			Err(err).
+			Str("service", "auth").
+			Str("module", "refresh token").
+			Msg("Error while connecting to service")
+
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",

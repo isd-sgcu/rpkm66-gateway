@@ -40,6 +40,7 @@ func NewHandler(service IService, usrService IUserService, validate *validate.Dt
 // VerifyTicket is a function that send ticket to verify at chula sso and generate the new credential
 // @Summary Verify ticket and get credential
 // @Description Return the credential if successfully
+// @Param register body dto.VerifyTicket true "refresh token dto"
 // @Tags auth
 // @Accept json
 // @Produce json
@@ -80,7 +81,7 @@ func (h *Handler) VerifyTicket(c IContext) {
 // @Failure 401 {object} dto.ResponseErr "Invalid token"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
 // @Security     AuthToken
-// @Router /user [get]
+// @Router /auth/me [get]
 func (h *Handler) Validate(c IContext) {
 	userId := c.UserID()
 
@@ -113,7 +114,7 @@ func (h *Handler) Validate(c IContext) {
 // @Failure 401 {object} dto.ResponseErr "Invalid refresh token"
 // @Failure 500 {object} dto.ResponseErr "Internal service error"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
-// @Router /auth/token [post]
+// @Router /auth/refreshToken [post]
 func (h *Handler) RefreshToken(c IContext) {
 	refreshToken := dto.RedeemNewToken{}
 

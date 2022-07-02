@@ -16,22 +16,24 @@ type FiberRouter struct {
 }
 
 type IGuard interface {
-	Validate(guard.IContext)
+	Use(guard.IContext)
 }
 
-func NewFiberRouter(authGuard IGuard) *FiberRouter {
+func NewFiberRouter(authGuard IGuard, isDebug bool) *FiberRouter {
 	r := fiber.New(fiber.Config{
 		StrictRouting: true,
 		AppName:       "RNKM65 API",
 	})
 
 	r.Use(cors.New())
-	r.Use(logger.New())
+	if isDebug {
+		r.Use(logger.New())
+	}
 
 	r.Get("/docs/*", swagger.HandlerDefault)
 
-	user := NewGroupRouteWithAuthMiddleware(r, "/user", authGuard.Validate)
-	auth := NewGroupRouteWithAuthMiddleware(r, "/auth", authGuard.Validate)
+	user := NewGroupRouteWithAuthMiddleware(r, "/user", authGuard.Use)
+	auth := NewGroupRouteWithAuthMiddleware(r, "/auth", authGuard.Use)
 
 	return &FiberRouter{r, user, auth}
 }
