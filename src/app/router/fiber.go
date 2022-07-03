@@ -25,7 +25,9 @@ func NewFiberRouter(authGuard IGuard, isDebug bool) *FiberRouter {
 		AppName:       "RNKM65 API",
 	})
 
-	r.Use(cors.New())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+	}))
 	if isDebug {
 		r.Use(logger.New())
 	}
