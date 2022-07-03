@@ -5,7 +5,7 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "# RNKM API\nThis is the documentation for https://rabnongkaomai.com",
+        "description": "# RNKM API\nThis is the documentation for https://freshersfairs.com",
         "title": "RNKM Backend",
         "contact": {
             "name": "ISD Team",
@@ -684,6 +684,10 @@
         {
             "description": "# Health Check Tag API Documentation\n**Health Check** functions goes here",
             "name": "health check"
+        },
+        {
+            "description": "# Auth Tag API Documentation\n**Auth** functions goes here",
+            "name": "auth"
         },
         {
             "description": "# User Tag API Documentation\n**User** functions goes here",

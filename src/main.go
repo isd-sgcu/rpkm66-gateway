@@ -43,6 +43,9 @@ import (
 // @tag.name health check
 // @tag.description.markdown
 
+// @tag.name auth
+// @tag.description.markdown
+
 // @tag.name user
 // @tag.description.markdown
 

@@ -691,6 +691,10 @@ const docTemplate = `{
             "name": "health check"
         },
         {
+            "description": "# Auth Tag API Documentation\n**Auth** functions goes here",
+            "name": "auth"
+        },
+        {
             "description": "# User Tag API Documentation\n**User** functions goes here",
             "name": "user"
         },
@@ -716,7 +720,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"https", "http"},
 	Title:            "RNKM Backend",
-	Description:      "# RNKM API\nThis is the documentation for https://rabnongkaomai.com",
+	Description:      "# RNKM API\nThis is the documentation for https://freshersfairs.com",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

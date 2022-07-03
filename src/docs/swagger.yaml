@@ -115,7 +115,7 @@ info:
     name: ISD Team
   description: |-
     # RNKM API
-    This is the documentation for https://rabnongkaomai.com
+    This is the documentation for https://freshersfairs.com
   title: RNKM Backend
   version: "1.0"
 paths:
@@ -450,6 +450,10 @@ tags:
     # Health Check Tag API Documentation
     **Health Check** functions goes here
   name: health check
+- description: |-
+    # Auth Tag API Documentation
+    **Auth** functions goes here
+  name: auth
 - description: |-
     # User Tag API Documentation
     **User** functions goes here
