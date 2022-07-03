@@ -9,6 +9,6 @@ type GuardMock struct {
 	mock.Mock
 }
 
-func (g *GuardMock) Validate(ctx guard.IContext) {
+func (g *GuardMock) Use(ctx guard.IContext) {
 	ctx.Next()
 }

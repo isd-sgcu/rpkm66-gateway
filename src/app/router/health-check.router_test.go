@@ -33,7 +33,7 @@ func (t *HealthCheckRouterTest) TestHealthCheckRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.GetHealthCheck("/", func(ctx health_check.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{

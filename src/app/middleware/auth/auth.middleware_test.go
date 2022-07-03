@@ -57,7 +57,9 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	want := u.UserId
 
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := &auth.ContextMock{
+		Header: map[string]string{},
+	}
 
 	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
@@ -67,6 +69,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 		Role:   constant.USER,
 	}, nil)
 	c.On("StoreValue", "UserId", u.UserId)
+	c.On("StoreValue", "Role", constant.USER)
 	c.On("Next")
 
 	h := NewAuthGuard(srv, u.ExcludePath, "register")

@@ -48,7 +48,7 @@ func (c *ContextMock) Token() string {
 func (c *ContextMock) StoreValue(key string, val string) {
 	_ = c.Called(key, val)
 
-	c.Header = map[string]string{key: val}
+	c.Header[key] = val
 }
 
 func (c *ContextMock) Method() string {

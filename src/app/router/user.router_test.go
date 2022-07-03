@@ -38,7 +38,7 @@ func (t *UserRouterTest) TestGetUserRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.GetUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
@@ -74,7 +74,7 @@ func (t *UserRouterTest) TestPostUserRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.PostUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusCreated, map[string]string{
@@ -110,7 +110,7 @@ func (t *UserRouterTest) TestPutUserRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.PutUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
@@ -146,7 +146,7 @@ func (t *UserRouterTest) TestDeleteUserRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.DeleteUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{

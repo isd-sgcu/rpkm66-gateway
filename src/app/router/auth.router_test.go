@@ -38,7 +38,7 @@ func (t *AuthRouterTest) TestGetAuthRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.GetAuth("/", func(ctx auth.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
@@ -74,7 +74,7 @@ func (t *AuthRouterTest) TestPostAuthRouter() {
 
 	g := mock.GuardMock{}
 
-	r := NewFiberRouter(&g)
+	r := NewFiberRouter(&g, false)
 
 	r.PostAuth("/", func(ctx auth.IContext) {
 		ctx.JSON(http.StatusCreated, map[string]string{
