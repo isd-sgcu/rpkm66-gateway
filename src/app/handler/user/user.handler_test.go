@@ -293,6 +293,31 @@ func (t *UserHandlerTest) TestUpdateValidateErr() {
 	assert.Equal(t.T(), want, c.V)
 }
 
+func (t *UserHandlerTest) TestUpdateForbidden() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusForbidden,
+		Message:    "Insufficiency permission to update user",
+	}
+
+	srv := new(mock.ServiceMock)
+	srv.On("Update", t.User.Id, t.UserDto).Return(nil, t.NotFoundErr)
+
+	c := &mock.ContextMock{
+		User:    t.User,
+		UserDto: t.UserDto,
+	}
+	c.On("ID").Return(faker.UUIDDigit(), nil)
+	c.On("UserID").Return(t.User.Id, nil)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.Update(c)
+
+	assert.Equal(t.T(), want, c.V)
+}
+
 func (t *UserHandlerTest) TestUpdateNotFound() {
 	want := t.NotFoundErr
 

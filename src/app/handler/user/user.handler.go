@@ -139,6 +139,15 @@ func (h *Handler) Update(ctx IContext) {
 		return
 	}
 
+	usrId := ctx.UserID()
+	if usrId != id {
+		ctx.JSON(http.StatusForbidden, &dto.ResponseErr{
+			StatusCode: http.StatusForbidden,
+			Message:    "Insufficiency permission to update user",
+		})
+		return
+	}
+
 	usrDto := dto.UserDto{}
 
 	err = ctx.Bind(&usrDto)
