@@ -539,14 +539,13 @@ const docTemplate = `{
         "dto.UserDto": {
             "type": "object",
             "required": [
-                "faculty",
+                "can_select_baan",
                 "firstname",
                 "lastname",
                 "line_id",
                 "nickname",
                 "phone",
-                "student_id",
-                "year"
+                "title"
             ],
             "properties": {
                 "allergy_food": {
@@ -555,13 +554,13 @@ const docTemplate = `{
                 "allergy_medicine": {
                     "type": "string"
                 },
+                "can_select_baan": {
+                    "type": "boolean"
+                },
                 "disease": {
                     "type": "string"
                 },
                 "email": {
-                    "type": "string"
-                },
-                "faculty": {
                     "type": "string"
                 },
                 "firstname": {
@@ -588,13 +587,7 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "student_id": {
-                    "type": "string"
-                },
-                "vaccine_certificate_url": {
-                    "type": "string"
-                },
-                "year": {
+                "title": {
                     "type": "string"
                 }
             }
@@ -633,6 +626,9 @@ const docTemplate = `{
                 "allergyMedicine": {
                     "type": "string"
                 },
+                "canSelectBaan": {
+                    "type": "boolean"
+                },
                 "disease": {
                     "type": "string"
                 },
@@ -669,7 +665,7 @@ const docTemplate = `{
                 "studentID": {
                     "type": "string"
                 },
-                "vaccineCertificateUrl": {
+                "title": {
                     "type": "string"
                 },
                 "year": {

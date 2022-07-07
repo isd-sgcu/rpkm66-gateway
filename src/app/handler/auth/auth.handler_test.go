@@ -30,22 +30,21 @@ func TestAuthHandler(t *testing.T) {
 
 func (t *AuthHandlerTest) SetupTest() {
 	t.UserDto = &proto.User{
-		Id:                    faker.UUIDDigit(),
-		Firstname:             faker.FirstName(),
-		Lastname:              faker.LastName(),
-		Nickname:              faker.Name(),
-		StudentID:             faker.Word(),
-		Faculty:               faker.Word(),
-		Year:                  faker.Word(),
-		Phone:                 faker.Phonenumber(),
-		LineID:                faker.Word(),
-		Email:                 faker.Email(),
-		AllergyFood:           faker.Word(),
-		FoodRestriction:       faker.Word(),
-		AllergyMedicine:       faker.Word(),
-		Disease:               faker.Word(),
-		VaccineCertificateUrl: faker.URL(),
-		ImageUrl:              faker.URL(),
+		Id:              faker.UUIDDigit(),
+		Firstname:       faker.FirstName(),
+		Lastname:        faker.LastName(),
+		Nickname:        faker.Name(),
+		StudentID:       faker.Word(),
+		Faculty:         faker.Word(),
+		Year:            faker.Word(),
+		Phone:           faker.Phonenumber(),
+		LineID:          faker.Word(),
+		Email:           faker.Email(),
+		AllergyFood:     faker.Word(),
+		FoodRestriction: faker.Word(),
+		AllergyMedicine: faker.Word(),
+		Disease:         faker.Word(),
+		ImageUrl:        faker.URL(),
 	}
 
 	t.Credential = &proto.Credential{
