@@ -28,41 +28,40 @@ func TestUserHandler(t *testing.T) {
 
 func (t *UserHandlerTest) SetupTest() {
 	t.User = &proto.User{
-		Id:                    faker.UUIDDigit(),
-		Firstname:             faker.FirstName(),
-		Lastname:              faker.LastName(),
-		Nickname:              faker.Name(),
-		StudentID:             faker.Word(),
-		Faculty:               faker.Word(),
-		Year:                  faker.Word(),
-		Phone:                 faker.Phonenumber(),
-		LineID:                faker.Word(),
-		Email:                 faker.Email(),
-		AllergyFood:           faker.Word(),
-		FoodRestriction:       faker.Word(),
-		AllergyMedicine:       faker.Word(),
-		Disease:               faker.Word(),
-		VaccineCertificateUrl: faker.URL(),
-		ImageUrl:              faker.URL(),
+		Id:              faker.UUIDDigit(),
+		Title:           faker.Word(),
+		Firstname:       faker.FirstName(),
+		Lastname:        faker.LastName(),
+		Nickname:        faker.Name(),
+		StudentID:       faker.Word(),
+		Faculty:         faker.Word(),
+		Year:            faker.Word(),
+		Phone:           faker.Phonenumber(),
+		LineID:          faker.Word(),
+		Email:           faker.Email(),
+		AllergyFood:     faker.Word(),
+		FoodRestriction: faker.Word(),
+		AllergyMedicine: faker.Word(),
+		Disease:         faker.Word(),
+		ImageUrl:        faker.URL(),
+		CanSelectBaan:   true,
 	}
 
 	t.UserDto = &dto.UserDto{
-		ID:                    t.User.Id,
-		Firstname:             t.User.Firstname,
-		Lastname:              t.User.Lastname,
-		Nickname:              t.User.Nickname,
-		StudentID:             t.User.StudentID,
-		Faculty:               t.User.Faculty,
-		Year:                  t.User.Year,
-		Phone:                 t.User.Phone,
-		LineID:                t.User.LineID,
-		Email:                 t.User.Email,
-		AllergyFood:           t.User.AllergyFood,
-		FoodRestriction:       t.User.FoodRestriction,
-		AllergyMedicine:       t.User.AllergyMedicine,
-		Disease:               t.User.Disease,
-		VaccineCertificateUrl: t.User.VaccineCertificateUrl,
-		ImageUrl:              t.User.ImageUrl,
+		ID:              t.User.Id,
+		Title:           t.User.Title,
+		Firstname:       t.User.Firstname,
+		Lastname:        t.User.Lastname,
+		Nickname:        t.User.Nickname,
+		Phone:           t.User.Phone,
+		LineID:          t.User.LineID,
+		Email:           t.User.Email,
+		AllergyFood:     t.User.AllergyFood,
+		FoodRestriction: t.User.FoodRestriction,
+		AllergyMedicine: t.User.AllergyMedicine,
+		Disease:         t.User.Disease,
+		ImageUrl:        t.User.ImageUrl,
+		CanSelectBaan:   t.User.CanSelectBaan,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
@@ -193,8 +192,8 @@ func (t *UserHandlerTest) TestCreateValidateErr() {
 		Message:    "Invalid body request",
 		Data: []*dto.BadReqErrResponse{
 			&dto.BadReqErrResponse{
-				Message:     "VaccineCertificateUrl must be a valid URL",
-				FailedField: "VaccineCertificateUrl",
+				Message:     "ImageUrl must be a valid URL",
+				FailedField: "ImageUrl",
 				Value:       "",
 			},
 		},
@@ -203,7 +202,7 @@ func (t *UserHandlerTest) TestCreateValidateErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("Create", t.UserDto).Return(t.User, nil)
 
-	t.UserDto.VaccineCertificateUrl = ""
+	t.UserDto.ImageUrl = ""
 
 	c := &mock.ContextMock{
 		User:    t.User,
@@ -267,14 +266,14 @@ func (t *UserHandlerTest) TestUpdateValidateErr() {
 		Message:    "Invalid body request",
 		Data: []*dto.BadReqErrResponse{
 			&dto.BadReqErrResponse{
-				Message:     "VaccineCertificateUrl must be a valid URL",
-				FailedField: "VaccineCertificateUrl",
+				Message:     "ImageUrl must be a valid URL",
+				FailedField: "ImageUrl",
 				Value:       "",
 			},
 		},
 	}
 
-	t.UserDto.VaccineCertificateUrl = ""
+	t.UserDto.ImageUrl = ""
 
 	srv := new(mock.ServiceMock)
 	srv.On("Update", t.UserDto).Return(nil, t.BindErr)

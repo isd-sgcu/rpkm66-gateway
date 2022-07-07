@@ -73,21 +73,19 @@ func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.Response
 	defer cancel()
 
 	usrDto := &proto.User{
-		Firstname:             in.Firstname,
-		Lastname:              in.Lastname,
-		Nickname:              in.Nickname,
-		StudentID:             in.StudentID,
-		Faculty:               in.Faculty,
-		Year:                  in.Year,
-		Phone:                 in.Phone,
-		LineID:                in.LineID,
-		Email:                 in.Email,
-		AllergyFood:           in.AllergyFood,
-		FoodRestriction:       in.FoodRestriction,
-		AllergyMedicine:       in.AllergyMedicine,
-		Disease:               in.Disease,
-		VaccineCertificateUrl: in.VaccineCertificateUrl,
-		ImageUrl:              in.ImageUrl,
+		Title:           in.Title,
+		Firstname:       in.Firstname,
+		Lastname:        in.Lastname,
+		Nickname:        in.Nickname,
+		Phone:           in.Phone,
+		LineID:          in.LineID,
+		Email:           in.Email,
+		AllergyFood:     in.AllergyFood,
+		FoodRestriction: in.FoodRestriction,
+		AllergyMedicine: in.AllergyMedicine,
+		Disease:         in.Disease,
+		ImageUrl:        in.ImageUrl,
+		CanSelectBaan:   in.CanSelectBaan,
 	}
 
 	res, errRes := s.client.Create(ctx, &proto.CreateUserRequest{User: usrDto})
@@ -114,22 +112,20 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 	defer cancel()
 
 	usrDto := &proto.User{
-		Id:                    id,
-		Firstname:             in.Firstname,
-		Lastname:              in.Lastname,
-		Nickname:              in.Nickname,
-		StudentID:             in.StudentID,
-		Faculty:               in.Faculty,
-		Year:                  in.Year,
-		Phone:                 in.Phone,
-		LineID:                in.LineID,
-		Email:                 in.Email,
-		AllergyFood:           in.AllergyFood,
-		FoodRestriction:       in.FoodRestriction,
-		AllergyMedicine:       in.AllergyMedicine,
-		Disease:               in.Disease,
-		VaccineCertificateUrl: in.VaccineCertificateUrl,
-		ImageUrl:              in.ImageUrl,
+		Id:              id,
+		Title:           in.Title,
+		Firstname:       in.Firstname,
+		Lastname:        in.Lastname,
+		Nickname:        in.Nickname,
+		Phone:           in.Phone,
+		LineID:          in.LineID,
+		Email:           in.Email,
+		AllergyFood:     in.AllergyFood,
+		FoodRestriction: in.FoodRestriction,
+		AllergyMedicine: in.AllergyMedicine,
+		Disease:         in.Disease,
+		ImageUrl:        in.ImageUrl,
+		CanSelectBaan:   in.CanSelectBaan,
 	}
 
 	res, errRes := s.client.Update(ctx, &proto.UpdateUserRequest{User: usrDto})
@@ -180,22 +176,20 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 	defer cancel()
 
 	usrDto := &proto.User{
-		Id:                    in.ID,
-		Firstname:             in.Firstname,
-		Lastname:              in.Lastname,
-		Nickname:              in.Nickname,
-		StudentID:             in.StudentID,
-		Faculty:               in.Faculty,
-		Year:                  in.Year,
-		Phone:                 in.Phone,
-		LineID:                in.LineID,
-		Email:                 in.Email,
-		AllergyFood:           in.AllergyFood,
-		FoodRestriction:       in.FoodRestriction,
-		AllergyMedicine:       in.AllergyMedicine,
-		Disease:               in.Disease,
-		VaccineCertificateUrl: in.VaccineCertificateUrl,
-		ImageUrl:              in.ImageUrl,
+		Id:              in.ID,
+		Title:           in.Title,
+		Firstname:       in.Firstname,
+		Lastname:        in.Lastname,
+		Nickname:        in.Nickname,
+		Phone:           in.Phone,
+		LineID:          in.LineID,
+		Email:           in.Email,
+		AllergyFood:     in.AllergyFood,
+		FoodRestriction: in.FoodRestriction,
+		AllergyMedicine: in.AllergyMedicine,
+		Disease:         in.Disease,
+		ImageUrl:        in.ImageUrl,
+		CanSelectBaan:   in.CanSelectBaan,
 	}
 
 	res, errRes := s.client.CreateOrUpdate(ctx, &proto.CreateOrUpdateUserRequest{User: usrDto})

@@ -534,14 +534,13 @@
         "dto.UserDto": {
             "type": "object",
             "required": [
-                "faculty",
+                "can_select_baan",
                 "firstname",
                 "lastname",
                 "line_id",
                 "nickname",
                 "phone",
-                "student_id",
-                "year"
+                "title"
             ],
             "properties": {
                 "allergy_food": {
@@ -550,13 +549,13 @@
                 "allergy_medicine": {
                     "type": "string"
                 },
+                "can_select_baan": {
+                    "type": "boolean"
+                },
                 "disease": {
                     "type": "string"
                 },
                 "email": {
-                    "type": "string"
-                },
-                "faculty": {
                     "type": "string"
                 },
                 "firstname": {
@@ -583,13 +582,7 @@
                 "phone": {
                     "type": "string"
                 },
-                "student_id": {
-                    "type": "string"
-                },
-                "vaccine_certificate_url": {
-                    "type": "string"
-                },
-                "year": {
+                "title": {
                     "type": "string"
                 }
             }
@@ -628,6 +621,9 @@
                 "allergyMedicine": {
                     "type": "string"
                 },
+                "canSelectBaan": {
+                    "type": "boolean"
+                },
                 "disease": {
                     "type": "string"
                 },
@@ -664,7 +660,7 @@
                 "studentID": {
                     "type": "string"
                 },
-                "vaccineCertificateUrl": {
+                "title": {
                     "type": "string"
                 },
                 "year": {
