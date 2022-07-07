@@ -105,7 +105,7 @@ func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseEr
 			Str("service", "auth").
 			Str("module", "validate").
 			Msg("Error while connecting to service")
-		
+
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -115,7 +115,6 @@ func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseEr
 
 	return &dto.TokenPayloadAuth{
 		UserId: res.UserId,
-		Role:   res.Role,
 	}, nil
 }
 

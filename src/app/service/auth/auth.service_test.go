@@ -3,7 +3,6 @@ package auth
 import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/pkg/errors"
@@ -37,7 +36,6 @@ func (t *AuthServiceTest) SetupTest() {
 
 	t.Payload = &dto.TokenPayloadAuth{
 		UserId: faker.UUIDDigit(),
-		Role:   constant.USER,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
@@ -115,7 +113,6 @@ func (t *AuthServiceTest) TestValidateSuccess() {
 	c := mock.ClientMock{}
 	c.On("Validate", &proto.ValidateRequest{Token: token}).Return(&proto.ValidateResponse{
 		UserId: t.Payload.UserId,
-		Role:   t.Payload.Role,
 	}, nil)
 
 	srv := NewService(&c)

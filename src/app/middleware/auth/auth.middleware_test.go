@@ -66,7 +66,6 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(&dto.TokenPayloadAuth{
 		UserId: u.UserId,
-		Role:   constant.USER,
 	}, nil)
 	c.On("StoreValue", "UserId", u.UserId)
 	c.On("StoreValue", "Role", constant.USER)

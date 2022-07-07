@@ -250,6 +250,7 @@ func (t *UserHandlerTest) TestUpdateSuccess() {
 		UserDto: t.UserDto,
 	}
 	c.On("ID").Return(t.User.Id, nil)
+	c.On("UserID").Return(t.User.Id, nil)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -284,6 +285,7 @@ func (t *UserHandlerTest) TestUpdateValidateErr() {
 	}
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 	c.On("ID").Return(t.User.Id, nil)
+	c.On("UserID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -329,6 +331,7 @@ func (t *UserHandlerTest) TestUpdateNotFound() {
 		UserDto: t.UserDto,
 	}
 	c.On("ID").Return(t.User.Id, nil)
+	c.On("UserID").Return(t.User.Id, nil)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -353,6 +356,7 @@ func (t *UserHandlerTest) TestUpdateInvalidID() {
 		UserDto: t.UserDto,
 	}
 	c.On("ID").Return("", errors.New(want.Message))
+	c.On("UserID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -373,6 +377,7 @@ func (t *UserHandlerTest) TestUpdateGrpcErr() {
 		UserDto: t.UserDto,
 	}
 	c.On("ID").Return(t.User.Id, nil)
+	c.On("UserID").Return(t.User.Id, nil)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()

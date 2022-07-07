@@ -4,7 +4,6 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
@@ -57,7 +56,6 @@ func (t *AuthHandlerTest) SetupTest() {
 
 	t.Payload = &dto.TokenPayloadAuth{
 		UserId: faker.UUIDDigit(),
-		Role:   constant.USER,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{

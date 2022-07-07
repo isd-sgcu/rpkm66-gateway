@@ -84,7 +84,6 @@ func (m *Guard) Validate(ctx IContext) {
 	}
 
 	ctx.StoreValue("UserId", payload.UserId)
-	ctx.StoreValue("Role", payload.Role)
 	ctx.Next()
 }
 
