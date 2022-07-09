@@ -43,10 +43,10 @@ type IService interface {
 // @Accept json
 // @Produce json
 // @Success 200 {object} proto.User
-// @Failure 400 {object} dto.ResponseErr Invalid body request
-// @Failure 404 {object} dto.ResponseErr Not found user
-// @Failure 401 {object} dto.ResponseErr Unauthorized
-// @Failure 503 {object} dto.ResponseErr Service is down
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid body request
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 404 {object} dto.ResponseNotfoundErr Not found user
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /user/{id} [get]
 func (h *Handler) FindOne(ctx IContext) {
 	id, err := ctx.ID()
@@ -78,11 +78,11 @@ func (h *Handler) FindOne(ctx IContext) {
 // @Accept json
 // @Produce json
 // @Success 201 {object} proto.User
-// @Failure 400 {object} dto.ResponseErr Invalid request body
-// @Failure 404 {object} dto.ResponseErr Not found user
-// @Failure 401 {object} dto.ResponseErr Unauthorized
-// @Failure 403 {object} dto.ResponseErr Insufficiency permission to create user
-// @Failure 503 {object} dto.ResponseErr Service is down
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid request body
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to create user
+// @Failure 404 {object} dto.ResponseNotfoundErr Not found user
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user [post]
 func (h *Handler) Create(ctx IContext) {
@@ -122,11 +122,11 @@ func (h *Handler) Create(ctx IContext) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} proto.User
-// @Failure 400 {object} dto.ResponseErr Invalid ID
-// @Failure 404 {object} dto.ResponseErr Not found user
-// @Failure 401 {object} dto.ResponseErr Unauthorized
-// @Failure 403 {object} dto.ResponseErr Insufficiency permission to update user
-// @Failure 503 {object} dto.ResponseErr Service is down
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update user
+// @Failure 404 {object} dto.ResponseNotfoundErr Not found user
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user/{id} [put]
 func (h *Handler) Update(ctx IContext) {
@@ -183,9 +183,9 @@ func (h *Handler) Update(ctx IContext) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} proto.User
-// @Failure 400 {object} dto.ResponseErr Invalid request body
-// @Failure 401 {object} dto.ResponseErr Unauthorized
-// @Failure 503 {object} dto.ResponseErr Service is down
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid request body
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user [put]
 func (h *Handler) CreateOrUpdate(ctx IContext) {
@@ -231,11 +231,11 @@ func (h *Handler) CreateOrUpdate(ctx IContext) {
 // @Accept json
 // @Produce json
 // @Success 200 {bool} true
-// @Failure 400 {object} dto.ResponseErr Invalid ID
-// @Failure 404 {object} dto.ResponseErr Not found user
-// @Failure 401 {object} dto.ResponseErr Unauthorized
-// @Failure 403 {object} dto.ResponseErr Insufficiency permission to delete user
-// @Failure 503 {object} dto.ResponseErr Service is down
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to delete user
+// @Failure 404 {object} dto.ResponseNotfoundErr Not found user
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user/{id} [delete]
 func (h *Handler) Delete(ctx IContext) {
