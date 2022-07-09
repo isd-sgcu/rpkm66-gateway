@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
+	"github.com/isd-sgcu/rnkm65-gateway/src/config"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -37,8 +38,13 @@ func (t *AuthRouterTest) TestGetAuthRouter() {
 	}
 
 	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
 
-	r := NewFiberRouter(&g, false)
+	r := NewFiberRouter(&g, conf)
 
 	r.GetAuth("/", func(ctx auth.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
@@ -73,8 +79,13 @@ func (t *AuthRouterTest) TestPostAuthRouter() {
 	}
 
 	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
 
-	r := NewFiberRouter(&g, false)
+	r := NewFiberRouter(&g, conf)
 
 	r.PostAuth("/", func(ctx auth.IContext) {
 		ctx.JSON(http.StatusCreated, map[string]string{

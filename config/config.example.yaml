@@ -1,10 +1,12 @@
 app:
   port: 3000
   debug: true
+  max-file-size: 10
 
 service:
   backend: localhost:3001
   auth: localhost:3002
+  file: localhost:3003
 
 guard:
   phase: "register"

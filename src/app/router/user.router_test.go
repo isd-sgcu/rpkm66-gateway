@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
+	"github.com/isd-sgcu/rnkm65-gateway/src/config"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -37,8 +38,13 @@ func (t *UserRouterTest) TestGetUserRouter() {
 	}
 
 	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
 
-	r := NewFiberRouter(&g, false)
+	r := NewFiberRouter(&g, conf)
 
 	r.GetUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
@@ -73,8 +79,13 @@ func (t *UserRouterTest) TestPostUserRouter() {
 	}
 
 	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
 
-	r := NewFiberRouter(&g, false)
+	r := NewFiberRouter(&g, conf)
 
 	r.PostUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusCreated, map[string]string{
@@ -109,8 +120,13 @@ func (t *UserRouterTest) TestPutUserRouter() {
 	}
 
 	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
 
-	r := NewFiberRouter(&g, false)
+	r := NewFiberRouter(&g, conf)
 
 	r.PutUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{
@@ -145,8 +161,13 @@ func (t *UserRouterTest) TestDeleteUserRouter() {
 	}
 
 	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
 
-	r := NewFiberRouter(&g, false)
+	r := NewFiberRouter(&g, conf)
 
 	r.DeleteUser("/", func(ctx user.IContext) {
 		ctx.JSON(http.StatusOK, map[string]string{

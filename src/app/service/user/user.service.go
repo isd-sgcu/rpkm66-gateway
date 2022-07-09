@@ -33,7 +33,7 @@ func (s *Service) FindOne(id string) (result *proto.User, err *dto.ResponseErr) 
 			case codes.NotFound:
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
-					Message:    st.Message(),
+					Message:    "User not found",
 					Data:       nil,
 				}
 			default:
