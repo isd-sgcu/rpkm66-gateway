@@ -8,11 +8,13 @@ import (
 type Service struct {
 	Auth    string `mapstructure:"auth"`
 	Backend string `mapstructure:"backend"`
+	File    string `mapstructure:"file"`
 }
 
 type App struct {
-	Port  int  `mapstructure:"port"`
-	Debug bool `mapstructure:"debug"`
+	Port        int  `mapstructure:"port"`
+	Debug       bool `mapstructure:"debug"`
+	MaxFileSize int  `mapstructure:"max-file-size"`
 }
 
 type Guard struct {

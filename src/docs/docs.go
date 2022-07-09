@@ -192,6 +192,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/file/image": {
+            "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the filename if successfully",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Upload the image",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseErr"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "put": {
                 "security": [
@@ -513,6 +565,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.FileResponse": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "example": "file-example.jpg-6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+                }
+            }
+        },
         "dto.RedeemNewToken": {
             "type": "object",
             "required": [
@@ -693,6 +754,10 @@ const docTemplate = `{
         {
             "description": "# User Tag API Documentation\n**User** functions goes here",
             "name": "user"
+        },
+        {
+            "description": "# File Tag API Documentation\n**File** functions goes here",
+            "name": "file"
         },
         {
             "description": "# Group Tag API Documentation\n**Group** functions goes here",

@@ -124,8 +124,8 @@ func (c *ClientMock) Delete(_ context.Context, in *proto.DeleteUserRequest, _ ..
 	return res, args.Error(1)
 }
 
-func (s *ClientMock) CreateOrUpdate(_ context.Context, in *proto.CreateOrUpdateUserRequest, _ ...grpc.CallOption) (res *proto.CreateOrUpdateUserResponse, err error) {
-	args := s.Called(in)
+func (c *ClientMock) CreateOrUpdate(_ context.Context, in *proto.CreateOrUpdateUserRequest, _ ...grpc.CallOption) (res *proto.CreateOrUpdateUserResponse, err error) {
+	args := c.Called(in)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.CreateOrUpdateUserResponse)

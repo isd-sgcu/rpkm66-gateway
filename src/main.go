@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	authHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
+	fileHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/file"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
 	usrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
 	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/router"
 	authSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/auth"
+	fileSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/file"
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/config"
@@ -47,6 +49,9 @@ import (
 // @tag.description.markdown
 
 // @tag.name user
+// @tag.description.markdown
+
+// @tag.name file
 // @tag.description.markdown
 
 // @tag.name group
@@ -91,6 +96,14 @@ func main() {
 			Msg("Cannot connect to service")
 	}
 
+	fileConn, err := grpc.Dial(conf.Service.File, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal().
+			Err(err).
+			Str("service", "rnkm-file").
+			Msg("Cannot connect to service")
+	}
+
 	hc := health_check.NewHandler()
 
 	uClient := proto.NewUserServiceClient(backendConn)
@@ -101,9 +114,13 @@ func main() {
 	aSrv := authSrv.NewService(aClient)
 	aHdr := authHdr.NewHandler(aSrv, uSrv, v)
 
+	fClient := proto.NewFileServiceClient(fileConn)
+	fSrv := fileSrv.NewService(fClient)
+	fHdr := fileHdr.NewHandler(fSrv, uSrv, conf.App.MaxFileSize)
+
 	authGuard := guard.NewAuthGuard(aSrv, constant.AuthExcludePath, conf.Guard.Phase)
 
-	r := router.NewFiberRouter(&authGuard, conf.App.Debug)
+	r := router.NewFiberRouter(&authGuard, conf.App)
 
 	r.GetHealthCheck("/", hc.HealthCheck)
 
@@ -116,6 +133,8 @@ func main() {
 	r.GetAuth("/me", aHdr.Validate)
 	r.PostAuth("/verify", aHdr.VerifyTicket)
 	r.PostAuth("/refreshToken", aHdr.RefreshToken)
+
+	r.PostFile("/image", fHdr.UploadImage)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

@@ -1,4 +1,10 @@
 definitions:
+  dto.FileResponse:
+    properties:
+      filename:
+        example: file-example.jpg-6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
+        type: string
+    type: object
   dto.RedeemNewToken:
     properties:
       refresh_token:
@@ -227,6 +233,39 @@ paths:
       summary: Verify ticket and get credential
       tags:
       - auth
+  /file/image:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Return the filename if successfully
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Upload the image
+      tags:
+      - file
   /user:
     post:
       consumes:
@@ -455,6 +494,10 @@ tags:
     # User Tag API Documentation
     **User** functions goes here
   name: user
+- description: |-
+    # File Tag API Documentation
+    **File** functions goes here
+  name: file
 - description: |-
     # Group Tag API Documentation
     **Group** functions goes here

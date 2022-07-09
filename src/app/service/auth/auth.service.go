@@ -30,20 +30,25 @@ func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseE
 		st, ok := status.FromError(err)
 		if ok {
 			switch st.Code() {
+			case codes.PermissionDenied:
+				return nil, &dto.ResponseErr{
+					StatusCode: http.StatusForbidden,
+					Message:    "Invalid study year",
+					Data:       nil,
+				}
 			case codes.Unauthenticated:
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusUnauthorized,
-					Message:    st.Message(),
+					Message:    "Invalid ticket",
 					Data:       nil,
 				}
-			default:
 
+			default:
 				log.Error().
 					Err(err).
 					Str("service", "auth").
 					Str("module", "verify ticket").
 					Msg("Error while connecting to service")
-
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
 					Message:    "Service is down",
