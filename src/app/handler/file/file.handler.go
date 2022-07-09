@@ -43,10 +43,10 @@ func NewHandler(service IService, usrService IUserService, maxFileSize int) *Han
 // @Accept mpfd
 // @Produce json
 // @Success 201 {object} dto.FileResponse
-// @Failure 400 {object} dto.ResponseErr Invalid file
-// @Failure 401 {object} dto.ResponseErr Unauthorized
-// @Failure 503 {object} dto.ResponseErr Service is down
-// @Failure 504 {object} dto.ResponseErr Gateway timeout
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid file
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
+// @Failure 504 {object} dto.ResponseGatewayTimeoutErr Gateway timeout
 // @Security     AuthToken
 // @Router /file/image [post]
 func (h *Handler) UploadImage(c IContext) {
