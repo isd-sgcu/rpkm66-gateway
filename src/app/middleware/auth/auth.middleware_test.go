@@ -3,7 +3,7 @@ package auth
 import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
+	role "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -68,7 +68,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 		UserId: u.UserId,
 	}, nil)
 	c.On("StoreValue", "UserId", u.UserId)
-	c.On("StoreValue", "Role", constant.USER)
+	c.On("StoreValue", "Role", role.USER)
 	c.On("Next")
 
 	h := NewAuthGuard(srv, u.ExcludePath, "register")

@@ -14,7 +14,7 @@ import (
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/config"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
+	"github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	_ "github.com/isd-sgcu/rnkm65-gateway/src/docs"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/rs/zerolog/log"
@@ -118,7 +118,7 @@ func main() {
 	fSrv := fileSrv.NewService(fClient)
 	fHdr := fileHdr.NewHandler(fSrv, uSrv, conf.App.MaxFileSize)
 
-	authGuard := guard.NewAuthGuard(aSrv, constant.AuthExcludePath, conf.Guard.Phase)
+	authGuard := guard.NewAuthGuard(aSrv, auth.ExcludePath, conf.Guard.Phase)
 
 	r := router.NewFiberRouter(&authGuard, conf.App)
 
@@ -134,7 +134,7 @@ func main() {
 	r.PostAuth("/verify", aHdr.VerifyTicket)
 	r.PostAuth("/refreshToken", aHdr.RefreshToken)
 
-	r.PostFile("/image", fHdr.UploadImage)
+	r.PostFile("/image", fHdr.Upload)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

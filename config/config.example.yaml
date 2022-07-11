@@ -1,7 +1,7 @@
 app:
   port: 3000
   debug: true
-  max-file-size: 10
+  max_file_size: 10
 
 service:
   backend: localhost:3001

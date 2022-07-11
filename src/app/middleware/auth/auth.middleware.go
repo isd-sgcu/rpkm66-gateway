@@ -4,7 +4,7 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
+	role "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"net/http"
 	"strings"
 )
@@ -110,7 +110,7 @@ func (m *Guard) CheckConfig(ctx IContext) {
 
 	path = utils.FormatPath(method, path, id)
 
-	phses, ok := constant.MapPath2Phase[path]
+	phses, ok := role.MapPath2Phase[path]
 	if !ok {
 		ctx.Next()
 		return

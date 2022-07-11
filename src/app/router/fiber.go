@@ -138,3 +138,7 @@ func (c *FiberCtx) File(key string, allowContent map[string]struct{}, maxSize in
 		Data:     buf.Bytes(),
 	}, nil
 }
+
+func (c *FiberCtx) GetFormData(key string) string {
+	return c.Ctx.FormValue(key)
+}

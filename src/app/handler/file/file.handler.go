@@ -2,10 +2,11 @@ package file
 
 import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
+	"github.com/isd-sgcu/rnkm65-gateway/src/constant/file"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"strings"
 )
 
 type Handler struct {
@@ -15,7 +16,7 @@ type Handler struct {
 }
 
 type IService interface {
-	UploadImage(*dto.DecomposedFile) (string, *dto.ResponseErr)
+	Upload(*dto.DecomposedFile, string, file.Tag, file.Type) (string, *dto.ResponseErr)
 }
 
 type IUserService interface {
@@ -26,6 +27,7 @@ type IContext interface {
 	File(string, map[string]struct{}, int64) (*dto.DecomposedFile, error)
 	JSON(int, interface{})
 	UserID() string
+	GetFormData(string) string
 }
 
 func NewHandler(service IService, usrService IUserService, maxFileSize int) *Handler {
@@ -36,7 +38,7 @@ func NewHandler(service IService, usrService IUserService, maxFileSize int) *Han
 	}
 }
 
-// UploadImage is a function that upload the image
+// Upload is a function that upload the image
 // @Summary Upload the image
 // @Description Return the filename if successfully
 // @Tags file
@@ -49,18 +51,37 @@ func NewHandler(service IService, usrService IUserService, maxFileSize int) *Han
 // @Failure 504 {object} dto.ResponseGatewayTimeoutErr Gateway timeout
 // @Security     AuthToken
 // @Router /file/image [post]
-func (h *Handler) UploadImage(c IContext) {
+func (h *Handler) Upload(c IContext) {
 	id := c.UserID()
-	file, err := c.File(constant.Image, constant.AllowImageContentType, h.MaxFileSize)
+
+	tag := getTagNumber(c.GetFormData("tag"))
+	if tag == file.UnknownTag {
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid tag",
+		})
+		return
+	}
+
+	fileType := getTypeNumber(c.GetFormData("type"))
+	if fileType == file.UnknownType {
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid type",
+		})
+		return
+	}
+
+	content, err := c.File("file", file.AllowContentType, h.MaxFileSize)
 	if err != nil {
 		log.Error().
 			Err(err).
-			Str("service", "file").
+			Str("service", "content").
 			Str("module", "upload image").
-			Msg("Invalid file")
+			Msg("Invalid content")
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
-			Message:    "Invalid file",
+			Message:    "Invalid content",
 		})
 		return
 	}
@@ -71,15 +92,37 @@ func (h *Handler) UploadImage(c IContext) {
 		return
 	}
 
-	file.Filename = usr.StudentID
+	content.Filename = usr.StudentID
 
-	filename, errRes := h.service.UploadImage(file)
+	filename, errRes := h.service.Upload(content, id, tag, fileType)
 	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
 	c.JSON(http.StatusCreated, &dto.FileResponse{
-		Filename: filename,
+		Url: filename,
 	})
+}
+
+func getTagNumber(tag string) file.Tag {
+	switch strings.ToLower(tag) {
+	case "profile":
+		return file.Profile
+	case "baan":
+		return file.Baan
+	default:
+		return file.UnknownTag
+	}
+}
+
+func getTypeNumber(fileType string) file.Type {
+	switch strings.ToLower(fileType) {
+	case "image":
+		return file.Image
+	case "file":
+		return file.File
+	default:
+		return file.UnknownType
+	}
 }
