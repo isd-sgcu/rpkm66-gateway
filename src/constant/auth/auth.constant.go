@@ -1,6 +1,6 @@
-package constant
+package auth
 
-var AuthExcludePath = map[string]struct{}{
+var ExcludePath = map[string]struct{}{
 	"POST /auth/verify":       {},
 	"POST /auth/refreshToken": {},
 }

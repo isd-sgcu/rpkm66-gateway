@@ -14,7 +14,7 @@ type Service struct {
 type App struct {
 	Port        int  `mapstructure:"port"`
 	Debug       bool `mapstructure:"debug"`
-	MaxFileSize int  `mapstructure:"max-file-size"`
+	MaxFileSize int  `mapstructure:"max_file_size"`
 }
 
 type Guard struct {

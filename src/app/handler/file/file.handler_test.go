@@ -3,7 +3,7 @@ package file
 import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant"
+	"github.com/isd-sgcu/rnkm65-gateway/src/constant/file"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/file"
 	mockUsr "github.com/isd-sgcu/rnkm65-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
@@ -18,7 +18,7 @@ type UserHandlerTest struct {
 	suite.Suite
 	filename          string
 	file              []byte
-	imgKey            string
+	key               string
 	maxFileSize       int
 	user              *proto.User
 	fileDecompose     *dto.DecomposedFile
@@ -53,7 +53,7 @@ func (t *UserHandlerTest) SetupTest() {
 	t.filename = faker.Word()
 	t.file = []byte("Hello")
 
-	t.imgKey = constant.Image
+	t.key = "file"
 
 	t.maxFileSize = 10
 
@@ -75,91 +75,99 @@ func (t *UserHandlerTest) SetupTest() {
 	}
 }
 
-func (t *UserHandlerTest) TestUploadImageSuccess() {
-	want := &dto.FileResponse{Filename: t.filename}
+func (t *UserHandlerTest) TestUploadSuccess() {
+	want := &dto.FileResponse{Url: t.filename}
 
 	c := mock.ContextMock{}
-	c.On("File", t.imgKey, constant.AllowImageContentType).Return(t.fileDecompose, nil)
+	c.On("File", t.key, file.AllowContentType).Return(t.fileDecompose, nil)
 	c.On("UserID").Return(t.user.Id)
+	c.On("GetFormData", "tag").Return("profile", nil)
+	c.On("GetFormData", "type").Return("image", nil)
 
 	usrSrv := mockUsr.ServiceMock{}
 	usrSrv.On("FindOne", t.user.Id).Return(t.user, nil)
 
 	srv := mock.ServiceMock{}
-	srv.On("UploadImage", t.fileDecompose).Return(t.filename, nil)
+	srv.On("Upload", t.fileDecompose, t.user.Id, file.Tag(file.Profile), file.Type(file.Image)).Return(t.filename, nil)
 
 	hdr := NewHandler(&srv, &usrSrv, t.maxFileSize)
 
-	hdr.UploadImage(&c)
+	hdr.Upload(&c)
 
 	assert.Equal(t.T(), want, c.V)
 }
 
-func (t *UserHandlerTest) TestUploadImageInvalidFile() {
+func (t *UserHandlerTest) TestUploadInvalidFile() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusBadRequest,
-		Message:    "Invalid file",
+		Message:    "Invalid content",
 		Data:       nil,
 	}
 
 	c := mock.ContextMock{}
-	c.On("File", t.imgKey, constant.AllowImageContentType).Return(nil, errors.New("Invalid file"))
+	c.On("File", t.key, file.AllowContentType).Return(nil, errors.New("Invalid content"))
 	c.On("UserID").Return(t.user.Id)
+	c.On("GetFormData", "tag").Return("profile", nil)
+	c.On("GetFormData", "type").Return("image", nil)
 
 	usrSrv := mockUsr.ServiceMock{}
 	usrSrv.On("FindOne", t.user.Id).Return(t.user, nil)
 
 	srv := mock.ServiceMock{}
-	srv.On("UploadImage", t.fileDecompose).Return("", nil)
+	srv.On("Upload", t.fileDecompose, t.user.Id, file.Profile, file.Type(file.Image)).Return("", nil)
 
 	hdr := NewHandler(&srv, &usrSrv, t.maxFileSize)
 
-	hdr.UploadImage(&c)
+	hdr.Upload(&c)
 
 	assert.Equal(t.T(), want, c.V)
 }
 
-func (t *UserHandlerTest) TestUploadImageFailed() {
-	testUploadFailed(t.T(), t.GatewayTimeoutErr, t.imgKey, t.fileDecompose, t.maxFileSize, t.user)
-	testUploadFailed(t.T(), t.ServiceDownErr, t.imgKey, t.fileDecompose, t.maxFileSize, t.user)
+func (t *UserHandlerTest) TestUploadFailed() {
+	testUploadFailed(t.T(), t.GatewayTimeoutErr, t.key, t.fileDecompose, t.maxFileSize, t.user)
+	testUploadFailed(t.T(), t.ServiceDownErr, t.key, t.fileDecompose, t.maxFileSize, t.user)
 }
 
-func testUploadFailed(t *testing.T, err *dto.ResponseErr, key string, file *dto.DecomposedFile, maxFileSize int, user *proto.User) {
+func testUploadFailed(t *testing.T, err *dto.ResponseErr, key string, decomposedFile *dto.DecomposedFile, maxFileSize int, user *proto.User) {
 	want := err
 
 	c := mock.ContextMock{}
-	c.On("File", key, constant.AllowImageContentType).Return(file, nil)
+	c.On("File", key, file.AllowContentType).Return(decomposedFile, nil)
 	c.On("UserID").Return(user.Id)
+	c.On("GetFormData", "tag").Return("profile", nil)
+	c.On("GetFormData", "type").Return("image", nil)
 
 	usrSrv := mockUsr.ServiceMock{}
 	usrSrv.On("FindOne", user.Id).Return(user, nil)
 
 	srv := mock.ServiceMock{}
-	srv.On("UploadImage", file).Return("", err)
+	srv.On("Upload", decomposedFile, user.Id, file.Tag(file.Profile), file.Type(file.Image)).Return("", err)
 
 	hdr := NewHandler(&srv, &usrSrv, maxFileSize)
 
-	hdr.UploadImage(&c)
+	hdr.Upload(&c)
 
 	assert.Equal(t, want, c.V)
 }
 
-func (t *UserHandlerTest) TestUploadImageGrpcErr() {
+func (t *UserHandlerTest) TestUploadGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := mock.ContextMock{}
-	c.On("File", t.imgKey, constant.AllowImageContentType).Return(t.fileDecompose, nil)
+	c.On("File", t.key, file.AllowContentType).Return(t.fileDecompose, nil)
 	c.On("UserID").Return(t.user.Id)
+	c.On("GetFormData", "tag").Return("profile", nil)
+	c.On("GetFormData", "type").Return("image", nil)
 
 	usrSrv := mockUsr.ServiceMock{}
 	usrSrv.On("FindOne", t.user.Id).Return(nil, t.ServiceDownErr)
 
 	srv := mock.ServiceMock{}
-	srv.On("UploadImage", t.fileDecompose).Return("", nil)
+	srv.On("Upload", t.fileDecompose, t.user.Id, file.Profile, file.Type(file.Image)).Return("", nil)
 
 	hdr := NewHandler(&srv, &usrSrv, t.maxFileSize)
 
-	hdr.UploadImage(&c)
+	hdr.Upload(&c)
 
 	assert.Equal(t.T(), want, c.V)
 }
