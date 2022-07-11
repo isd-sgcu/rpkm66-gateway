@@ -50,7 +50,7 @@ func NewHandler(service IService, usrService IUserService, maxFileSize int) *Han
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Failure 504 {object} dto.ResponseGatewayTimeoutErr Gateway timeout
 // @Security     AuthToken
-// @Router /file/image [post]
+// @Router /file/upload [post]
 func (h *Handler) Upload(c IContext) {
 	id := c.UserID()
 

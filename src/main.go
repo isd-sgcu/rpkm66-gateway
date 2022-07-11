@@ -134,7 +134,7 @@ func main() {
 	r.PostAuth("/verify", aHdr.VerifyTicket)
 	r.PostAuth("/refreshToken", aHdr.RefreshToken)
 
-	r.PostFile("/image", fHdr.Upload)
+	r.PostFile("/upload", fHdr.Upload)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {
