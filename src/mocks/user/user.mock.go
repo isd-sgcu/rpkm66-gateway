@@ -40,6 +40,20 @@ func (s *ServiceMock) Create(in *dto.UserDto) (result *proto.User, err *dto.Resp
 	return
 }
 
+func (s *ServiceMock) Verify(id string) (result bool, err *dto.ResponseErr) {
+	args := s.Called(id)
+
+	if args.Get(0) != nil {
+		result = args.Bool(0)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
+}
+
 func (s *ServiceMock) Update(id string, in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	args := s.Called(id, in)
 
@@ -82,6 +96,16 @@ func (s *ServiceMock) Delete(id string) (result bool, err *dto.ResponseErr) {
 
 type ClientMock struct {
 	mock.Mock
+}
+
+func (c *ClientMock) Verify(_ context.Context, in *proto.VerifyUserRequest, _ ...grpc.CallOption) (res *proto.VerifyUserResponse, err error) {
+	args := c.Called(in)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.VerifyUserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
 func (c *ClientMock) FindOne(_ context.Context, in *proto.FindOneUserRequest, _ ...grpc.CallOption) (res *proto.FindOneUserResponse, err error) {
@@ -136,27 +160,38 @@ func (c *ClientMock) CreateOrUpdate(_ context.Context, in *proto.CreateOrUpdateU
 
 type ContextMock struct {
 	mock.Mock
-	V       interface{}
-	User    *proto.User
-	UserDto *dto.UserDto
+	V      interface{}
+	Status int
 }
 
-func (c *ContextMock) JSON(_ int, v interface{}) {
+func (c *ContextMock) JSON(status int, v interface{}) {
 	c.V = v
+	c.Status = status
 }
 
 func (c *ContextMock) Bind(v interface{}) error {
 	args := c.Called(v)
 
-	*v.(*dto.UserDto) = *c.UserDto
+	switch v.(type) {
+	case *dto.UserDto:
+		*v.(*dto.UserDto) = *args.Get(0).(*dto.UserDto)
+	case *dto.Verify:
+		*v.(*dto.Verify) = *args.Get(0).(*dto.Verify)
+	}
 
-	return args.Error(0)
+	return args.Error(1)
 }
 
 func (c *ContextMock) ID() (string, error) {
 	args := c.Called()
 
 	return args.String(0), args.Error(1)
+}
+
+func (c *ContextMock) Host() string {
+	args := c.Called()
+
+	return args.String(0)
 }
 
 func (c *ContextMock) UserID() string {

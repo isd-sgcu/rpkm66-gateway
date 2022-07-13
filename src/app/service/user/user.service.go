@@ -169,6 +169,34 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 	return res.User, nil
 }
 
+func (s *Service) Verify(studentId string) (result bool, err *dto.ResponseErr) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	log.Info().
+		Str("service", "user").
+		Str("module", "verify").
+		Str("student_id", studentId).
+		Msg("Trying to verify the user")
+
+	res, errRes := s.client.Verify(ctx, &proto.VerifyUserRequest{StudentId: studentId})
+	if errRes != nil {
+		return false, &dto.ResponseErr{
+			StatusCode: http.StatusNotFound,
+			Message:    "User not found",
+			Data:       nil,
+		}
+	}
+
+	log.Info().
+		Str("service", "user").
+		Str("module", "verify").
+		Str("student_id", studentId).
+		Msg("Verified the user")
+
+	return res.Success, nil
+}
+
 func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

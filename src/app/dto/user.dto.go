@@ -15,3 +15,7 @@ type UserDto struct {
 	Disease         string `json:"disease"`
 	CanSelectBaan   bool   `json:"can_select_baan"`
 }
+
+type Verify struct {
+	StudentId string `json:"student_id"`
+}

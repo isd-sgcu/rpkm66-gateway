@@ -158,6 +158,32 @@ func (t *UserServiceTest) TestCreateGrpcErr() {
 	assert.Equal(t.T(), want, err)
 }
 
+func (t *UserServiceTest) TestVerifySuccess() {
+	c := &user.ClientMock{}
+	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID}).Return(&proto.VerifyUserResponse{Success: true}, nil)
+
+	srv := NewService(c)
+
+	actual, err := srv.Verify(t.User.StudentID)
+
+	assert.Nil(t.T(), err)
+	assert.True(t.T(), actual)
+}
+
+func (t *UserServiceTest) TestVerifyFailed() {
+	want := t.NotFoundErr
+
+	c := &user.ClientMock{}
+	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID}).Return(&proto.VerifyUserResponse{Success: true}, status.Error(codes.NotFound, "User not found"))
+
+	srv := NewService(c)
+
+	actual, err := srv.Verify(t.User.StudentID)
+
+	assert.False(t.T(), actual)
+	assert.Equal(t.T(), want, err)
+}
+
 func (t *UserServiceTest) TestUpdateSuccess() {
 	want := t.User
 
