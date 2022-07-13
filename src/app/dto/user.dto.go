@@ -13,6 +13,5 @@ type UserDto struct {
 	FoodRestriction string `json:"food_restriction"`
 	AllergyMedicine string `json:"allergy_medicine"`
 	Disease         string `json:"disease"`
-	ImageUrl        string `json:"image_url" validate:"url"`
 	CanSelectBaan   bool   `json:"can_select_baan"`
 }
