@@ -21,7 +21,7 @@ definitions:
     type: object
   dto.FileResponse:
     properties:
-      filename:
+      url:
         example: file-example.jpg-6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
         type: string
     type: object
@@ -141,6 +141,11 @@ definitions:
     - phone
     - title
     type: object
+  dto.Verify:
+    properties:
+      student_id:
+        type: string
+    type: object
   dto.VerifyTicket:
     properties:
       ticket:
@@ -170,6 +175,8 @@ definitions:
         type: string
       imageUrl:
         type: string
+      isVerify:
+        type: boolean
       lastname:
         type: string
       lineID:
@@ -306,7 +313,7 @@ paths:
       summary: Verify ticket and get credential
       tags:
       - auth
-  /file/image:
+  /file/upload:
     post:
       consumes:
       - multipart/form-data
@@ -497,54 +504,32 @@ paths:
       summary: Get the user data by id
       tags:
       - user
-    put:
+  /vaccine/callback:
+    post:
       consumes:
       - application/json
-      description: Return the user dto if successfully
+      description: Return nothing if success
       parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
       - description: user dto
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.UserDto'
+          $ref: '#/definitions/dto.Verify'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           schema:
-            $ref: '#/definitions/proto.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ResponseBadRequestErr'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+            type: bool
         "403":
           description: Forbidden
           schema:
             $ref: '#/definitions/dto.ResponseForbiddenErr'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ResponseNotfoundErr'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/dto.ResponseServiceDownErr'
-      security:
-      - AuthToken: []
-      summary: Update the existing user
+      summary: Verify the user status
       tags:
-      - user
+      - vaccine
 schemes:
 - https
 - http
@@ -559,6 +544,10 @@ tags:
     # Health Check Tag API Documentation
     **Health Check** functions goes here
   name: health check
+- description: |-
+    # Vaccine Tag API Documentation
+    **Vaccine** functions goes here
+  name: vaccine
 - description: |-
     # Auth Tag API Documentation
     **Auth** functions goes here

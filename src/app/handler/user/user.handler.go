@@ -5,8 +5,11 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
+
+const ValidHost = "vaccine.cucheck.in"
 
 type Handler struct {
 	service  IService
@@ -25,12 +28,14 @@ type IContext interface {
 	JSON(int, interface{})
 	ID() (string, error)
 	UserID() string
+	Host() string
 }
 
 type IService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 	Create(*dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Update(string, *dto.UserDto) (*proto.User, *dto.ResponseErr)
+	Verify(string) (bool, *dto.ResponseErr)
 	CreateOrUpdate(*dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Delete(string) (bool, *dto.ResponseErr)
 }
@@ -113,22 +118,61 @@ func (h *Handler) Create(ctx IContext) {
 	return
 }
 
-// Update is a function that update the user
-// @Summary Update the existing user
-// @Description Return the user dto if successfully
-// @Param id path string true "id"
-// @Param user body dto.UserDto true "user dto"
-// @Tags user
+// Verify is a function that verify the user status
+// @Summary Verify the user status
+// @Description Return nothing if success
+// @Param user body dto.Verify true "user dto"
+// @Tags vaccine
 // @Accept json
 // @Produce json
-// @Success 200 {object} proto.User
-// @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID
-// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
-// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update user
-// @Failure 404 {object} dto.ResponseNotfoundErr Not found user
-// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
-// @Security     AuthToken
-// @Router /user/{id} [put]
+// @Success 204 {bool} true
+// @Failure 403 {object} dto.ResponseForbiddenErr Invalid host
+// @Router /vaccine/callback [post]
+func (h *Handler) Verify(ctx IContext) {
+	host := ctx.Host()
+
+	log.Info().
+		Str("service", "user").
+		Str("module", "verify").
+		Str("host", host).
+		Msg("Got request from host")
+
+	if host != ValidHost {
+
+		log.Warn().
+			Str("service", "user").
+			Str("module", "verify").
+			Str("hostname", host).
+			Msg("Someone trying to verify")
+
+		ctx.JSON(http.StatusForbidden, &dto.ResponseErr{
+			StatusCode: http.StatusForbidden,
+			Message:    "Forbidden",
+		})
+		return
+	}
+
+	verifyReq := dto.Verify{}
+	err := ctx.Bind(&verifyReq)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid input",
+			Data:       nil,
+		})
+		return
+	}
+
+	ok, errRes := h.service.Verify(verifyReq.StudentId)
+	if errRes != nil {
+		ctx.JSON(errRes.StatusCode, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, ok)
+	return
+}
+
 func (h *Handler) Update(ctx IContext) {
 	id, err := ctx.ID()
 	if err != nil {

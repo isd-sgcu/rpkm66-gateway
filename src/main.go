@@ -45,6 +45,9 @@ import (
 // @tag.name health check
 // @tag.description.markdown
 
+// @tag.name vaccine
+// @tag.description.markdown
+
 // @tag.name auth
 // @tag.description.markdown
 
@@ -135,6 +138,8 @@ func main() {
 	r.PostAuth("/refreshToken", aHdr.RefreshToken)
 
 	r.PostFile("/upload", fHdr.Upload)
+
+	r.PostMethod("/vaccine/callback", uHdr.Verify)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

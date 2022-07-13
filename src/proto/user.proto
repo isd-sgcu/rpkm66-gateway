@@ -8,6 +8,7 @@ service UserService {
   rpc FindOne(FindOneUserRequest) returns (FindOneUserResponse){}
   rpc Create(CreateUserRequest) returns (CreateUserResponse){}
   rpc Update(UpdateUserRequest) returns (UpdateUserResponse){}
+  rpc Verify(VerifyUserRequest) returns (VerifyUserResponse){}
   rpc Delete(DeleteUserRequest) returns (DeleteUserResponse){}
   rpc CreateOrUpdate(CreateOrUpdateUserRequest) returns (CreateOrUpdateUserResponse){}
 }
@@ -30,6 +31,7 @@ message User{
   string disease = 15;
   string imageUrl = 16;
   bool canSelectBaan = 17;
+  bool isVerify = 18;
 }
 
 // FindOne
@@ -73,10 +75,21 @@ message DeleteUserResponse{
 }
 
 // Create or Update
+
 message CreateOrUpdateUserRequest{
   User user = 1;
 }
 
 message CreateOrUpdateUserResponse{
   User user = 1;
+}
+
+// Verify
+
+message VerifyUserRequest{
+  string studentId = 1;
+}
+
+message VerifyUserResponse{
+  bool success = 1;
 }
