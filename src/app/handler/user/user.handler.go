@@ -131,7 +131,11 @@ func (h *Handler) Create(ctx IContext) {
 func (h *Handler) Verify(ctx IContext) {
 	host := ctx.Host()
 
-	log.Print(host)
+	log.Info().
+		Str("service", "user").
+		Str("module", "verify").
+		Str("host", host).
+		Msg("Got request from host")
 
 	if host != ValidHost {
 
