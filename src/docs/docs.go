@@ -720,7 +720,6 @@ const docTemplate = `{
         "dto.UserDto": {
             "type": "object",
             "required": [
-                "can_select_baan",
                 "firstname",
                 "lastname",
                 "line_id",
@@ -751,9 +750,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "image_url": {
                     "type": "string"
                 },
                 "lastname": {
