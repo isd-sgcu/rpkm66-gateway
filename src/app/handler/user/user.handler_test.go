@@ -60,7 +60,6 @@ func (t *UserHandlerTest) SetupTest() {
 		FoodRestriction: t.User.FoodRestriction,
 		AllergyMedicine: t.User.AllergyMedicine,
 		Disease:         t.User.Disease,
-		ImageUrl:        t.User.ImageUrl,
 		CanSelectBaan:   t.User.CanSelectBaan,
 	}
 
@@ -192,17 +191,17 @@ func (t *UserHandlerTest) TestCreateValidateErr() {
 		Message:    "Invalid body request",
 		Data: []*dto.BadReqErrResponse{
 			&dto.BadReqErrResponse{
-				Message:     "ImageUrl must be a valid URL",
-				FailedField: "ImageUrl",
+				Message:     "Email must be a valid email address",
+				FailedField: "Email",
 				Value:       "",
 			},
 		},
 	}
 
+	t.UserDto.Email = ""
+
 	srv := new(mock.ServiceMock)
 	srv.On("Create", t.UserDto).Return(t.User, nil)
-
-	t.UserDto.ImageUrl = ""
 
 	c := &mock.ContextMock{
 		User:    t.User,
@@ -266,14 +265,14 @@ func (t *UserHandlerTest) TestUpdateValidateErr() {
 		Message:    "Invalid body request",
 		Data: []*dto.BadReqErrResponse{
 			&dto.BadReqErrResponse{
-				Message:     "ImageUrl must be a valid URL",
-				FailedField: "ImageUrl",
+				Message:     "Email must be a valid email address",
+				FailedField: "Email",
 				Value:       "",
 			},
 		},
 	}
 
-	t.UserDto.ImageUrl = ""
+	t.UserDto.Email = ""
 
 	srv := new(mock.ServiceMock)
 	srv.On("Update", t.UserDto).Return(nil, t.BindErr)

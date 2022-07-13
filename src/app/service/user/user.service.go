@@ -84,7 +84,6 @@ func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.Response
 		FoodRestriction: in.FoodRestriction,
 		AllergyMedicine: in.AllergyMedicine,
 		Disease:         in.Disease,
-		ImageUrl:        in.ImageUrl,
 		CanSelectBaan:   in.CanSelectBaan,
 	}
 
@@ -124,7 +123,6 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 		FoodRestriction: in.FoodRestriction,
 		AllergyMedicine: in.AllergyMedicine,
 		Disease:         in.Disease,
-		ImageUrl:        in.ImageUrl,
 		CanSelectBaan:   in.CanSelectBaan,
 	}
 
@@ -188,7 +186,6 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 		FoodRestriction: in.FoodRestriction,
 		AllergyMedicine: in.AllergyMedicine,
 		Disease:         in.Disease,
-		ImageUrl:        in.ImageUrl,
 		CanSelectBaan:   in.CanSelectBaan,
 	}
 

@@ -43,7 +43,6 @@ func (t *UserServiceTest) SetupTest() {
 		FoodRestriction: faker.Word(),
 		AllergyMedicine: faker.Word(),
 		Disease:         faker.Word(),
-		ImageUrl:        faker.URL(),
 		CanSelectBaan:   true,
 	}
 
@@ -74,7 +73,6 @@ func (t *UserServiceTest) SetupTest() {
 		FoodRestriction: t.User.FoodRestriction,
 		AllergyMedicine: t.User.AllergyMedicine,
 		Disease:         t.User.Disease,
-		ImageUrl:        t.User.ImageUrl,
 		CanSelectBaan:   t.User.CanSelectBaan,
 	}
 
@@ -92,6 +90,7 @@ func (t *UserServiceTest) SetupTest() {
 }
 
 func (t *UserServiceTest) TestFindOneSuccess() {
+	t.User.ImageUrl = faker.URL()
 	want := t.User
 
 	c := &user.ClientMock{}
