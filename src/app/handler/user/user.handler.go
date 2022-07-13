@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-const ValidHost = "cucheck.in"
+const ValidHost = "vaccine.cucheck.in"
 
 type Handler struct {
 	service  IService
