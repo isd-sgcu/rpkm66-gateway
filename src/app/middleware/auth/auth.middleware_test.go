@@ -205,7 +205,7 @@ func testConfigFail(t *testing.T, u *AuthGuardTest, phs string, mth string, pth 
 
 func (u *AuthGuardTest) TestConfigFail() {
 	testConfigFail(u.T(), u, "register", "GET", "/group")
-	testConfigFail(u.T(), u, "select", "PUT", "/file/image")
+	testConfigFail(u.T(), u, "select", "PUT", "/file/upload")
 	testConfigFail(u.T(), u, "select", "GET", "/estamp/1")
 	testConfigFail(u.T(), u, "eventDay", "PUT", "/group")
 	testConfigFail(u.T(), u, "eStamp", "GET", "/group")
