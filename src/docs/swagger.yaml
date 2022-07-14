@@ -143,8 +143,10 @@ definitions:
     type: object
   dto.Verify:
     properties:
-      student_id:
+      hcert:
         type: string
+    required:
+    - hcert
     type: object
   dto.VerifyTicket:
     properties:
@@ -504,13 +506,13 @@ paths:
       summary: Get the user data by id
       tags:
       - user
-  /vaccine/callback:
+  /vaccine/verify:
     post:
       consumes:
       - application/json
       description: Return nothing if success
       parameters:
-      - description: user dto
+      - description: verify dto
         in: body
         name: user
         required: true
@@ -527,6 +529,8 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/dto.ResponseForbiddenErr'
+      security:
+      - AuthToken: []
       summary: Verify the user status
       tags:
       - vaccine

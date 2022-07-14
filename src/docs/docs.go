@@ -489,8 +489,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/vaccine/callback": {
+        "/vaccine/verify": {
             "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return nothing if success",
                 "consumes": [
                     "application/json"
@@ -504,7 +509,7 @@ const docTemplate = `{
                 "summary": "Verify the user status",
                 "parameters": [
                     {
-                        "description": "user dto",
+                        "description": "verify dto",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -737,8 +742,11 @@ const docTemplate = `{
         },
         "dto.Verify": {
             "type": "object",
+            "required": [
+                "hcert"
+            ],
             "properties": {
-                "student_id": {
+                "hcert": {
                     "type": "string"
                 }
             }

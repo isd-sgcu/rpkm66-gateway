@@ -9,8 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"net/http"
 	"testing"
 )
@@ -342,84 +340,6 @@ func (t *UserHandlerTest) TestUpdateInvalidID() {
 }
 
 func (t *UserHandlerTest) TestUpdateGrpcErr() {
-	want := t.ServiceDownErr
-
-	srv := new(mock.ServiceMock)
-	srv.On("Update", t.User.Id, t.UserDto).Return(nil, t.ServiceDownErr)
-
-	c := &mock.ContextMock{}
-	c.On("ID").Return(t.User.Id, nil)
-	c.On("UserID").Return(t.User.Id, nil)
-	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Update(c)
-
-	assert.Equal(t.T(), want, c.V)
-	assert.Equal(t.T(), http.StatusServiceUnavailable, c.Status)
-}
-
-func (t *UserHandlerTest) TestVerifySuccess() {
-	srv := new(mock.ServiceMock)
-	srv.On("Verify", t.User.StudentID).Return(true, nil)
-
-	c := &mock.ContextMock{}
-	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{StudentId: t.User.StudentID}, nil)
-	c.On("Host").Return(ValidHost)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Verify(c)
-
-	assert.Equal(t.T(), http.StatusNoContent, c.Status)
-}
-
-func (t *UserHandlerTest) TestVerifyNotFound() {
-	want := t.NotFoundErr
-
-	srv := new(mock.ServiceMock)
-	srv.On("Verify", t.User.StudentID).Return(nil, t.NotFoundErr)
-
-	c := new(mock.ContextMock)
-	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{StudentId: t.User.StudentID}, nil)
-	c.On("Host").Return(ValidHost)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Verify(c)
-
-	assert.Equal(t.T(), want, c.V)
-	assert.Equal(t.T(), http.StatusNotFound, c.Status)
-}
-
-func (t *UserHandlerTest) TestVerifyInvalidHost() {
-	want := &dto.ResponseErr{
-		StatusCode: http.StatusForbidden,
-		Message:    "Forbidden",
-		Data:       nil,
-	}
-
-	srv := new(mock.ServiceMock)
-	srv.On("Verify", t.User.StudentID).Return(true, nil)
-
-	c := new(mock.ContextMock)
-	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID}).Return(&proto.VerifyUserResponse{Success: true}, status.Error(codes.NotFound, "User not found"))
-	c.On("Host").Return("rubnongkaomai.com")
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Verify(c)
-
-	assert.Equal(t.T(), want, c.V)
-	assert.Equal(t.T(), http.StatusForbidden, c.Status)
-}
-
-func (t *UserHandlerTest) TestVerifyGrpcErr() {
 	want := t.ServiceDownErr
 
 	srv := new(mock.ServiceMock)

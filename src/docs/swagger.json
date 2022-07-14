@@ -484,8 +484,13 @@
                 }
             }
         },
-        "/vaccine/callback": {
+        "/vaccine/verify": {
             "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return nothing if success",
                 "consumes": [
                     "application/json"
@@ -499,7 +504,7 @@
                 "summary": "Verify the user status",
                 "parameters": [
                     {
-                        "description": "user dto",
+                        "description": "verify dto",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -732,8 +737,11 @@
         },
         "dto.Verify": {
             "type": "object",
+            "required": [
+                "hcert"
+            ],
             "properties": {
-                "student_id": {
+                "hcert": {
                     "type": "string"
                 }
             }

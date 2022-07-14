@@ -8,5 +8,9 @@ service:
   auth: localhost:3002
   file: localhost:3003
 
+vaccine:
+  host: localhost:8000
+  api_key: <api key>
+
 guard:
   phase: "register"
