@@ -36,7 +36,8 @@ func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
 // @Accept json
 // @Produce json
 // @Success 204 {bool} true
-// @Failure 403 {object} dto.ResponseForbiddenErr Invalid host
+// @Failure 400 {object} dto.ResponseForbiddenErr Already verified
+// @Failure 403 {object} dto.ResponseForbiddenErr Invalid phase
 // @Security     AuthToken
 // @Router /vaccine/verify [post]
 func (h *Handler) Verify(ctx IContext) {
