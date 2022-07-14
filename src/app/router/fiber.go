@@ -38,11 +38,11 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 	}))
+
 	if conf.Debug {
 		r.Use(logger.New())
+		r.Get("/docs/*", swagger.HandlerDefault)
 	}
-
-	r.Get("/docs/*", swagger.HandlerDefault)
 
 	user := NewGroupRouteWithAuthMiddleware(r, "/user", authGuard.Use)
 	auth := NewGroupRouteWithAuthMiddleware(r, "/auth", authGuard.Use)
