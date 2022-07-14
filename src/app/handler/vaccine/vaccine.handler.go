@@ -3,7 +3,6 @@ package vaccine
 import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -41,6 +40,8 @@ func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
 // @Security     AuthToken
 // @Router /vaccine/verify [post]
 func (h *Handler) Verify(ctx IContext) {
+	userId := ctx.UserID()
+
 	verifyReq := dto.Verify{}
 	err := ctx.Bind(&verifyReq)
 	if err != nil {
@@ -52,12 +53,6 @@ func (h *Handler) Verify(ctx IContext) {
 		return
 	}
 
-	log.Info().
-		Str("service", "user").
-		Str("module", "verify").
-		Str("student_id", verifyReq.StudentId).
-		Msg("Verifying the vaccine cert")
-
 	if errors := h.validate.Validate(verifyReq); errors != nil {
 		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -67,17 +62,11 @@ func (h *Handler) Verify(ctx IContext) {
 		return
 	}
 
-	ok, errRes := h.service.Verify(verifyReq.HCert, verifyReq.StudentId)
+	ok, errRes := h.service.Verify(verifyReq.HCert, userId)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return
 	}
-
-	log.Info().
-		Str("service", "user").
-		Str("module", "verify").
-		Str("student_id", verifyReq.StudentId).
-		Msg("Verified the vaccine cert")
 
 	ctx.JSON(http.StatusNoContent, ok)
 	return

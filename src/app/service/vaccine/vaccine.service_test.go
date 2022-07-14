@@ -5,6 +5,7 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	uMock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/user"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/vaccine"
+	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -15,7 +16,7 @@ import (
 type ServiceTest struct {
 	suite.Suite
 	hcert          string
-	studentId      string
+	User           *proto.User
 	VaccineRes     *dto.VaccineResponse
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
@@ -27,13 +28,30 @@ func TestService(t *testing.T) {
 
 func (t *ServiceTest) SetupTest() {
 	t.hcert = faker.Word()
-	t.studentId = faker.Word()
+
+	t.User = &proto.User{
+		Id:              faker.UUIDDigit(),
+		Firstname:       faker.FirstName(),
+		Lastname:        faker.LastName(),
+		Nickname:        faker.Name(),
+		StudentID:       faker.Word(),
+		Faculty:         faker.Word(),
+		Year:            faker.Word(),
+		Phone:           faker.Phonenumber(),
+		LineID:          faker.Word(),
+		Email:           faker.Email(),
+		AllergyFood:     faker.Word(),
+		FoodRestriction: faker.Word(),
+		AllergyMedicine: faker.Word(),
+		Disease:         faker.Word(),
+		CanSelectBaan:   true,
+	}
 
 	t.VaccineRes = &dto.VaccineResponse{
 		FirstName: faker.FirstName(),
 		LastName:  faker.LastName(),
 		IsPassed:  true,
-		Uid:       t.studentId,
+		Uid:       t.User.StudentID,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
@@ -53,11 +71,12 @@ func (t *ServiceTest) TestVerifySuccess() {
 	want := t.VaccineRes
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.studentId).Return(true, nil)
+	userSrv.On("Verify", t.User.StudentID).Return(true, nil)
+	userSrv.On("FindOne", t.User.Id).Return(t.User, nil)
 
 	req := &dto.VaccineRequest{
 		HCert:     t.hcert,
-		StudentId: t.studentId,
+		StudentId: t.User.StudentID,
 	}
 
 	c := mock.ClientMock{}
@@ -65,7 +84,7 @@ func (t *ServiceTest) TestVerifySuccess() {
 
 	srv := NewService(&userSrv, &c)
 
-	actual, err := srv.Verify(t.hcert, t.studentId)
+	actual, err := srv.Verify(t.hcert, t.User.Id)
 
 	assert.Nil(t.T(), err)
 	assert.Equal(t.T(), want, actual)
@@ -75,11 +94,12 @@ func (t *ServiceTest) TestVerifyNotFound() {
 	want := t.NotFoundErr
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.studentId).Return(false, t.NotFoundErr)
+	userSrv.On("Verify", t.User.StudentID).Return(false, t.NotFoundErr)
+	userSrv.On("FindOne", t.User.Id).Return(t.User, nil)
 
 	req := &dto.VaccineRequest{
 		HCert:     t.hcert,
-		StudentId: t.studentId,
+		StudentId: t.User.StudentID,
 	}
 
 	c := mock.ClientMock{}
@@ -87,7 +107,7 @@ func (t *ServiceTest) TestVerifyNotFound() {
 
 	srv := NewService(&userSrv, &c)
 
-	actual, err := srv.Verify(t.hcert, t.studentId)
+	actual, err := srv.Verify(t.hcert, t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -101,11 +121,12 @@ func (t *ServiceTest) TestVerifyInvalidQR() {
 	}
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.studentId).Return(false, t.NotFoundErr)
+	userSrv.On("Verify", t.User.StudentID).Return(false, t.NotFoundErr)
+	userSrv.On("FindOne", t.User.Id).Return(t.User, nil)
 
 	req := &dto.VaccineRequest{
 		HCert:     t.hcert,
-		StudentId: t.studentId,
+		StudentId: t.User.StudentID,
 	}
 
 	c := mock.ClientMock{}
@@ -113,7 +134,7 @@ func (t *ServiceTest) TestVerifyInvalidQR() {
 
 	srv := NewService(&userSrv, &c)
 
-	actual, err := srv.Verify(t.hcert, t.studentId)
+	actual, err := srv.Verify(t.hcert, t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -123,11 +144,12 @@ func (t *ServiceTest) TestVerifyGrpcError() {
 	want := t.ServiceDownErr
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.studentId).Return(false, t.ServiceDownErr)
+	userSrv.On("Verify", t.User.StudentID).Return(false, t.ServiceDownErr)
+	userSrv.On("FindOne", t.User.Id).Return(nil, t.ServiceDownErr)
 
 	req := &dto.VaccineRequest{
 		HCert:     t.hcert,
-		StudentId: t.studentId,
+		StudentId: t.User.StudentID,
 	}
 
 	c := mock.ClientMock{}
@@ -135,7 +157,7 @@ func (t *ServiceTest) TestVerifyGrpcError() {
 
 	srv := NewService(&userSrv, &c)
 
-	actual, err := srv.Verify(t.hcert, t.studentId)
+	actual, err := srv.Verify(t.hcert, t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)

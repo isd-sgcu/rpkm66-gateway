@@ -69,7 +69,7 @@ func (t *HandlerTest) SetupTest() {
 
 func (t *HandlerTest) TestVerifySuccess() {
 	srv := new(mock.ServiceMock)
-	srv.On("Verify", t.hcert, t.user.StudentID).Return(&dto.VaccineResponse{
+	srv.On("Verify", t.hcert, t.user.Id).Return(&dto.VaccineResponse{
 		FirstName: t.user.Firstname,
 		LastName:  t.user.Lastname,
 		IsPassed:  true,
@@ -78,7 +78,7 @@ func (t *HandlerTest) TestVerifySuccess() {
 
 	c := &mock.ContextMock{}
 	c.On("UserID").Return(t.user.Id, nil)
-	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert, StudentId: t.user.StudentID}, nil)
+	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert}, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -92,11 +92,11 @@ func (t *HandlerTest) TestVerifyNotFound() {
 	want := t.NotFoundErr
 
 	srv := new(mock.ServiceMock)
-	srv.On("Verify", t.hcert, t.user.StudentID).Return(nil, t.NotFoundErr)
+	srv.On("Verify", t.hcert, t.user.Id).Return(nil, t.NotFoundErr)
 
 	c := new(mock.ContextMock)
 	c.On("UserID").Return(t.user.Id, nil)
-	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert, StudentId: t.user.StudentID}, nil)
+	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert}, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -111,11 +111,11 @@ func (t *HandlerTest) TestVerifyGrpcErr() {
 	want := t.ServiceDownErr
 
 	srv := new(mock.ServiceMock)
-	srv.On("Verify", t.hcert, t.user.StudentID).Return(nil, t.ServiceDownErr)
+	srv.On("Verify", t.hcert, t.user.Id).Return(nil, t.ServiceDownErr)
 
 	c := &mock.ContextMock{}
 	c.On("UserID").Return(t.user.Id, nil)
-	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert, StudentId: t.user.StudentID}, nil)
+	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert}, nil)
 
 	v, _ := validator.NewValidator()
 

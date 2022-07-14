@@ -2,6 +2,7 @@ package vaccine
 
 import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/rs/zerolog/log"
 	"net/http"
 )
@@ -12,6 +13,7 @@ type Service struct {
 }
 
 type IUserService interface {
+	FindOne(string) (*proto.User, *dto.ResponseErr)
 	Verify(string) (bool, *dto.ResponseErr)
 }
 
@@ -27,11 +29,24 @@ func NewService(userService IUserService, client IClient) *Service {
 }
 
 func (s *Service) Verify(hcert string, userId string) (*dto.VaccineResponse, *dto.ResponseErr) {
+	user, errRes := s.userService.FindOne(userId)
+	if errRes != nil {
+
+		log.Error().
+			Interface("error", errRes).
+			Str("service", "vaccine").
+			Str("module", "verify").
+			Str("user_id", userId).
+			Msg("Error while verifying the user")
+
+		return nil, errRes
+	}
+
 	res := &dto.VaccineResponse{}
 
 	err := s.client.Verify(&dto.VaccineRequest{
 		HCert:     hcert,
-		StudentId: userId,
+		StudentId: user.StudentID,
 	}, res)
 
 	if err != nil {

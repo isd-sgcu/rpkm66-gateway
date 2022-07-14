@@ -13,6 +13,5 @@ type VaccineRequest struct {
 }
 
 type Verify struct {
-	HCert     string `json:"hcert" validate:"required"`
-	StudentId string `json:"student_id" validate:"required"`
+	HCert string `json:"hcert" validate:"required"`
 }

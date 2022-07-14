@@ -33,8 +33,8 @@ type ServiceMock struct {
 	mock.Mock
 }
 
-func (s *ServiceMock) Verify(hcert string, sid string) (result *dto.VaccineResponse, err *dto.ResponseErr) {
-	args := s.Called(hcert, sid)
+func (s *ServiceMock) Verify(hcert string, userId string) (result *dto.VaccineResponse, err *dto.ResponseErr) {
+	args := s.Called(hcert, userId)
 
 	if args.Get(0) != nil {
 		result = args.Get(0).(*dto.VaccineResponse)
