@@ -25,6 +25,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
+	github.com/go-resty/resty/v2 v2.7.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect

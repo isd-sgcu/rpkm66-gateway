@@ -21,10 +21,16 @@ type Guard struct {
 	Phase string `mapstructure:"phase"`
 }
 
+type Vaccine struct {
+	Host   string `mapstructure:"host"`
+	ApiKey string `mapstructure:"api_key"`
+}
+
 type Config struct {
 	Service Service `mapstructure:"service"`
 	App     App     `mapstructure:"app"`
 	Guard   Guard   `mapstructure:"guard"`
+	Vaccine Vaccine `mapstructure:"vaccine"`
 }
 
 func LoadConfig() (config *Config, err error) {
