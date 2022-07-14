@@ -743,14 +743,10 @@ const docTemplate = `{
         "dto.Verify": {
             "type": "object",
             "required": [
-                "h_cert",
-                "student_id"
+                "hcert"
             ],
             "properties": {
-                "h_cert": {
-                    "type": "string"
-                },
-                "student_id": {
+                "hcert": {
                     "type": "string"
                 }
             }

@@ -143,13 +143,10 @@ definitions:
     type: object
   dto.Verify:
     properties:
-      h_cert:
-        type: string
-      student_id:
+      hcert:
         type: string
     required:
-    - h_cert
-    - student_id
+    - hcert
     type: object
   dto.VerifyTicket:
     properties:
