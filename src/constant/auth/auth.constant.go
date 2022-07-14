@@ -6,8 +6,7 @@ var ExcludePath = map[string]struct{}{
 }
 
 var MapPath2Phase = map[string][]string{
-	"GET /user":                 {"register", "select", "eventDay", "eStamp"},
-	"PUT /user":                 {"register", "eventDay"},
+	"PUT /user":                 {"register", "eventDay", "eStamp"},
 	"POST /vaccine/verify":      {"register"},
 	"PUT /file/upload":          {"register"},
 	"GET /group":                {"select"},
