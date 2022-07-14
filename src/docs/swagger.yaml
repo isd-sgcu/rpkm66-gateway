@@ -1,0 +1,582 @@
+definitions:
+  dto.BadReqErrResponse:
+    properties:
+      failed_field:
+        type: string
+      message:
+        type: string
+      value: {}
+    type: object
+  dto.Credential:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BiZX...
+        type: string
+      expires_in:
+        example: 3600
+        type: integer
+      refresh_token:
+        example: e7e84d54-7518-4...
+        type: string
+    type: object
+  dto.FileResponse:
+    properties:
+      url:
+        example: file-example.jpg-6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
+        type: string
+    type: object
+  dto.RedeemNewToken:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.ResponseBadRequestErr:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.BadReqErrResponse'
+        type: array
+      message:
+        example: Invalid request body
+        type: string
+      status_code:
+        example: 400
+        type: integer
+    type: object
+  dto.ResponseForbiddenErr:
+    properties:
+      data: {}
+      message:
+        example: Insufficiency permission
+        type: string
+      status_code:
+        example: 403
+        type: integer
+    type: object
+  dto.ResponseGatewayTimeoutErr:
+    properties:
+      data: {}
+      message:
+        example: Connection timeout
+        type: string
+      status_code:
+        example: 504
+        type: integer
+    type: object
+  dto.ResponseInternalErr:
+    properties:
+      data: {}
+      message:
+        example: Internal service error
+        type: string
+      status_code:
+        example: 500
+        type: integer
+    type: object
+  dto.ResponseNotfoundErr:
+    properties:
+      data: {}
+      message:
+        example: Not found
+        type: string
+      status_code:
+        example: 404
+        type: integer
+    type: object
+  dto.ResponseServiceDownErr:
+    properties:
+      data: {}
+      message:
+        example: Service is down
+        type: string
+      status_code:
+        example: 503
+        type: integer
+    type: object
+  dto.ResponseUnauthorizedErr:
+    properties:
+      data: {}
+      message:
+        example: Invalid token
+        type: string
+      status_code:
+        example: 401
+        type: integer
+    type: object
+  dto.UserDto:
+    properties:
+      allergy_food:
+        type: string
+      allergy_medicine:
+        type: string
+      can_select_baan:
+        type: boolean
+      disease:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      food_restriction:
+        type: string
+      id:
+        type: string
+      lastname:
+        type: string
+      line_id:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      title:
+        type: string
+    required:
+    - firstname
+    - lastname
+    - line_id
+    - nickname
+    - phone
+    - title
+    type: object
+  dto.Verify:
+    properties:
+      hcert:
+        type: string
+    required:
+    - hcert
+    type: object
+  dto.VerifyTicket:
+    properties:
+      ticket:
+        type: string
+    required:
+    - ticket
+    type: object
+  proto.User:
+    properties:
+      allergyFood:
+        type: string
+      allergyMedicine:
+        type: string
+      canSelectBaan:
+        type: boolean
+      disease:
+        type: string
+      email:
+        type: string
+      faculty:
+        type: string
+      firstname:
+        type: string
+      foodRestriction:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      isVerify:
+        type: boolean
+      lastname:
+        type: string
+      lineID:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      studentID:
+        type: string
+      title:
+        type: string
+      year:
+        type: string
+    type: object
+info:
+  contact:
+    email: sd.team.sgcu@gmail.com
+    name: ISD Team
+  description: |-
+    # RNKM API
+    This is the documentation for https://freshersfairs.com
+  title: RNKM Backend
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Check is service heath is ok
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: health check
+      tags:
+      - health check
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "401":
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Check user status and user info
+      tags:
+      - auth
+  /auth/refreshToken:
+    post:
+      consumes:
+      - application/json
+      description: Return the credentials if successfully
+      parameters:
+      - description: refresh token dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RedeemNewToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Credential'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Invalid refresh token
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "500":
+          description: Internal service error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      summary: Redeem new token
+      tags:
+      - auth
+  /auth/verify:
+    post:
+      consumes:
+      - application/json
+      description: Return the credential if successfully
+      parameters:
+      - description: refresh token dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyTicket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Credential'
+        "500":
+          description: Internal service error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Verify ticket and get credential
+      tags:
+      - auth
+  /file/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Return the filename if successfully
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/dto.ResponseGatewayTimeoutErr'
+      security:
+      - AuthToken: []
+      summary: Upload the image
+      tags:
+      - file
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: User DTO
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Create new user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Create new user if it doesn't exist and Update the user data if exists
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: bool
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Delete the user
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      summary: Get the user data by id
+      tags:
+      - user
+  /vaccine/verify:
+    post:
+      consumes:
+      - application/json
+      description: Return nothing if success
+      parameters:
+      - description: verify dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Verify'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: bool
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+      security:
+      - AuthToken: []
+      summary: Verify the user status
+      tags:
+      - vaccine
+schemes:
+- https
+- http
+securityDefinitions:
+  AuthToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: |-
+    # Health Check Tag API Documentation
+    **Health Check** functions goes here
+  name: health check
+- description: |-
+    # Vaccine Tag API Documentation
+    **Vaccine** functions goes here
+  name: vaccine
+- description: |-
+    # Auth Tag API Documentation
+    **Auth** functions goes here
+  name: auth
+- description: |-
+    # User Tag API Documentation
+    **User** functions goes here
+  name: user
+- description: |-
+    # File Tag API Documentation
+    **File** functions goes here
+  name: file
+- description: |-
+    # Group Tag API Documentation
+    **Group** functions goes here
+  name: group
+- description: |-
+    # Baan Tag API Documentation
+    **Baan** functions goes here
+  name: baan
+- description: |-
+    # Event Tag API Documentation
+    **Event** functions goes here
+  name: event
