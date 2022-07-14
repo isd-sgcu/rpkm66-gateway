@@ -134,11 +134,14 @@ func main() {
 
 	r.GetHealthCheck("/", hc.HealthCheck)
 
-	r.GetUser("/:id", userHdr.FindOne)
-	r.PostUser("/", userHdr.Create)
-	r.PutUser("/:id", userHdr.Update)
 	r.PutUser("/", userHdr.CreateOrUpdate)
-	r.DeleteUser("/:id", userHdr.Delete)
+
+	if conf.App.Debug {
+		r.GetUser("/:id", userHdr.FindOne)
+		r.PostUser("/", userHdr.Create)
+		r.PutUser("/:id", userHdr.Update)
+		r.DeleteUser("/:id", userHdr.Delete)
+	}
 
 	r.GetAuth("/me", athHdr.Validate)
 	r.PostAuth("/verify", athHdr.VerifyTicket)

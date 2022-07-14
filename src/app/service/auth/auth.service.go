@@ -46,21 +46,46 @@ func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseE
 					Err(err).
 					Str("service", "auth").
 					Str("module", "verify ticket").
-					Msg("%s is trying to login (forbidden year)")
+					Msg("someone is trying to login (forbidden year)")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusForbidden,
 					Message:    "Invalid study year",
 					Data:       nil,
 				}
+
 			case codes.Unauthenticated:
 				log.Error().
 					Err(err).
 					Str("service", "auth").
 					Str("module", "verify ticket").
-					Msg("%s is trying to login")
+					Msg("someone is trying to login")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusUnauthorized,
 					Message:    "Invalid ticket",
+					Data:       nil,
+				}
+
+			case codes.Internal:
+				log.Error().
+					Err(err).
+					Str("service", "auth").
+					Str("module", "verify ticket").
+					Msgf("Internal service error")
+				return nil, &dto.ResponseErr{
+					StatusCode: http.StatusInternalServerError,
+					Message:    "Internal error",
+					Data:       nil,
+				}
+
+			case codes.Unavailable:
+				log.Error().
+					Err(err).
+					Str("service", "auth").
+					Str("module", "verify ticket").
+					Msgf("Too many request")
+				return nil, &dto.ResponseErr{
+					StatusCode: http.StatusTooManyRequests,
+					Message:    "Too many request",
 					Data:       nil,
 				}
 
