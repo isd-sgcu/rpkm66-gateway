@@ -36,3 +36,7 @@ func FindIntFromStr(s string) []int32 {
 
 	return result
 }
+
+func BoolAdr(b bool) *bool {
+	return &b
+}
