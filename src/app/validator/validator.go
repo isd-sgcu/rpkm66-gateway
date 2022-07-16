@@ -8,6 +8,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
+	"net/http"
 )
 
 type DtoValidator struct {
@@ -26,6 +28,12 @@ func (v *DtoValidator) Validate(in interface{}) []*dto.BadReqErrResponse {
 				FailedField: e.StructField(),
 				Value:       e.Value(),
 			}
+
+			log.Error().
+				Str("module", "validate").
+				Int("status", http.StatusBadRequest).
+				Interface("error", element).
+				Msg("Validate failed")
 
 			errors = append(errors, &element)
 		}

@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
@@ -60,7 +61,7 @@ func (t *UserHandlerTest) SetupTest() {
 		FoodRestriction: t.User.FoodRestriction,
 		AllergyMedicine: t.User.AllergyMedicine,
 		Disease:         t.User.Disease,
-		CanSelectBaan:   t.User.CanSelectBaan,
+		CanSelectBaan:   utils.BoolAdr(t.User.CanSelectBaan),
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
