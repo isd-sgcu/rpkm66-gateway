@@ -83,5 +83,11 @@ func (s *Service) Verify(hcert string, userId string) (*dto.VaccineResponse, *dt
 		}
 	}
 
+	log.Info().
+		Str("service", "vaccine").
+		Str("module", "verify").
+		Str("student_id", user.StudentID).
+		Msg("Verified the vaccine cert")
+
 	return res, nil
 }
