@@ -55,6 +55,7 @@ func (s *Service) Verify(hcert string, userId string) (*dto.VaccineResponse, *dt
 			Err(err).
 			Str("service", "vaccine").
 			Str("module", "verify").
+			Str("student_id", user.StudentID).
 			Msg("Cannot verify the QR code")
 
 		return nil, &dto.ResponseErr{
@@ -70,6 +71,7 @@ func (s *Service) Verify(hcert string, userId string) (*dto.VaccineResponse, *dt
 		log.Error().Interface("error", errRes).
 			Str("service", "vaccine").
 			Str("module", "verify").
+			Str("student_id", user.StudentID).
 			Msg("Error while update the user status")
 
 		return nil, errRes
