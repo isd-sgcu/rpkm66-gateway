@@ -41,6 +41,7 @@ func (s *Service) Upload(file *dto.DecomposedFile, userId string, tag file.Tag, 
 					Err(err).
 					Str("service", "file").
 					Str("module", "upload").
+					Str("user_id", userId).
 					Msg("Something wrong")
 				return "", &dto.ResponseErr{
 					StatusCode: http.StatusGatewayTimeout,
@@ -53,6 +54,7 @@ func (s *Service) Upload(file *dto.DecomposedFile, userId string, tag file.Tag, 
 					Err(err).
 					Str("service", "file").
 					Str("module", "upload").
+					Str("user_id", userId).
 					Msg("Error while connecting to service")
 				return "", &dto.ResponseErr{
 					StatusCode: http.StatusServiceUnavailable,
@@ -66,6 +68,7 @@ func (s *Service) Upload(file *dto.DecomposedFile, userId string, tag file.Tag, 
 			Err(err).
 			Str("service", "file").
 			Str("module", "upload").
+			Str("user_id", userId).
 			Msg("Error while connecting to service")
 
 		return "", &dto.ResponseErr{

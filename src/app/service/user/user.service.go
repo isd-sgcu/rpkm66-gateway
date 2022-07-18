@@ -234,6 +234,7 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 					Err(errRes).
 					Str("service", "user").
 					Str("module", "create and update").
+					Str("student_id", usrDto.StudentID).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -248,6 +249,7 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 			Err(errRes).
 			Str("service", "user").
 			Str("module", "create and update").
+			Str("student_id", usrDto.StudentID).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
