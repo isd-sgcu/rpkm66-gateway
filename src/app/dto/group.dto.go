@@ -8,7 +8,6 @@ type GroupDto struct {
 }
 
 type JoinGroupRequest struct {
-	UserId   string `json:"user_id" validate:"required"`
-	IsLeader bool   `json:"is_leader" validate:"required"`
-	Members  int    `json:"members" validate:"required"`
+	IsLeader bool `json:"is_leader" validate:"required"`
+	Members  int  `json:"members" validate:"required"`
 }

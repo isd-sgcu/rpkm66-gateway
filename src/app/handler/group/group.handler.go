@@ -5,6 +5,7 @@ import (
 	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"net/http"
+	"net/url"
 )
 
 type Handler struct {
@@ -86,7 +87,10 @@ func (h *Handler) FindByToken(ctx IContext) {
 		return
 	}
 
-	group, errRes := h.service.FindByToken(token)
+	tokenUrl, _ := url.Parse(token)
+	tokenGroup := tokenUrl.String()
+
+	group, errRes := h.service.FindByToken(tokenGroup)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return
@@ -201,7 +205,8 @@ func (h *Handler) Join(ctx IContext) {
 		return
 	}
 
-	group, errRes := h.service.Join(token, joinRequest.UserId, joinRequest.IsLeader, joinRequest.Members)
+	userId := ctx.UserID()
+	group, errRes := h.service.Join(token, userId, joinRequest.IsLeader, joinRequest.Members)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return

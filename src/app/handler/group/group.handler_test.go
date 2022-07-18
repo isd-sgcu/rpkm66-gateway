@@ -44,7 +44,6 @@ func (t *GroupHandlerTest) SetupTest() {
 	}
 
 	t.JoinRequestDto = &dto.JoinGroupRequest{
-		UserId:   t.Group.LeaderID,
 		IsLeader: true,
 		Members:  1,
 	}
@@ -369,9 +368,9 @@ func (t *GroupHandlerTest) TestJoinSuccess() {
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
-
+	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.JoinRequestDto.UserId, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(t.Group, nil)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(t.Group, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -404,9 +403,9 @@ func (t *GroupHandlerTest) TestJoinForbidden() {
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
-
+	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.JoinRequestDto.UserId, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.ForbiddenErr)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.ForbiddenErr)
 
 	v, _ := validator.NewValidator()
 
@@ -422,9 +421,9 @@ func (t *GroupHandlerTest) TestJoinInvalidId() {
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
-
+	c.On("UserID").Return("abc")
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.JoinRequestDto.UserId, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.InvalidIdErr)
+	srv.On("Join", t.Group.Token, "abc", t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.InvalidIdErr)
 
 	v, _ := validator.NewValidator()
 
@@ -440,9 +439,9 @@ func (t *GroupHandlerTest) TestJoinNotFound() {
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
-
+	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.JoinRequestDto.UserId, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.NotFoundErr)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.NotFoundErr)
 
 	v, _ := validator.NewValidator()
 
@@ -458,9 +457,9 @@ func (t *GroupHandlerTest) TestJoinGrpcErr() {
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
-
+	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.JoinRequestDto.UserId, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.ServiceDownErr)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.ServiceDownErr)
 
 	v, _ := validator.NewValidator()
 
