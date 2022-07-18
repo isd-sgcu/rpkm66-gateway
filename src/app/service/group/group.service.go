@@ -25,7 +25,7 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, errRes := s.client.FindOne(ctx, &proto.FindOneGroupRequest{Id: id})
+	res, errRes := s.client.FindOne(ctx, &proto.FindOneGroupRequest{UserId: id})
 	if errRes != nil {
 		st, ok := status.FromError(errRes)
 		if ok {

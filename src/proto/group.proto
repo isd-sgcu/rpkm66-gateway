@@ -24,8 +24,8 @@ message Group{
 }
 
 // FindOne
-message FindOneGroupRequest {
-  string id = 1;
+message FindOneGroupRequest{
+  string userId = 1;
 }
 
 message FindOneGroupResponse {
