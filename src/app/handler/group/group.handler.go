@@ -77,7 +77,7 @@ func (h *Handler) FindOne(ctx IContext) {
 // @Security     AuthToken
 // @Router /group/{token} [get]
 func (h *Handler) FindByToken(ctx IContext) {
-	token, err := ctx.Param("token")
+	tokenUrl, err := ctx.Param("token")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
 			StatusCode: http.StatusInternalServerError,
@@ -87,10 +87,9 @@ func (h *Handler) FindByToken(ctx IContext) {
 		return
 	}
 
-	tokenUrl, _ := url.Parse(token)
-	tokenGroup := tokenUrl.String()
+	token, _ := url.QueryUnescape(tokenUrl)
 
-	group, errRes := h.service.FindByToken(tokenGroup)
+	group, errRes := h.service.FindByToken(token)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return
