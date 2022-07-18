@@ -6,6 +6,7 @@ import (
 	vaccineClient "github.com/isd-sgcu/rnkm65-gateway/src/app/client/vaccine"
 	authHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	fileHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/file"
+	grpHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/group"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
 	usrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
 	vaccineHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/vaccine"
@@ -13,6 +14,7 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/router"
 	authSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/auth"
 	fileSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/file"
+	grpSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/group"
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
 	vaccineSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/vaccine"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
@@ -127,6 +129,9 @@ func main() {
 	vacClient := vaccineClient.NewClient(conf.Vaccine)
 	vacSrv := vaccineSrv.NewService(userSrv, vacClient)
 	vacHdr := vaccineHdr.NewHandler(vacSrv, v)
+	gClient := proto.NewGroupServiceClient(backendConn)
+	gSrv := grpSrv.NewService(gClient)
+	gHdr := grpHdr.NewHandler(gSrv, v)
 
 	authGuard := guard.NewAuthGuard(athSrv, auth.ExcludePath, conf.Guard.Phase)
 
@@ -150,6 +155,13 @@ func main() {
 	r.PostFile("/upload", fleHdr.Upload)
 
 	r.PostVaccine("/verify", vacHdr.Verify)
+
+	r.GetGroup("/", gHdr.FindOne)
+	r.GetGroup("/:token", gHdr.FindByToken)
+	r.PostGroup("/", gHdr.Create)
+	r.PostGroup("/:token", gHdr.Join)
+	r.DeleteGroup("/members/:member_id", gHdr.DeleteMember)
+	r.DeleteGroup("/leave", gHdr.Leave)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {
