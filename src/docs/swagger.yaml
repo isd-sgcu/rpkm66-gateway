@@ -48,12 +48,9 @@ definitions:
         type: boolean
       members:
         type: integer
-      user_id:
-        type: string
     required:
     - is_leader
     - members
-    - user_id
     type: object
   dto.RedeemNewToken:
     properties:
@@ -427,13 +424,6 @@ paths:
       consumes:
       - application/json
       description: Return the group dto if successfully
-      parameters:
-      - description: Group dto
-        in: body
-        name: groupDto
-        required: true
-        schema:
-          $ref: '#/definitions/dto.GroupDto'
       produces:
       - application/json
       responses:

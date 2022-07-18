@@ -102,7 +102,6 @@ func (h *Handler) FindByToken(ctx IContext) {
 // Create is a function that create new group
 // @Summary Create new group
 // @Description Return the group dto if successfully
-// @Param groupDto body dto.GroupDto true "Group dto"
 // @Tags group
 // @Accept json
 // @Produce json
@@ -183,7 +182,7 @@ func (h *Handler) Update(ctx IContext) {
 // @Security     AuthToken
 // @Router /group/{token} [post]
 func (h *Handler) Join(ctx IContext) {
-	token, err := ctx.Param("token")
+	tokenUrl, err := ctx.Param("token")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
 			StatusCode: http.StatusInternalServerError,
@@ -205,6 +204,7 @@ func (h *Handler) Join(ctx IContext) {
 	}
 
 	userId := ctx.UserID()
+	token, _ := url.QueryUnescape(tokenUrl)
 	group, errRes := h.service.Join(token, userId, joinRequest.IsLeader, joinRequest.Members)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)

@@ -373,17 +373,6 @@ const docTemplate = `{
                     "group"
                 ],
                 "summary": "Create new group",
-                "parameters": [
-                    {
-                        "description": "Group dto",
-                        "name": "groupDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.GroupDto"
-                        }
-                    }
-                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -1049,8 +1038,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "is_leader",
-                "members",
-                "user_id"
+                "members"
             ],
             "properties": {
                 "is_leader": {
@@ -1058,9 +1046,6 @@ const docTemplate = `{
                 },
                 "members": {
                     "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },
