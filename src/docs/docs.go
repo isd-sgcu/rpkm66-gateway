@@ -192,6 +192,110 @@ const docTemplate = `{
                 }
             }
         },
+        "/baan": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the array of baan dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "baan"
+                ],
+                "summary": "Get all baans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/proto.Baan"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/baan/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the baan dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "baan"
+                ],
+                "summary": "Get the baan data by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Baan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
         "/file/upload": {
             "post": {
                 "security": [
@@ -1241,6 +1345,50 @@ const docTemplate = `{
                 }
             }
         },
+        "proto.Baan": {
+            "type": "object",
+            "properties": {
+                "descriptionEN": {
+                    "type": "string"
+                },
+                "descriptionTH": {
+                    "type": "string"
+                },
+                "facebook": {
+                    "type": "string"
+                },
+                "facebookUrl": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "instagram": {
+                    "type": "string"
+                },
+                "instagramUrl": {
+                    "type": "string"
+                },
+                "line": {
+                    "type": "string"
+                },
+                "lineUrl": {
+                    "type": "string"
+                },
+                "nameEN": {
+                    "type": "string"
+                },
+                "nameTH": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
         "proto.Group": {
             "type": "object",
             "properties": {
@@ -1333,35 +1481,35 @@ const docTemplate = `{
     },
     "tags": [
         {
-            "description": "# Health Check Tag API Documentation\r\n**Health Check** functions goes here",
+            "description": "# Health Check Tag API Documentation\n**Health Check** functions goes here",
             "name": "health check"
         },
         {
-            "description": "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here",
+            "description": "# Vaccine Tag API Documentation\n**Vaccine** functions goes here",
             "name": "vaccine"
         },
         {
-            "description": "# Auth Tag API Documentation\r\n**Auth** functions goes here",
+            "description": "# Auth Tag API Documentation\n**Auth** functions goes here",
             "name": "auth"
         },
         {
-            "description": "# User Tag API Documentation\r\n**User** functions goes here",
+            "description": "# User Tag API Documentation\n**User** functions goes here",
             "name": "user"
         },
         {
-            "description": "# File Tag API Documentation\r\n**File** functions goes here",
+            "description": "# File Tag API Documentation\n**File** functions goes here",
             "name": "file"
         },
         {
-            "description": "# Group Tag API Documentation\r\n**Group** functions goes here",
+            "description": "# Group Tag API Documentation\n**Group** functions goes here",
             "name": "group"
         },
         {
-            "description": "# Baan Tag API Documentation\r\n**Baan** functions goes here",
+            "description": "# Baan Tag API Documentation\n**Baan** functions goes here",
             "name": "baan"
         },
         {
-            "description": "# Event Tag API Documentation\r\n**Event** functions goes here",
+            "description": "# Event Tag API Documentation\n**Event** functions goes here",
             "name": "event"
         }
     ]
@@ -1374,7 +1522,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"https", "http"},
 	Title:            "RNKM Backend",
-	Description:      "# RNKM API\r\nThis is the documentation for https://freshersfairs.com",
+	Description:      "# RNKM API\nThis is the documentation for https://freshersfairs.com",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

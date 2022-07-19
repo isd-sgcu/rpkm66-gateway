@@ -1,6 +1,7 @@
 proto:
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. user.proto
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. auth.proto
+	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. baan.proto
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. file.proto
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. group.proto
 
