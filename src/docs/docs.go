@@ -1389,6 +1389,26 @@ const docTemplate = `{
                 }
             }
         },
+        "proto.Group": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "leaderID": {
+                    "type": "string"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/proto.User"
+                    }
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "proto.User": {
             "type": "object",
             "properties": {
@@ -1461,35 +1481,35 @@ const docTemplate = `{
     },
     "tags": [
         {
-            "description": "# Health Check Tag API Documentation\r\n**Health Check** functions goes here",
+            "description": "# Health Check Tag API Documentation\n**Health Check** functions goes here",
             "name": "health check"
         },
         {
-            "description": "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here",
+            "description": "# Vaccine Tag API Documentation\n**Vaccine** functions goes here",
             "name": "vaccine"
         },
         {
-            "description": "# Auth Tag API Documentation\r\n**Auth** functions goes here",
+            "description": "# Auth Tag API Documentation\n**Auth** functions goes here",
             "name": "auth"
         },
         {
-            "description": "# User Tag API Documentation\r\n**User** functions goes here",
+            "description": "# User Tag API Documentation\n**User** functions goes here",
             "name": "user"
         },
         {
-            "description": "# File Tag API Documentation\r\n**File** functions goes here",
+            "description": "# File Tag API Documentation\n**File** functions goes here",
             "name": "file"
         },
         {
-            "description": "# Group Tag API Documentation\r\n**Group** functions goes here",
+            "description": "# Group Tag API Documentation\n**Group** functions goes here",
             "name": "group"
         },
         {
-            "description": "# Baan Tag API Documentation\r\n**Baan** functions goes here",
+            "description": "# Baan Tag API Documentation\n**Baan** functions goes here",
             "name": "baan"
         },
         {
-            "description": "# Event Tag API Documentation\r\n**Event** functions goes here",
+            "description": "# Event Tag API Documentation\n**Event** functions goes here",
             "name": "event"
         }
     ]
@@ -1502,7 +1522,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"https", "http"},
 	Title:            "RNKM Backend",
-	Description:      "# RNKM API\r\nThis is the documentation for https://freshersfairs.com",
+	Description:      "# RNKM API\nThis is the documentation for https://freshersfairs.com",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
