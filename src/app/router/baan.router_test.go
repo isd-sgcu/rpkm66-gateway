@@ -47,7 +47,7 @@ func (t *BaanRouterTest) TestPostBaanRouter() {
 	r := NewFiberRouter(&g, conf)
 
 	r.GetBaan("/", func(ctx baan.IContext) {
-		ctx.JSON(http.StatusCreated, map[string]string{
+		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
 	})
