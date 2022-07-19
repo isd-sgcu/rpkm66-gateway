@@ -25,6 +25,33 @@ definitions:
         example: file-example.jpg-6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
         type: string
     type: object
+  dto.GroupDto:
+    properties:
+      id:
+        type: string
+      leader_id:
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/dto.UserDto'
+        type: array
+      token:
+        type: string
+    required:
+    - leader_id
+    - members
+    - token
+    type: object
+  dto.JoinGroupRequest:
+    properties:
+      is_leader:
+        type: boolean
+      members:
+        type: integer
+    required:
+    - is_leader
+    - members
+    type: object
   dto.RedeemNewToken:
     properties:
       refresh_token:
@@ -121,6 +148,8 @@ definitions:
         type: string
       food_restriction:
         type: string
+      group_id:
+        type: string
       id:
         type: string
       lastname:
@@ -134,6 +163,7 @@ definitions:
       title:
         type: string
     required:
+    - can_select_baan
     - firstname
     - lastname
     - line_id
@@ -155,6 +185,19 @@ definitions:
     required:
     - ticket
     type: object
+  proto.Group:
+    properties:
+      id:
+        type: string
+      leaderID:
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+      token:
+        type: string
+    type: object
   proto.User:
     properties:
       allergyFood:
@@ -172,6 +215,8 @@ definitions:
       firstname:
         type: string
       foodRestriction:
+        type: string
+      groupId:
         type: string
       id:
         type: string
@@ -198,9 +243,7 @@ info:
   contact:
     email: sd.team.sgcu@gmail.com
     name: ISD Team
-  description: |-
-    # RNKM API
-    This is the documentation for https://freshersfairs.com
+  description: "# RNKM API\r\nThis is the documentation for https://freshersfairs.com"
   title: RNKM Backend
   version: "1.0"
 paths:
@@ -348,6 +391,281 @@ paths:
       summary: Upload the image
       tags:
       - file
+  /group:
+    get:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Get the group data
+      tags:
+      - group
+    post:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Create new group
+      tags:
+      - group
+    put:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      parameters:
+      - description: Group dto
+        in: body
+        name: groupDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Update the existing group
+      tags:
+      - group
+  /group/{token}:
+    get:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      parameters:
+      - description: token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Get the group data by token
+      tags:
+      - group
+    post:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      parameters:
+      - description: token
+        in: path
+        name: token
+        required: true
+        type: string
+      - description: joinGroupRequest dto
+        in: body
+        name: joinRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.JoinGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Join the existing group
+      tags:
+      - group
+  /group/leave:
+    post:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Leave the current group and Create a new group
+      tags:
+      - group
+  /group/members/{member_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the group dto if successfully
+      parameters:
+      - description: member_id
+        in: path
+        name: member_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Delete member from the group
+      tags:
+      - group
   /user:
     post:
       consumes:
@@ -548,35 +866,20 @@ securityDefinitions:
     type: apiKey
 swagger: "2.0"
 tags:
-- description: |-
-    # Health Check Tag API Documentation
-    **Health Check** functions goes here
+- description: "# Health Check Tag API Documentation\r\n**Health Check** functions
+    goes here"
   name: health check
-- description: |-
-    # Vaccine Tag API Documentation
-    **Vaccine** functions goes here
+- description: "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here"
   name: vaccine
-- description: |-
-    # Auth Tag API Documentation
-    **Auth** functions goes here
+- description: "# Auth Tag API Documentation\r\n**Auth** functions goes here"
   name: auth
-- description: |-
-    # User Tag API Documentation
-    **User** functions goes here
+- description: "# User Tag API Documentation\r\n**User** functions goes here"
   name: user
-- description: |-
-    # File Tag API Documentation
-    **File** functions goes here
+- description: "# File Tag API Documentation\r\n**File** functions goes here"
   name: file
-- description: |-
-    # Group Tag API Documentation
-    **Group** functions goes here
+- description: "# Group Tag API Documentation\r\n**Group** functions goes here"
   name: group
-- description: |-
-    # Baan Tag API Documentation
-    **Baan** functions goes here
+- description: "# Baan Tag API Documentation\r\n**Baan** functions goes here"
   name: baan
-- description: |-
-    # Event Tag API Documentation
-    **Event** functions goes here
+- description: "# Event Tag API Documentation\r\n**Event** functions goes here"
   name: event
