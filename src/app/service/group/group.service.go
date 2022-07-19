@@ -31,12 +31,24 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 		if ok {
 			switch st.Code() {
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "find one").
+					Str("user_id", id).
+					Msg("Not found")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.InvalidArgument:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "find one").
+					Str("user_id", id).
+					Msg("Invalid user id")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
 					Message:    st.Message(),
@@ -47,7 +59,8 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 				log.Error().
 					Err(errRes).
 					Str("service", "group").
-					Str("module", "findByToken").
+					Str("module", "find one").
+					Str("user_id", id).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -60,7 +73,8 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 		log.Error().
 			Err(errRes).
 			Str("service", "group").
-			Str("module", "findByToken").
+			Str("module", "find one").
+			Str("user_id", id).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -70,6 +84,11 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "find one").
+		Str("user_id", id).
+		Msg("Find group success")
 	return res.Group, nil
 }
 
@@ -83,6 +102,12 @@ func (s *Service) FindByToken(token string) (result *proto.Group, err *dto.Respo
 		if ok {
 			switch st.Code() {
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "find by token").
+					Str("token", token).
+					Msg("Not found group")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
@@ -93,7 +118,8 @@ func (s *Service) FindByToken(token string) (result *proto.Group, err *dto.Respo
 				log.Error().
 					Err(errRes).
 					Str("service", "group").
-					Str("module", "findByToken").
+					Str("module", "find by token").
+					Str("token", token).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -106,7 +132,8 @@ func (s *Service) FindByToken(token string) (result *proto.Group, err *dto.Respo
 		log.Error().
 			Err(errRes).
 			Str("service", "group").
-			Str("module", "findByToken").
+			Str("module", "find by token").
+			Str("token", token).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -116,6 +143,11 @@ func (s *Service) FindByToken(token string) (result *proto.Group, err *dto.Respo
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "find by token").
+		Str("token", token).
+		Msg("Find group success")
 	return res.Group, nil
 }
 
@@ -129,18 +161,36 @@ func (s *Service) Create(id string) (result *proto.Group, err *dto.ResponseErr) 
 		if ok {
 			switch st.Code() {
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "create").
+					Str("user_id", id).
+					Msg("Not found user")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.InvalidArgument:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "create").
+					Str("user_id", id).
+					Msg("Invalid user id")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.Internal:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "create").
+					Str("user_id", id).
+					Msg("Fail to create group")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusInternalServerError,
 					Message:    st.Message(),
@@ -150,7 +200,8 @@ func (s *Service) Create(id string) (result *proto.Group, err *dto.ResponseErr) 
 				log.Error().
 					Err(errRes).
 					Str("service", "group").
-					Str("module", "findByToken").
+					Str("module", "create").
+					Str("user_id", id).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -164,6 +215,7 @@ func (s *Service) Create(id string) (result *proto.Group, err *dto.ResponseErr) 
 			Err(errRes).
 			Str("service", "group").
 			Str("module", "create").
+			Str("user_id", id).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -173,6 +225,11 @@ func (s *Service) Create(id string) (result *proto.Group, err *dto.ResponseErr) 
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "create").
+		Str("user_id", id).
+		Msg("Create group success")
 	return res.Group, nil
 }
 
@@ -215,12 +272,24 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 		if ok {
 			switch st.Code() {
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "update").
+					Str("user_id", leaderId).
+					Msg("Not found")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.InvalidArgument:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "update").
+					Str("user_id", leaderId).
+					Msg("Invalid user id")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
 					Message:    st.Message(),
@@ -232,6 +301,7 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 					Err(errRes).
 					Str("service", "group").
 					Str("module", "update").
+					Str("user_id", leaderId).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -246,6 +316,7 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 			Err(errRes).
 			Str("service", "group").
 			Str("module", "update").
+			Str("user_id", leaderId).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -255,6 +326,11 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "update").
+		Str("user_id", leaderId).
+		Msg("Update group success")
 	return res.Group, nil
 }
 
@@ -268,18 +344,36 @@ func (s *Service) Join(token string, userId string, isLeader bool, members int) 
 		if ok {
 			switch st.Code() {
 			case codes.PermissionDenied:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "join").
+					Str("user_id", userId).
+					Msg("Not allowed")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusForbidden,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.InvalidArgument:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "join").
+					Str("user_id", userId).
+					Msg("Invalid user id")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "join").
+					Str("user_id", userId).
+					Msg("Not found")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
@@ -289,7 +383,8 @@ func (s *Service) Join(token string, userId string, isLeader bool, members int) 
 				log.Error().
 					Err(errRes).
 					Str("service", "group").
-					Str("module", "update").
+					Str("module", "join").
+					Str("user_id", userId).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -302,7 +397,8 @@ func (s *Service) Join(token string, userId string, isLeader bool, members int) 
 		log.Error().
 			Err(errRes).
 			Str("service", "group").
-			Str("module", "delete").
+			Str("module", "join").
+			Str("user_id", userId).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -312,6 +408,11 @@ func (s *Service) Join(token string, userId string, isLeader bool, members int) 
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "join").
+		Str("user_id", userId).
+		Msg("Join group success")
 	return res.Group, nil
 }
 
@@ -325,18 +426,36 @@ func (s *Service) DeleteMember(userId string, leaderId string) (result *proto.Gr
 		if ok {
 			switch st.Code() {
 			case codes.InvalidArgument:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "delete member").
+					Str("user_id", leaderId).
+					Msg("Invalid user id")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "delete member").
+					Str("user_id", leaderId).
+					Msg("Not found")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.PermissionDenied:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "delete member").
+					Str("user_id", leaderId).
+					Msg("Not allowed")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusForbidden,
 					Message:    st.Message(),
@@ -346,7 +465,8 @@ func (s *Service) DeleteMember(userId string, leaderId string) (result *proto.Gr
 				log.Error().
 					Err(errRes).
 					Str("service", "group").
-					Str("module", "delete").
+					Str("module", "delete member").
+					Str("user_id", leaderId).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -360,7 +480,8 @@ func (s *Service) DeleteMember(userId string, leaderId string) (result *proto.Gr
 		log.Error().
 			Err(errRes).
 			Str("service", "group").
-			Str("module", "delete").
+			Str("module", "delete member").
+			Str("user_id", leaderId).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -370,6 +491,11 @@ func (s *Service) DeleteMember(userId string, leaderId string) (result *proto.Gr
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "delete member").
+		Str("user_id", leaderId).
+		Msg("Delete member success")
 	return res.Group, nil
 }
 
@@ -383,24 +509,48 @@ func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseEr
 		if ok {
 			switch st.Code() {
 			case codes.PermissionDenied:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("Not allowed")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusForbidden,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.InvalidArgument:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("Invalid user id")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.NotFound:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("Not found")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusNotFound,
 					Message:    st.Message(),
 					Data:       nil,
 				}
 			case codes.Internal:
+				log.Error().
+					Err(errRes).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("Fail to create group")
 				return nil, &dto.ResponseErr{
 					StatusCode: http.StatusInternalServerError,
 					Message:    st.Message(),
@@ -410,7 +560,8 @@ func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseEr
 				log.Error().
 					Err(errRes).
 					Str("service", "group").
-					Str("module", "update").
+					Str("module", "leave").
+					Str("user_id", userId).
 					Msg("Error while connecting to service")
 
 				return nil, &dto.ResponseErr{
@@ -424,6 +575,7 @@ func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseEr
 			Err(errRes).
 			Str("service", "group").
 			Str("module", "delete").
+			Str("user_id", userId).
 			Msg("Error while connecting to service")
 
 		return nil, &dto.ResponseErr{
@@ -433,5 +585,10 @@ func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseEr
 		}
 	}
 
+	log.Info().
+		Str("service", "group").
+		Str("module", "leave").
+		Str("user_id", userId).
+		Msg("Leave group success")
 	return res.Group, nil
 }
