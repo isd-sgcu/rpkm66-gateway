@@ -55,7 +55,7 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	baan := NewGroupRouteWithAuthMiddleware(r, "/baan", authGuard.Use)
 	group := NewGroupRouteWithAuthMiddleware(r, "/group", authGuard.Use)
 
-	return &FiberRouter{r, user, auth, file, vaccine, baan}
+	return &FiberRouter{r, user, auth, file, group, vaccine, baan}
 }
 
 func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx guard.IContext)) fiber.Router {
