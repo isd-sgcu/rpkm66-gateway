@@ -151,7 +151,7 @@ func (t *GroupRouterTest) TestDeleteGroupRouter() {
 	}{
 		{
 			description:  "DELETE /group status 200",
-			route:        "/group/leave",
+			route:        "/group",
 			expectedCode: http.StatusOK,
 		},
 		{
