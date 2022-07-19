@@ -96,7 +96,7 @@ func (m *Guard) CheckConfig(ctx IContext) {
 	pathSlice := strings.Split(path, "/")
 	//paths which can have a token is "/group/token"
 	if pathSlice[1] == "group" {
-		if len(pathSlice) > 2 && pathSlice[2] != "members" {
+		if len(pathSlice) > 2 && pathSlice[2] != "members" && pathSlice[2] != "leave" {
 			token := pathSlice[2]
 			path = strings.Replace(path, token, ":token", 1)
 		}

@@ -136,7 +136,7 @@ func (h *Handler) Create(ctx IContext) {
 // @Success 200 {object} proto.Group
 // @Failure 400 {object} dto.ResponseBadRequestErr Invalid request body or ID
 // @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
-// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update user
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update group
 // @Failure 404 {object} dto.ResponseNotfoundErr Not found group
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
@@ -176,7 +176,7 @@ func (h *Handler) Update(ctx IContext) {
 // @Success 200 {object} proto.Group
 // @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID or Request Body
 // @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
-// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update user
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to join group
 // @Failure 404 {object} dto.ResponseNotfoundErr Not found group
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
@@ -263,7 +263,7 @@ func (h *Handler) DeleteMember(ctx IContext) {
 // @Success 200 {object} proto.Group
 // @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID
 // @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
-// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update user
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to leave group
 // @Failure 404 {object} dto.ResponseNotfoundErr Not found group
 // @Failure 500 {object} dto.ResponseInternalErr Internal error
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
