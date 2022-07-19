@@ -23,6 +23,7 @@ type FiberRouter struct {
 	file    fiber.Router
 	group   fiber.Router
 	vaccine fiber.Router
+	baan    fiber.Router
 }
 
 type IGuard interface {
@@ -41,7 +42,9 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	}))
 
 	if conf.Debug {
-		r.Use(logger.New())
+		r.Use(logger.New(logger.Config{Next: func(c *fiber.Ctx) bool {
+			return c.Path() == "/"
+		}}))
 		r.Get("/docs/*", swagger.HandlerDefault)
 	}
 
@@ -49,9 +52,10 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	auth := NewGroupRouteWithAuthMiddleware(r, "/auth", authGuard.Use)
 	file := NewGroupRouteWithAuthMiddleware(r, "/file", authGuard.Use)
 	vaccine := NewGroupRouteWithAuthMiddleware(r, "/vaccine", authGuard.Use)
+	baan := NewGroupRouteWithAuthMiddleware(r, "/baan", authGuard.Use)
 	group := NewGroupRouteWithAuthMiddleware(r, "/group", authGuard.Use)
 
-	return &FiberRouter{r, user, auth, file, group, vaccine}
+	return &FiberRouter{r, user, auth, file, vaccine, baan}
 }
 
 func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx guard.IContext)) fiber.Router {

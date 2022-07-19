@@ -77,7 +77,7 @@ func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseE
 					Data:       nil,
 				}
 
-			case codes.Unavailable:
+			case codes.ResourceExhausted:
 				log.Error().
 					Err(err).
 					Str("service", "auth").

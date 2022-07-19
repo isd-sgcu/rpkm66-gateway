@@ -192,6 +192,110 @@ const docTemplate = `{
                 }
             }
         },
+        "/baan": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the array of baan dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "baan"
+                ],
+                "summary": "Get all baans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/proto.Baan"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/baan/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the baan dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "baan"
+                ],
+                "summary": "Get the baan data by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Baan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
         "/file/upload": {
             "post": {
                 "security": [
@@ -1241,23 +1345,47 @@ const docTemplate = `{
                 }
             }
         },
-        "proto.Group": {
+        "proto.Baan": {
             "type": "object",
             "properties": {
+                "descriptionEN": {
+                    "type": "string"
+                },
+                "descriptionTH": {
+                    "type": "string"
+                },
+                "facebook": {
+                    "type": "string"
+                },
+                "facebookUrl": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
-                "leaderID": {
+                "imageUrl": {
                     "type": "string"
                 },
-                "members": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/proto.User"
-                    }
-                },
-                "token": {
+                "instagram": {
                     "type": "string"
+                },
+                "instagramUrl": {
+                    "type": "string"
+                },
+                "line": {
+                    "type": "string"
+                },
+                "lineUrl": {
+                    "type": "string"
+                },
+                "nameEN": {
+                    "type": "string"
+                },
+                "nameTH": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
                 }
             }
         },

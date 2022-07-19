@@ -5,6 +5,7 @@ import (
 	"fmt"
 	vaccineClient "github.com/isd-sgcu/rnkm65-gateway/src/app/client/vaccine"
 	authHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
+	baanHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/baan"
 	fileHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/file"
 	grpHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/group"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
@@ -13,6 +14,7 @@ import (
 	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/router"
 	authSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/auth"
+	baanSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/baan"
 	fileSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/file"
 	grpSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/group"
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
@@ -133,6 +135,10 @@ func main() {
 	gSrv := grpSrv.NewService(gClient)
 	gHdr := grpHdr.NewHandler(gSrv, v)
 
+	bnClient := proto.NewBaanServiceClient(backendConn)
+	bnSrv := baanSrv.NewService(bnClient)
+	bnHdr := baanHdr.NewHandler(bnSrv)
+
 	authGuard := guard.NewAuthGuard(athSrv, auth.ExcludePath, conf.Guard.Phase)
 
 	r := router.NewFiberRouter(&authGuard, conf.App)
@@ -155,6 +161,9 @@ func main() {
 	r.PostFile("/upload", fleHdr.Upload)
 
 	r.PostVaccine("/verify", vacHdr.Verify)
+
+	r.GetBaan("/", bnHdr.FindAll)
+	r.GetBaan("/:id", bnHdr.FindOne)
 
 	r.GetGroup("/", gHdr.FindOne)
 	r.GetGroup("/:token", gHdr.FindByToken)
