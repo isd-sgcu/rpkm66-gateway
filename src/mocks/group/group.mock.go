@@ -25,11 +25,11 @@ func (s *ServiceMock) FindOne(id string) (result *proto.Group, err *dto.Response
 	return
 }
 
-func (s *ServiceMock) FindByToken(token string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *ServiceMock) FindByToken(token string) (result *proto.FindByTokenGroupResponse, err *dto.ResponseErr) {
 	args := s.Called(token)
 
 	if args.Get(0) != nil {
-		result = args.Get(0).(*proto.Group)
+		result = args.Get(0).(*proto.FindByTokenGroupResponse)
 	}
 
 	if args.Get(1) != nil {
@@ -67,8 +67,8 @@ func (s *ServiceMock) Update(in *dto.GroupDto, id string) (result *proto.Group, 
 	return
 }
 
-func (s *ServiceMock) Join(token string, userId string, isLeader bool, members int) (result *proto.Group, err *dto.ResponseErr) {
-	args := s.Called(token, userId, isLeader, members)
+func (s *ServiceMock) Join(token string, userId string) (result *proto.Group, err *dto.ResponseErr) {
+	args := s.Called(token, userId)
 
 	if args.Get(0) != nil {
 		result = args.Get(0).(*proto.Group)
@@ -133,16 +133,6 @@ func (c *ClientMock) FindByToken(_ context.Context, in *proto.FindByTokenGroupRe
 	return res, args.Error(1)
 }
 
-func (c *ClientMock) Create(_ context.Context, in *proto.CreateGroupRequest, _ ...grpc.CallOption) (res *proto.CreateGroupResponse, err error) {
-	args := c.Called(in)
-
-	if args.Get(0) != nil {
-		res = args.Get(0).(*proto.CreateGroupResponse)
-	}
-
-	return res, args.Error(1)
-}
-
 func (c *ClientMock) Update(_ context.Context, in *proto.UpdateGroupRequest, _ ...grpc.CallOption) (res *proto.UpdateGroupResponse, err error) {
 	args := c.Called(in)
 
@@ -196,12 +186,7 @@ func (c *ContextMock) Bind(v interface{}) error {
 	args := c.Called(v)
 
 	if args.Get(0) != nil {
-		switch v.(type) {
-		case *dto.JoinGroupRequest:
-			*v.(*dto.JoinGroupRequest) = *args.Get(0).(*dto.JoinGroupRequest)
-		case *dto.GroupDto:
-			*v.(*dto.GroupDto) = *args.Get(0).(*dto.GroupDto)
-		}
+		*v.(*dto.GroupDto) = *args.Get(0).(*dto.GroupDto)
 	}
 
 	return args.Error(1)

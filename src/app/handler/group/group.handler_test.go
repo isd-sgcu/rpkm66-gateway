@@ -17,7 +17,6 @@ type GroupHandlerTest struct {
 	suite.Suite
 	Group          *proto.Group
 	GroupDto       *dto.GroupDto
-	JoinRequestDto *dto.JoinGroupRequest
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 	InvalidIdErr   *dto.ResponseErr
@@ -41,11 +40,6 @@ func (t *GroupHandlerTest) SetupTest() {
 		ID:       t.Group.Id,
 		LeaderID: t.Group.LeaderID,
 		Token:    t.Group.Token,
-	}
-
-	t.JoinRequestDto = &dto.JoinGroupRequest{
-		IsLeader: true,
-		Members:  1,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
@@ -137,13 +131,22 @@ func (t *GroupHandlerTest) TestFindOneGrpcErr() {
 }
 
 func (t *GroupHandlerTest) TestFindByTokenSuccess() {
-	want := t.Group
+	want := &proto.FindByTokenGroupResponse{
+		Id:    t.Group.Id,
+		Token: t.Group.Token,
+		Leader: &proto.UserInfo{
+			Id:        faker.UUIDDigit(),
+			FirstName: faker.Word(),
+			LastName:  faker.Word(),
+			ImageUrl:  faker.URL(),
+		},
+	}
 
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 
 	srv := new(mock.ServiceMock)
-	srv.On("FindByToken", t.Group.Token).Return(t.Group, nil)
+	srv.On("FindByToken", t.Group.Token).Return(want, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -183,92 +186,6 @@ func (t *GroupHandlerTest) TestFindByTokenGrpcErr() {
 
 	h := NewHandler(srv, v)
 	h.FindByToken(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestCreateSuccess() {
-	want := t.Group
-
-	c := &mock.ContextMock{}
-
-	c.On("UserID").Return(t.Group.LeaderID)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Create", t.Group.LeaderID).Return(t.Group, nil)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Create(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestCreateNotFound() {
-	want := t.NotFoundErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Create", t.Group.LeaderID).Return(nil, t.NotFoundErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Create(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestCreateInvalidId() {
-	want := t.InvalidIdErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return("abc")
-
-	srv := new(mock.ServiceMock)
-	srv.On("Create", "abc").Return(nil, t.InvalidIdErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Create(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestCreateInternalErr() {
-	want := t.InternalErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Create", t.Group.LeaderID).Return(nil, t.InternalErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Create(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestCreateGrpcErr() {
-	want := t.ServiceDownErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Create", t.Group.LeaderID).Return(nil, t.ServiceDownErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Create(c)
 
 	assert.Equal(t.T(), want, c.V)
 }
@@ -367,27 +284,9 @@ func (t *GroupHandlerTest) TestJoinSuccess() {
 
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
-	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(t.Group, nil)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Join(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestJoinInvalidRequest() {
-	want := t.InvalidReqErr
-
-	c := &mock.ContextMock{}
-	c.On("Param").Return(t.Group.Token, nil)
-	c.On("Bind", &dto.JoinGroupRequest{}).Return(nil, errors.New(t.InvalidReqErr.Message))
-
-	srv := new(mock.ServiceMock)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID).Return(t.Group, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -402,10 +301,9 @@ func (t *GroupHandlerTest) TestJoinForbidden() {
 
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
-	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.ForbiddenErr)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID).Return(nil, t.ForbiddenErr)
 
 	v, _ := validator.NewValidator()
 
@@ -420,10 +318,9 @@ func (t *GroupHandlerTest) TestJoinInvalidId() {
 
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
-	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
 	c.On("UserID").Return("abc")
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, "abc", t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.InvalidIdErr)
+	srv.On("Join", t.Group.Token, "abc").Return(nil, t.InvalidIdErr)
 
 	v, _ := validator.NewValidator()
 
@@ -438,10 +335,9 @@ func (t *GroupHandlerTest) TestJoinNotFound() {
 
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
-	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.NotFoundErr)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID).Return(nil, t.NotFoundErr)
 
 	v, _ := validator.NewValidator()
 
@@ -456,10 +352,9 @@ func (t *GroupHandlerTest) TestJoinGrpcErr() {
 
 	c := &mock.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
-	c.On("Bind", &dto.JoinGroupRequest{}).Return(t.JoinRequestDto, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
-	srv.On("Join", t.Group.Token, t.Group.LeaderID, t.JoinRequestDto.IsLeader, t.JoinRequestDto.Members).Return(nil, t.ServiceDownErr)
+	srv.On("Join", t.Group.Token, t.Group.LeaderID).Return(nil, t.ServiceDownErr)
 
 	v, _ := validator.NewValidator()
 

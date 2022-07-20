@@ -92,7 +92,7 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 	return res.Group, nil
 }
 
-func (s *Service) FindByToken(token string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *Service) FindByToken(token string) (result *proto.FindByTokenGroupResponse, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -148,113 +148,21 @@ func (s *Service) FindByToken(token string) (result *proto.Group, err *dto.Respo
 		Str("module", "find by token").
 		Str("token", token).
 		Msg("Find group success")
-	return res.Group, nil
-}
-
-func (s *Service) Create(id string) (result *proto.Group, err *dto.ResponseErr) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	res, errRes := s.client.Create(ctx, &proto.CreateGroupRequest{UserId: id})
-	if errRes != nil {
-		st, ok := status.FromError(errRes)
-		if ok {
-			switch st.Code() {
-			case codes.NotFound:
-				log.Error().
-					Err(errRes).
-					Str("service", "group").
-					Str("module", "create").
-					Str("user_id", id).
-					Msg("Not found user")
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusNotFound,
-					Message:    st.Message(),
-					Data:       nil,
-				}
-			case codes.InvalidArgument:
-				log.Error().
-					Err(errRes).
-					Str("service", "group").
-					Str("module", "create").
-					Str("user_id", id).
-					Msg("Invalid user id")
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusBadRequest,
-					Message:    st.Message(),
-					Data:       nil,
-				}
-			case codes.Internal:
-				log.Error().
-					Err(errRes).
-					Str("service", "group").
-					Str("module", "create").
-					Str("user_id", id).
-					Msg("Fail to create group")
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusInternalServerError,
-					Message:    st.Message(),
-					Data:       nil,
-				}
-			default:
-				log.Error().
-					Err(errRes).
-					Str("service", "group").
-					Str("module", "create").
-					Str("user_id", id).
-					Msg("Error while connecting to service")
-
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusServiceUnavailable,
-					Message:    "Service is down",
-					Data:       nil,
-				}
-			}
-		}
-		log.Error().
-			Err(errRes).
-			Str("service", "group").
-			Str("module", "create").
-			Str("user_id", id).
-			Msg("Error while connecting to service")
-
-		return nil, &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
-	}
-
-	log.Info().
-		Str("service", "group").
-		Str("module", "create").
-		Str("user_id", id).
-		Msg("Create group success")
-	return res.Group, nil
+	return res, nil
 }
 
 func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var grpMembers []*proto.User
+	var grpMembers []*proto.UserInfo
 
 	for _, mem := range in.Members {
-		usr := &proto.User{
-			Id:              mem.ID,
-			Title:           mem.Title,
-			Firstname:       mem.Firstname,
-			Lastname:        mem.Lastname,
-			Nickname:        mem.Nickname,
-			Phone:           mem.Phone,
-			LineID:          mem.LineID,
-			Email:           mem.Email,
-			AllergyFood:     mem.AllergyFood,
-			FoodRestriction: mem.FoodRestriction,
-			AllergyMedicine: mem.AllergyMedicine,
-			Disease:         mem.Disease,
-			CanSelectBaan:   *mem.CanSelectBaan,
-			GroupId:         mem.GroupId,
+		usr := &proto.UserInfo{
+			Id:        mem.ID,
+			FirstName: mem.Firstname,
+			LastName:  mem.Lastname,
+			ImageUrl:  mem.ImageUrl,
 		}
 		grpMembers = append(grpMembers, usr)
 	}
@@ -334,11 +242,11 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 	return res.Group, nil
 }
 
-func (s *Service) Join(token string, userId string, isLeader bool, members int) (result *proto.Group, err *dto.ResponseErr) {
+func (s *Service) Join(token string, userId string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, errRes := s.client.Join(ctx, &proto.JoinGroupRequest{Token: token, UserId: userId, IsLeader: isLeader, Members: int32(members)})
+	res, errRes := s.client.Join(ctx, &proto.JoinGroupRequest{Token: token, UserId: userId})
 	if errRes != nil {
 		st, ok := status.FromError(errRes)
 		if ok {

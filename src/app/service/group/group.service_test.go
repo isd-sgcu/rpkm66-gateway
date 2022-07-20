@@ -3,7 +3,6 @@ package group
 import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
 	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/group"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/pkg/errors"
@@ -17,15 +16,16 @@ import (
 
 type GroupServiceTest struct {
 	suite.Suite
-	User           *proto.User
-	UserDto        *dto.UserDto
-	Group          *proto.Group
-	GroupDto       *dto.GroupDto
-	NotFoundErr    *dto.ResponseErr
-	ServiceDownErr *dto.ResponseErr
-	InvalidIdErr   *dto.ResponseErr
-	ForbiddenErr   *dto.ResponseErr
-	InternalErr    *dto.ResponseErr
+	User                     *proto.UserInfo
+	UserDto                  *dto.UserInfo
+	Group                    *proto.Group
+	GroupDto                 *dto.GroupDto
+	FindByTokenGroupResponse *proto.FindByTokenGroupResponse
+	NotFoundErr              *dto.ResponseErr
+	ServiceDownErr           *dto.ResponseErr
+	InvalidIdErr             *dto.ResponseErr
+	ForbiddenErr             *dto.ResponseErr
+	InternalErr              *dto.ResponseErr
 }
 
 func TestGroupService(t *testing.T) {
@@ -33,50 +33,38 @@ func TestGroupService(t *testing.T) {
 }
 
 func (t *GroupServiceTest) SetupTest() {
-	t.User = &proto.User{
-		Id:              faker.UUIDDigit(),
-		Firstname:       faker.FirstName(),
-		Lastname:        faker.LastName(),
-		Nickname:        faker.Name(),
-		Phone:           faker.Phonenumber(),
-		LineID:          faker.Word(),
-		Email:           faker.Email(),
-		AllergyFood:     faker.Word(),
-		FoodRestriction: faker.Word(),
-		AllergyMedicine: faker.Word(),
-		Disease:         faker.Word(),
-		CanSelectBaan:   true,
-		GroupId:         faker.UUIDDigit(),
+	t.User = &proto.UserInfo{
+		Id:        faker.UUIDDigit(),
+		FirstName: faker.FirstName(),
+		LastName:  faker.LastName(),
+		ImageUrl:  faker.URL(),
 	}
 
-	t.UserDto = &dto.UserDto{
-		ID:              t.User.Id,
-		Firstname:       t.User.Firstname,
-		Lastname:        t.User.Lastname,
-		Nickname:        t.User.Nickname,
-		Phone:           t.User.Phone,
-		LineID:          t.User.LineID,
-		Email:           t.User.Email,
-		AllergyFood:     t.User.AllergyFood,
-		FoodRestriction: t.User.FoodRestriction,
-		AllergyMedicine: t.User.AllergyMedicine,
-		Disease:         t.User.Disease,
-		CanSelectBaan:   utils.BoolAdr(t.User.CanSelectBaan),
-		GroupId:         t.User.GroupId,
+	t.UserDto = &dto.UserInfo{
+		ID:        t.User.Id,
+		Firstname: t.User.FirstName,
+		Lastname:  t.User.LastName,
+		ImageUrl:  t.User.ImageUrl,
 	}
 
 	t.Group = &proto.Group{
-		Id:       t.User.GroupId,
+		Id:       faker.UUIDDigit(),
 		LeaderID: t.User.Id,
 		Token:    faker.Word(),
-		Members:  []*proto.User{t.User},
+		Members:  []*proto.UserInfo{t.User},
 	}
 
 	t.GroupDto = &dto.GroupDto{
 		ID:       t.Group.Id,
 		LeaderID: t.Group.LeaderID,
 		Token:    t.Group.Token,
-		Members:  []*dto.UserDto{t.UserDto},
+		Members:  []*dto.UserInfo{t.UserDto},
+	}
+
+	t.FindByTokenGroupResponse = &proto.FindByTokenGroupResponse{
+		Id:     t.Group.Id,
+		Token:  t.Group.Token,
+		Leader: t.User,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
@@ -162,10 +150,10 @@ func (t *GroupServiceTest) TestFindOneGrpcErr() {
 }
 
 func (t *GroupServiceTest) TestFindByTokenSuccess() {
-	want := t.Group
+	want := t.FindByTokenGroupResponse
 
 	c := &group.ClientMock{}
-	c.On("FindByToken", &proto.FindByTokenGroupRequest{Token: t.Group.Token}).Return(&proto.FindByTokenGroupResponse{Group: want}, nil)
+	c.On("FindByToken", &proto.FindByTokenGroupRequest{Token: t.Group.Token}).Return(&proto.FindByTokenGroupResponse{Id: t.Group.Id, Token: t.Group.Token, Leader: t.User}, nil)
 
 	srv := NewService(c)
 	actual, err := srv.FindByToken(t.Group.Token)
@@ -197,73 +185,6 @@ func (t *GroupServiceTest) TestFindByTokenGrpcErr() {
 	srv := NewService(c)
 
 	actual, err := srv.FindByToken(t.Group.Token)
-
-	assert.Nil(t.T(), actual)
-	assert.Equal(t.T(), want, err)
-}
-
-func (t *GroupServiceTest) TestCreateSuccess() {
-	want := t.Group
-
-	c := &group.ClientMock{}
-	c.On("Create", &proto.CreateGroupRequest{UserId: t.User.Id}).Return(&proto.CreateGroupResponse{Group: t.Group}, nil)
-
-	srv := NewService(c)
-
-	actual, err := srv.Create(t.User.Id)
-
-	assert.Nil(t.T(), err)
-	assert.Equal(t.T(), want, actual)
-}
-
-func (t *GroupServiceTest) TestCreateNotFound() {
-	want := t.NotFoundErr
-
-	c := &group.ClientMock{}
-	c.On("Create", &proto.CreateGroupRequest{UserId: t.User.Id}).Return(nil, status.Error(codes.NotFound, "Group not found"))
-
-	srv := NewService(c)
-	actual, err := srv.Create(t.User.Id)
-
-	assert.Nil(t.T(), actual)
-	assert.Equal(t.T(), want, err)
-}
-
-func (t *GroupServiceTest) TestCreateInvalidId() {
-	want := t.InvalidIdErr
-
-	c := &group.ClientMock{}
-	c.On("Create", &proto.CreateGroupRequest{UserId: "abc"}).Return(nil, status.Error(codes.InvalidArgument, "Invalid user id"))
-
-	srv := NewService(c)
-	actual, err := srv.Create("abc")
-
-	assert.Nil(t.T(), actual)
-	assert.Equal(t.T(), want, err)
-}
-
-func (t *GroupServiceTest) TestCreateInternalErr() {
-	want := t.InternalErr
-
-	c := &group.ClientMock{}
-	c.On("Create", &proto.CreateGroupRequest{UserId: t.User.Id}).Return(nil, status.Error(codes.Internal, "Fail to create group"))
-
-	srv := NewService(c)
-	actual, err := srv.Create(t.User.Id)
-
-	assert.Nil(t.T(), actual)
-	assert.Equal(t.T(), want, err)
-}
-
-func (t *GroupServiceTest) TestCreateGrpcErr() {
-	want := t.ServiceDownErr
-
-	c := &group.ClientMock{}
-	c.On("Create", &proto.CreateGroupRequest{UserId: t.User.Id}).Return(nil, errors.New("Service is down"))
-
-	srv := NewService(c)
-
-	actual, err := srv.Create(t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -329,11 +250,11 @@ func (t *GroupServiceTest) TestJoinSuccess() {
 	want := t.Group
 
 	c := &group.ClientMock{}
-	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id, IsLeader: false, Members: 2}).Return(&proto.JoinGroupResponse{Group: t.Group}, nil)
+	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id}).Return(&proto.JoinGroupResponse{Group: t.Group}, nil)
 
 	srv := NewService(c)
 
-	actual, err := srv.Join(t.Group.Token, t.User.Id, false, 2)
+	actual, err := srv.Join(t.Group.Token, t.User.Id)
 
 	assert.Nil(t.T(), err)
 	assert.Equal(t.T(), want, actual)
@@ -343,11 +264,11 @@ func (t *GroupServiceTest) TestJoinForbidden() {
 	want := t.ForbiddenErr
 
 	c := &group.ClientMock{}
-	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id, IsLeader: true, Members: 2}).Return(nil, status.Error(codes.PermissionDenied, "Not allowed"))
+	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id}).Return(nil, status.Error(codes.PermissionDenied, "Not allowed"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Join(t.Group.Token, t.User.Id, true, 2)
+	actual, err := srv.Join(t.Group.Token, t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -357,11 +278,11 @@ func (t *GroupServiceTest) TestJoinInvalidId() {
 	want := t.InvalidIdErr
 
 	c := &group.ClientMock{}
-	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: "abc", IsLeader: false, Members: 2}).Return(nil, status.Error(codes.InvalidArgument, "Invalid user id"))
+	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: "abc"}).Return(nil, status.Error(codes.InvalidArgument, "Invalid user id"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Join(t.Group.Token, "abc", false, 2)
+	actual, err := srv.Join(t.Group.Token, "abc")
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -371,11 +292,11 @@ func (t *GroupServiceTest) TestJoinNotFound() {
 	want := t.NotFoundErr
 
 	c := &group.ClientMock{}
-	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id, IsLeader: false, Members: 2}).Return(nil, status.Error(codes.NotFound, "Group not found"))
+	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id}).Return(nil, status.Error(codes.NotFound, "Group not found"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Join(t.Group.Token, t.User.Id, false, 2)
+	actual, err := srv.Join(t.Group.Token, t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -385,11 +306,11 @@ func (t *GroupServiceTest) TestJoinGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id, IsLeader: false, Members: 2}).Return(nil, errors.New("Service is down"))
+	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id}).Return(nil, errors.New("Service is down"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Join(t.Group.Token, t.User.Id, false, 2)
+	actual, err := srv.Join(t.Group.Token, t.User.Id)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
