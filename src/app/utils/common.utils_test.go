@@ -40,33 +40,85 @@ func (u *UtilTest) TestIsExistedFalse() {
 }
 
 func (u *UtilTest) TestFormatPathWithID() {
-	want := "POST /user/:id"
-
-	path := FormatPath("POST", "/user/1", 1)
-
-	assert.Equal(u.T(), want, path)
+	testFormatPathWithID(u.T(), "POST", "/user/1", []string{"1"}, "POST /user/:id")
+	testFormatPathWithID(u.T(), "GET", "/user/join/1", []string{"1"}, "GET /user/join/:id")
+	testFormatPathWithID(u.T(), "PUT", "/group/1/join", []string{"1"}, "PUT /group/:id/join")
+	testFormatPathWithID(u.T(), "DELETE", "/group/1/kick/2", []string{"1", "2"}, "DELETE /group/:id/kick/:id")
+	testFormatPathWithID(u.T(), "DELETE", "/group", []string{"1", "2"}, "DELETE /group")
 }
 
-func (u *UtilTest) TestFormatPathWithoutID() {
-	want := "POST /user"
+func testFormatPathWithID(t *testing.T, method string, path string, keys []string, want string) {
+	actual := FormatPath(method, path, keys)
 
-	path := FormatPath("POST", "/user", 0)
-
-	assert.Equal(u.T(), want, path)
+	assert.Equal(t, want, actual)
 }
 
-func (u *UtilTest) TestGetIntFromStrFound() {
-	want := []int32{1}
+func (u *UtilTest) TestGetIntFromStr() {
+	var nilSlice []string
 
-	id := FindIntFromStr("/user/1")
-
-	assert.Equal(u.T(), want, id)
+	testFindIntFromStr(u.T(), "/user/1", "/", []string{"1"})
+	testFindIntFromStr(u.T(), "/user/join/1", "/", []string{"1"})
+	testFindIntFromStr(u.T(), "/user/2f434b27-0ecf-47a2-9a61-901fa3303aca", "/", nilSlice)
+	testFindIntFromStr(u.T(), "/user", "/", nilSlice)
 }
 
-func (u *UtilTest) TestGetIntFromStrNotFound() {
-	var want []int32
+func testFindIntFromStr(t *testing.T, s string, sep string, want []string) {
+	actual := FindIntFromStr(s, sep)
 
-	id := FindIntFromStr("/user")
+	assert.Equal(t, want, actual)
+}
 
-	assert.Equal(u.T(), want, id)
+func (u *UtilTest) TestFindUUIDFromString() {
+	var nilSlice []string
+
+	testFindUUIDFromStr(u.T(), "/user/2f434b27-0ecf-47a2-9a61-901fa3303aca", "/", []string{"2f434b27-0ecf-47a2-9a61-901fa3303aca"})
+	testFindUUIDFromStr(u.T(), "/group/join/2f434b27-0ecf-47a2-9a61-901fa3303aca", "/", []string{"2f434b27-0ecf-47a2-9a61-901fa3303aca"})
+	testFindUUIDFromStr(u.T(), "/group/97c1504c-50d1-413c-8f47-921f4b2919c1/kick/2f434b27-0ecf-47a2-9a61-901fa3303aca", "/", []string{"97c1504c-50d1-413c-8f47-921f4b2919c1", "2f434b27-0ecf-47a2-9a61-901fa3303aca"})
+	testFindUUIDFromStr(u.T(), "/user", "/", nilSlice)
+}
+
+func testFindUUIDFromStr(t *testing.T, s string, sep string, want []string) {
+	actual := FindUUIDFromStr(s, sep)
+
+	assert.Equal(t, want, actual)
+}
+
+func (u *UtilTest) TestFindUUIDFromStringNotFound() {
+	var want []string
+
+	actual := FindUUIDFromStr("/user", "/")
+
+	assert.Equal(u.T(), want, actual)
+}
+
+func (u *UtilTest) TestMergeStringSlice() {
+	var nilSlice []string
+
+	testMergeStringSlice(u.T(), []string{"1"}, []string{"2"}, []string{"1", "2"})
+	testMergeStringSlice(u.T(), []string{"1"}, []string{"2", "3"}, []string{"1", "2", "3"})
+	testMergeStringSlice(u.T(), []string{}, []string{"2"}, []string{"2"})
+	testMergeStringSlice(u.T(), []string{"1"}, []string{}, []string{"1"})
+	testMergeStringSlice(u.T(), nilSlice, nilSlice, nilSlice)
+}
+
+func testMergeStringSlice(t *testing.T, s1 []string, s2 []string, want []string) {
+	actual := MergeStringSlice(s1, s2)
+
+	assert.Equal(t, want, actual)
+}
+
+func (u *UtilTest) TestGetIDFromPath() {
+	var nilSlice []string
+
+	testGetIDFromPath(u.T(), "/user/2f434b27-0ecf-47a2-9a61-901fa3303aca", []string{"2f434b27-0ecf-47a2-9a61-901fa3303aca"})
+	testGetIDFromPath(u.T(), "/user/1", []string{"1"})
+	testGetIDFromPath(u.T(), "/user/1/2f434b27-0ecf-47a2-9a61-901fa3303aca", []string{"1", "2f434b27-0ecf-47a2-9a61-901fa3303aca"})
+	testGetIDFromPath(u.T(), "/user/2f434b27-0ecf-47a2-9a61-901fa3303aca/2", []string{"2", "2f434b27-0ecf-47a2-9a61-901fa3303aca"})
+	testGetIDFromPath(u.T(), "/user", nilSlice)
+}
+
+func testGetIDFromPath(t *testing.T, path string, want []string) {
+	actual := FindIDFromPath(path)
+
+	assert.Equal(t, want, actual)
 }

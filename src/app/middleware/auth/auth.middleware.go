@@ -54,13 +54,9 @@ func (m *Guard) Validate(ctx IContext) {
 	method := ctx.Method()
 	path := ctx.Path()
 
-	var id int32
-	ids := utils.FindIntFromStr(path)
-	if len(ids) > 0 {
-		id = ids[0]
-	}
+	ids := utils.FindIDFromPath(path)
 
-	path = utils.FormatPath(method, path, id)
+	path = utils.FormatPath(method, path, ids)
 	if utils.IsExisted(m.excludes, path) {
 		ctx.Next()
 		return
@@ -102,13 +98,13 @@ func (m *Guard) CheckConfig(ctx IContext) {
 		}
 	}
 
-	var id int32
-	ids := utils.FindIntFromStr(path)
-	if len(ids) > 0 {
-		id = ids[0]
-	}
+	ids := utils.FindIDFromPath(path)
 
-	path = utils.FormatPath(method, path, id)
+	path = utils.FormatPath(method, path, ids)
+	if utils.IsExisted(m.excludes, path) {
+		ctx.Next()
+		return
+	}
 
 	phses, ok := role.MapPath2Phase[path]
 	if !ok {

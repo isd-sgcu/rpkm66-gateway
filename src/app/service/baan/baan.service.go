@@ -23,8 +23,6 @@ func (s *Service) FindAll() ([]*proto.Baan, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	log.Print("Find all baan")
-
 	res, err := s.client.FindAllBaan(ctx, &proto.FindAllBaanRequest{})
 	if err != nil {
 		log.Error().Err(err).
