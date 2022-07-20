@@ -228,7 +228,7 @@ func (h *Handler) DeleteMember(ctx IContext) {
 // @Failure 500 {object} dto.ResponseInternalErr Internal error
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
-// @Router /group/leave [post]
+// @Router /group/leave [delete]
 func (h *Handler) Leave(ctx IContext) {
 	userId := ctx.UserID()
 

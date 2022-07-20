@@ -12,7 +12,7 @@ var MapPath2Phase = map[string][]string{
 	"GET /group":                {"select"},
 	"GET /group/:token":         {"select"},
 	"POST /group/:token":        {"select"},
-	"POST /group/leave":         {"select"},
+	"DELETE /group/leave":       {"select"},
 	"PUT /group":                {"select"},
 	"DELETE /group/members/:id": {"select"},
 	"POST /qr/checkin/verify":   {"eventDay", "eStamp"},

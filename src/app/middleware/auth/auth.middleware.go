@@ -101,6 +101,7 @@ func (m *Guard) CheckConfig(ctx IContext) {
 	ids := utils.FindIDFromPath(path)
 
 	path = utils.FormatPath(method, path, ids)
+
 	if utils.IsExisted(m.excludes, path) {
 		ctx.Next()
 		return
