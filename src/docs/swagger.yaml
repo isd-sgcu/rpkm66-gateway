@@ -33,7 +33,7 @@ definitions:
         type: string
       members:
         items:
-          $ref: '#/definitions/dto.UserDto'
+          $ref: '#/definitions/dto.UserInfo'
         type: array
       token:
         type: string
@@ -41,16 +41,6 @@ definitions:
     - leader_id
     - members
     - token
-    type: object
-  dto.JoinGroupRequest:
-    properties:
-      is_leader:
-        type: boolean
-      members:
-        type: integer
-    required:
-    - is_leader
-    - members
     type: object
   dto.RedeemNewToken:
     properties:
@@ -171,6 +161,17 @@ definitions:
     - phone
     - title
     type: object
+  dto.UserInfo:
+    properties:
+      firstname:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      lastname:
+        type: string
+    type: object
   dto.Verify:
     properties:
       hcert:
@@ -214,6 +215,15 @@ definitions:
       size:
         type: integer
     type: object
+  proto.FindByTokenGroupResponse:
+    properties:
+      id:
+        type: string
+      leader:
+        $ref: '#/definitions/proto.UserInfo'
+      token:
+        type: string
+    type: object
   proto.Group:
     properties:
       id:
@@ -222,7 +232,7 @@ definitions:
         type: string
       members:
         items:
-          $ref: '#/definitions/proto.User'
+          $ref: '#/definitions/proto.UserInfo'
         type: array
       token:
         type: string
@@ -266,6 +276,17 @@ definitions:
       title:
         type: string
       year:
+        type: string
+    type: object
+  proto.UserInfo:
+    properties:
+      firstName:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      lastName:
         type: string
     type: object
 info:
@@ -517,42 +538,6 @@ paths:
       summary: Get the group data
       tags:
       - group
-    post:
-      consumes:
-      - application/json
-      description: Return the group dto if successfully
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/proto.Group'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ResponseBadRequestErr'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ResponseNotfoundErr'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ResponseInternalErr'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/dto.ResponseServiceDownErr'
-      security:
-      - AuthToken: []
-      summary: Create new group
-      tags:
-      - group
     put:
       consumes:
       - application/json
@@ -613,7 +598,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/proto.Group'
+            $ref: '#/definitions/proto.FindByTokenGroupResponse'
         "401":
           description: Unauthorized
           schema:
@@ -641,12 +626,6 @@ paths:
         name: token
         required: true
         type: string
-      - description: joinGroupRequest dto
-        in: body
-        name: joinRequest
-        required: true
-        schema:
-          $ref: '#/definitions/dto.JoinGroupRequest'
       produces:
       - application/json
       responses:

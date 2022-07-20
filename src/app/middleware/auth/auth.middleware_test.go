@@ -183,6 +183,7 @@ func (u *AuthGuardTest) TestConfigSuccess() {
 	testConfigSuccess(u.T(), u, "register", "PUT", "/user")
 	testConfigSuccess(u.T(), u, "select", "GET", "/group/1")
 	testConfigSuccess(u.T(), u, "select", "DELETE", "/group/members/2")
+	testConfigSuccess(u.T(), u, "select", "POST", "/group/leave")
 	testConfigSuccess(u.T(), u, "eventDay", "POST", "/qr/checkin/verify")
 	testConfigSuccess(u.T(), u, "eStamp", "POST", "/qr/estamp/confirm")
 }

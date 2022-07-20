@@ -3,8 +3,6 @@ package auth
 var ExcludePath = map[string]struct{}{
 	"POST /auth/verify":       {},
 	"POST /auth/refreshToken": {},
-	"GET /baan":               {},
-	"GET /baan/:id":           {},
 }
 
 var MapPath2Phase = map[string][]string{
@@ -13,8 +11,9 @@ var MapPath2Phase = map[string][]string{
 	"PUT /file/upload":          {"register"},
 	"GET /group":                {"select"},
 	"GET /group/:token":         {"select"},
-	"PUT /group":                {"select"},
 	"POST /group/:token":        {"select"},
+	"POST /group/leave":         {"select"},
+	"PUT /group":                {"select"},
 	"DELETE /group/members/:id": {"select"},
 	"POST /qr/checkin/verify":   {"eventDay", "eStamp"},
 	"POST /qr/checkin/confirm":  {"eventDay", "eStamp"},

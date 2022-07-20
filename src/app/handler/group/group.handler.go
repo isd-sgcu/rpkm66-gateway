@@ -30,10 +30,9 @@ type IContext interface {
 
 type IService interface {
 	FindOne(string) (*proto.Group, *dto.ResponseErr)
-	FindByToken(string) (*proto.Group, *dto.ResponseErr)
-	Create(id string) (*proto.Group, *dto.ResponseErr)
+	FindByToken(string) (*proto.FindByTokenGroupResponse, *dto.ResponseErr)
 	Update(*dto.GroupDto, string) (*proto.Group, *dto.ResponseErr)
-	Join(string, string, bool, int) (*proto.Group, *dto.ResponseErr)
+	Join(string, string) (*proto.Group, *dto.ResponseErr)
 	DeleteMember(string, string) (*proto.Group, *dto.ResponseErr)
 	Leave(string) (*proto.Group, *dto.ResponseErr)
 }
@@ -70,7 +69,7 @@ func (h *Handler) FindOne(ctx IContext) {
 // @Tags group
 // @Accept json
 // @Produce json
-// @Success 200 {object} proto.Group
+// @Success 200 {object} proto.FindByTokenGroupResponse
 // @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
 // @Failure 404 {object} dto.ResponseNotfoundErr Not found group
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
@@ -89,40 +88,13 @@ func (h *Handler) FindByToken(ctx IContext) {
 
 	token, _ := url.QueryUnescape(tokenUrl)
 
-	group, errRes := h.service.FindByToken(token)
+	res, errRes := h.service.FindByToken(token)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, group)
-	return
-}
-
-// Create is a function that create new group
-// @Summary Create new group
-// @Description Return the group dto if successfully
-// @Tags group
-// @Accept json
-// @Produce json
-// @Success 201 {object} proto.Group
-// @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID
-// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
-// @Failure 404 {object} dto.ResponseNotfoundErr Not found user
-// @Failure 500 {object} dto.ResponseInternalErr Internal error
-// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
-// @Security     AuthToken
-// @Router /group [post]
-func (h *Handler) Create(ctx IContext) {
-	userId := ctx.UserID()
-
-	group, errRes := h.service.Create(userId)
-	if errRes != nil {
-		ctx.JSON(errRes.StatusCode, errRes)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, group)
+	ctx.JSON(http.StatusOK, res)
 	return
 }
 
@@ -169,7 +141,6 @@ func (h *Handler) Update(ctx IContext) {
 // @Summary Join the existing group
 // @Description Return the group dto if successfully
 // @Param token path string true "token"
-// @Param joinRequest body dto.JoinGroupRequest true "joinGroupRequest dto"
 // @Tags group
 // @Accept json
 // @Produce json
@@ -192,20 +163,9 @@ func (h *Handler) Join(ctx IContext) {
 		return
 	}
 
-	joinRequest := &dto.JoinGroupRequest{}
-	err = ctx.Bind(joinRequest)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Invalid Request Body",
-			Data:       nil,
-		})
-		return
-	}
-
 	userId := ctx.UserID()
 	token, _ := url.QueryUnescape(tokenUrl)
-	group, errRes := h.service.Join(token, userId, joinRequest.IsLeader, joinRequest.Members)
+	group, errRes := h.service.Join(token, userId)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return

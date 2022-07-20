@@ -459,62 +459,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "AuthToken": []
-                    }
-                ],
-                "description": "Return the group dto if successfully",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "group"
-                ],
-                "summary": "Create new group",
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/proto.Group"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseInternalErr"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
-                        }
-                    }
-                }
             }
         },
         "/group/leave": {
@@ -679,7 +623,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Group"
+                            "$ref": "#/definitions/proto.FindByTokenGroupResponse"
                         }
                     },
                     "401": {
@@ -726,15 +670,6 @@ const docTemplate = `{
                         "name": "token",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "joinGroupRequest dto",
-                        "name": "joinRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.JoinGroupRequest"
-                        }
                     }
                 ],
                 "responses": {
@@ -1130,26 +1065,11 @@ const docTemplate = `{
                 "members": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.UserDto"
+                        "$ref": "#/definitions/dto.UserInfo"
                     }
                 },
                 "token": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.JoinGroupRequest": {
-            "type": "object",
-            "required": [
-                "is_leader",
-                "members"
-            ],
-            "properties": {
-                "is_leader": {
-                    "type": "boolean"
-                },
-                "members": {
-                    "type": "integer"
                 }
             }
         },
@@ -1323,6 +1243,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UserInfo": {
+            "type": "object",
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.Verify": {
             "type": "object",
             "required": [
@@ -1389,6 +1326,20 @@ const docTemplate = `{
                 }
             }
         },
+        "proto.FindByTokenGroupResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "leader": {
+                    "$ref": "#/definitions/proto.UserInfo"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "proto.Group": {
             "type": "object",
             "properties": {
@@ -1401,7 +1352,7 @@ const docTemplate = `{
                 "members": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/proto.User"
+                        "$ref": "#/definitions/proto.UserInfo"
                     }
                 },
                 "token": {
@@ -1467,6 +1418,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.UserInfo": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "lastName": {
                     "type": "string"
                 }
             }
