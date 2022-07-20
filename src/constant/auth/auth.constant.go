@@ -3,6 +3,8 @@ package auth
 var ExcludePath = map[string]struct{}{
 	"POST /auth/verify":       {},
 	"POST /auth/refreshToken": {},
+	"GET /baan":               {},
+	"GET /baan/:id":           {},
 }
 
 var MapPath2Phase = map[string][]string{
