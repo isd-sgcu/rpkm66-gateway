@@ -13,3 +13,7 @@ type UserInfo struct {
 	Lastname  string `json:"lastname"`
 	ImageUrl  string `json:"image_url"`
 }
+
+type SelectBaan struct {
+	Baans []string `json:"baans" validate:"required"`
+}

@@ -25,23 +25,6 @@ definitions:
         example: file-example.jpg-6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
         type: string
     type: object
-  dto.GroupDto:
-    properties:
-      id:
-        type: string
-      leader_id:
-        type: string
-      members:
-        items:
-          $ref: '#/definitions/dto.UserInfo'
-        type: array
-      token:
-        type: string
-    required:
-    - leader_id
-    - members
-    - token
-    type: object
   dto.RedeemNewToken:
     properties:
       refresh_token:
@@ -122,6 +105,15 @@ definitions:
         example: 401
         type: integer
     type: object
+  dto.SelectBaan:
+    properties:
+      baans:
+        items:
+          type: string
+        type: array
+    required:
+    - baans
+    type: object
   dto.UserDto:
     properties:
       allergy_food:
@@ -160,21 +152,6 @@ definitions:
     - nickname
     - phone
     - title
-    type: object
-  dto.UserInfo:
-    properties:
-      firstname:
-        type: string
-      id:
-        type: string
-      image_url:
-        type: string
-      lastname:
-        type: string
-    required:
-    - firstname
-    - image_url
-    - lastname
     type: object
   dto.Verify:
     properties:
@@ -284,13 +261,13 @@ definitions:
     type: object
   proto.UserInfo:
     properties:
-      firstName:
+      firstname:
         type: string
       id:
         type: string
       imageUrl:
         type: string
-      lastName:
+      lastname:
         type: string
     type: object
 info:
@@ -540,49 +517,6 @@ paths:
       summary: Get the group data
       tags:
       - group
-    put:
-      consumes:
-      - application/json
-      description: Return the group dto if successfully
-      parameters:
-      - description: Group dto
-        in: body
-        name: groupDto
-        required: true
-        schema:
-          $ref: '#/definitions/dto.GroupDto'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/proto.Group'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ResponseBadRequestErr'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/dto.ResponseForbiddenErr'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ResponseNotfoundErr'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/dto.ResponseServiceDownErr'
-      security:
-      - AuthToken: []
-      summary: Update the existing group
-      tags:
-      - group
   /group/{token}:
     get:
       consumes:
@@ -742,6 +676,52 @@ paths:
       security:
       - AuthToken: []
       summary: Delete member from the group
+      tags:
+      - group
+  /group/select:
+    put:
+      consumes:
+      - application/json
+      description: Return nothing if successfully
+      parameters:
+      - description: Select baan dto
+        in: body
+        name: selectBaanDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SelectBaan'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ResponseForbiddenErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseNotfoundErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: select baan for the group (leader only)
       tags:
       - group
   /user:

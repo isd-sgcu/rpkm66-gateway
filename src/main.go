@@ -168,7 +168,8 @@ func main() {
 	r.GetGroup("/", gHdr.FindOne)
 	r.GetGroup("/:token", gHdr.FindByToken)
 	r.PostGroup("/:token", gHdr.Join)
-	r.DeleteGroup("/leave", gHdr.Leave)
+	r.PostGroup("/leave", gHdr.Leave)
+	r.PutGroup("/select", gHdr.SelectBaan)
 	r.DeleteGroup("/members/:member_id", gHdr.DeleteMember)
 
 	go func() {

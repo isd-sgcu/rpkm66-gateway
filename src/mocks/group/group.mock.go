@@ -12,6 +12,19 @@ type ServiceMock struct {
 	mock.Mock
 }
 
+func (s *ServiceMock) SelectBaan(userId string, baanIds []string) (result bool, err *dto.ResponseErr) {
+	args := s.Called(userId, baanIds)
+
+	if args.Get(0) != nil {
+		result = args.Bool(0)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+	return
+}
+
 func (s *ServiceMock) FindOne(id string) (result *proto.Group, err *dto.ResponseErr) {
 	args := s.Called(id)
 
@@ -113,6 +126,16 @@ type ClientMock struct {
 	mock.Mock
 }
 
+func (c *ClientMock) SelectBaan(_ context.Context, in *proto.SelectBaanRequest, _ ...grpc.CallOption) (result *proto.SelectBaanResponse, err error) {
+	args := c.Called(in)
+
+	if args.Get(0) != nil {
+		result = args.Get(0).(*proto.SelectBaanResponse)
+	}
+
+	return result, args.Error(1)
+}
+
 func (c *ClientMock) FindOne(_ context.Context, in *proto.FindOneGroupRequest, _ ...grpc.CallOption) (res *proto.FindOneGroupResponse, err error) {
 	args := c.Called(in)
 
@@ -175,18 +198,25 @@ func (c *ClientMock) Leave(_ context.Context, in *proto.LeaveGroupRequest, _ ...
 
 type ContextMock struct {
 	mock.Mock
-	V interface{}
+	V      interface{}
+	Status int
 }
 
-func (c *ContextMock) JSON(_ int, v interface{}) {
+func (c *ContextMock) JSON(status int, v interface{}) {
 	c.V = v
+	c.Status = status
 }
 
 func (c *ContextMock) Bind(v interface{}) error {
 	args := c.Called(v)
 
 	if args.Get(0) != nil {
-		*v.(*dto.GroupDto) = *args.Get(0).(*dto.GroupDto)
+		switch args.Get(0).(type) {
+		case *dto.GroupDto:
+			*v.(*dto.GroupDto) = *args.Get(0).(*dto.GroupDto)
+		case *dto.SelectBaan:
+			*v.(*dto.SelectBaan) = *args.Get(0).(*dto.SelectBaan)
+		}
 	}
 
 	return args.Error(1)

@@ -160,8 +160,8 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 	for _, mem := range in.Members {
 		usr := &proto.UserInfo{
 			Id:        mem.ID,
-			FirstName: mem.Firstname,
-			LastName:  mem.Lastname,
+			Firstname: mem.Firstname,
+			Lastname:  mem.Lastname,
 			ImageUrl:  mem.ImageUrl,
 		}
 		grpMembers = append(grpMembers, usr)
@@ -499,4 +499,86 @@ func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseEr
 		Str("user_id", userId).
 		Msg("Leave group success")
 	return res.Group, nil
+}
+
+func (s *Service) SelectBaan(userId string, baanIds []string) (bool, *dto.ResponseErr) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := s.client.SelectBaan(ctx, &proto.SelectBaanRequest{
+		UserId: userId,
+		Baans:  baanIds,
+	})
+	if err != nil {
+		st, ok := status.FromError(err)
+		if ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				log.Error().
+					Err(err).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("invalid baan ids")
+				return false, &dto.ResponseErr{
+					StatusCode: http.StatusBadRequest,
+					Message:    "Invalid Input",
+					Data:       nil,
+				}
+
+			case codes.PermissionDenied:
+				log.Error().
+					Err(err).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("invalid baan ids")
+				return false, &dto.ResponseErr{
+					StatusCode: http.StatusForbidden,
+					Message:    "Forbidden Action",
+					Data:       nil,
+				}
+
+			case codes.Internal:
+				log.Error().
+					Err(err).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("Internal error in backend")
+				return false, &dto.ResponseErr{
+					StatusCode: http.StatusInternalServerError,
+					Message:    "Service is down",
+					Data:       nil,
+				}
+			default:
+				log.Error().
+					Err(err).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("Error while connecting to service")
+
+				return false, &dto.ResponseErr{
+					StatusCode: http.StatusServiceUnavailable,
+					Message:    "Service is down",
+					Data:       nil,
+				}
+			}
+		}
+		log.Error().
+			Err(err).
+			Str("service", "group").
+			Str("module", "delete").
+			Str("user_id", userId).
+			Msg("Error while connecting to service")
+
+		return false, &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+			Data:       nil,
+		}
+	}
+
+	return res.Success, nil
 }

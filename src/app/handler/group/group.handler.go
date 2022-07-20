@@ -35,6 +35,7 @@ type IService interface {
 	Join(string, string) (*proto.Group, *dto.ResponseErr)
 	DeleteMember(string, string) (*proto.Group, *dto.ResponseErr)
 	Leave(string) (*proto.Group, *dto.ResponseErr)
+	SelectBaan(string, []string) (bool, *dto.ResponseErr)
 }
 
 // FindOne is a function that get the group data
@@ -95,45 +96,6 @@ func (h *Handler) FindByToken(ctx IContext) {
 	}
 
 	ctx.JSON(http.StatusOK, res)
-	return
-}
-
-// Update is a function that update the group
-// @Summary Update the existing group
-// @Description Return the group dto if successfully
-// @Param groupDto body dto.GroupDto true "Group dto"
-// @Tags group
-// @Accept json
-// @Produce json
-// @Success 200 {object} proto.Group
-// @Failure 400 {object} dto.ResponseBadRequestErr Invalid request body or ID
-// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
-// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to update group
-// @Failure 404 {object} dto.ResponseNotfoundErr Not found group
-// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
-// @Security     AuthToken
-// @Router /group [put]
-func (h *Handler) Update(ctx IContext) {
-	userId := ctx.UserID()
-
-	grpDto := &dto.GroupDto{}
-	err := ctx.Bind(grpDto)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Invalid Request Body",
-			Data:       nil,
-		})
-		return
-	}
-
-	group, errRes := h.service.Update(grpDto, userId)
-	if errRes != nil {
-		ctx.JSON(errRes.StatusCode, errRes)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, group)
 	return
 }
 
@@ -240,4 +202,39 @@ func (h *Handler) Leave(ctx IContext) {
 
 	ctx.JSON(http.StatusOK, group)
 	return
+}
+
+// SelectBaan is a function for to select the baan
+// @Summary select baan for the group (leader only)
+// @Description Return nothing if successfully
+// @Param selectBaanDto body dto.SelectBaan true "Select baan dto"
+// @Tags group
+// @Accept json
+// @Produce json
+// @Success 204
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid ID
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 403 {object} dto.ResponseForbiddenErr Insufficiency permission to select the baan
+// @Failure 404 {object} dto.ResponseNotfoundErr Not found group
+// @Failure 500 {object} dto.ResponseInternalErr Internal error
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
+// @Security     AuthToken
+// @Router /group/select [put]
+func (h *Handler) SelectBaan(ctx IContext) {
+	userId := ctx.UserID()
+
+	baans := dto.SelectBaan{}
+	err := ctx.Bind(&baans)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "Invalid baan ids")
+		return
+	}
+
+	success, errRes := h.service.SelectBaan(userId, baans.Baans)
+	if !success {
+		ctx.JSON(errRes.StatusCode, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, struct{}{})
 }

@@ -392,77 +392,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "put": {
-                "security": [
-                    {
-                        "AuthToken": []
-                    }
-                ],
-                "description": "Return the group dto if successfully",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "group"
-                ],
-                "summary": "Update the existing group",
-                "parameters": [
-                    {
-                        "description": "Group dto",
-                        "name": "groupDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.GroupDto"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/proto.Group"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseForbiddenErr"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
-                        }
-                    }
-                }
             }
         },
         "/group/leave": {
-            "delete": {
+            "post": {
                 "security": [
                     {
                         "AuthToken": []
@@ -581,6 +514,78 @@ const docTemplate = `{
                         "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/group/select": {
+            "put": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return nothing if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "group"
+                ],
+                "summary": "select baan for the group (leader only)",
+                "parameters": [
+                    {
+                        "description": "Select baan dto",
+                        "name": "selectBaanDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SelectBaan"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseForbiddenErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
                         }
                     },
                     "503": {
@@ -1048,31 +1053,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.GroupDto": {
-            "type": "object",
-            "required": [
-                "leader_id",
-                "members",
-                "token"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "leader_id": {
-                    "type": "string"
-                },
-                "members": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.UserInfo"
-                    }
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.RedeemNewToken": {
             "type": "object",
             "required": [
@@ -1187,6 +1167,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.SelectBaan": {
+            "type": "object",
+            "required": [
+                "baans"
+            ],
+            "properties": {
+                "baans": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.UserDto": {
             "type": "object",
             "required": [
@@ -1239,28 +1233,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UserInfo": {
-            "type": "object",
-            "required": [
-                "firstname",
-                "image_url",
-                "lastname"
-            ],
-            "properties": {
-                "firstname": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "lastname": {
                     "type": "string"
                 }
             }
@@ -1430,7 +1402,7 @@ const docTemplate = `{
         "proto.UserInfo": {
             "type": "object",
             "properties": {
-                "firstName": {
+                "firstname": {
                     "type": "string"
                 },
                 "id": {
@@ -1439,7 +1411,7 @@ const docTemplate = `{
                 "imageUrl": {
                     "type": "string"
                 },
-                "lastName": {
+                "lastname": {
                     "type": "string"
                 }
             }

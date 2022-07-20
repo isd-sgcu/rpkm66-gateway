@@ -2,6 +2,7 @@ package group
 
 import (
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/group"
@@ -136,8 +137,8 @@ func (t *GroupHandlerTest) TestFindByTokenSuccess() {
 		Token: t.Group.Token,
 		Leader: &proto.UserInfo{
 			Id:        faker.UUIDDigit(),
-			FirstName: faker.Word(),
-			LastName:  faker.Word(),
+			Firstname: faker.Word(),
+			Lastname:  faker.Word(),
 			ImageUrl:  faker.URL(),
 		},
 	}
@@ -186,95 +187,6 @@ func (t *GroupHandlerTest) TestFindByTokenGrpcErr() {
 
 	h := NewHandler(srv, v)
 	h.FindByToken(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestUpdateSuccess() {
-	want := t.Group
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-	c.On("Bind", &dto.GroupDto{}).Return(t.GroupDto, nil)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Update", t.GroupDto, t.Group.LeaderID).Return(t.Group, nil)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Update(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestUpdateInvalidRequest() {
-	want := t.InvalidReqErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-	c.On("Bind", &dto.GroupDto{}).Return(nil, errors.New(t.InvalidReqErr.Message))
-
-	srv := new(mock.ServiceMock)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Update(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestUpdateNotFound() {
-	want := t.NotFoundErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-	c.On("Bind", &dto.GroupDto{}).Return(t.GroupDto, nil)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Update", t.GroupDto, t.Group.LeaderID).Return(nil, t.NotFoundErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Update(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestUpdateInvalidID() {
-	want := t.InvalidIdErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return("abc")
-	c.On("Bind", &dto.GroupDto{}).Return(t.GroupDto, nil)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Update", t.GroupDto, "abc").Return(nil, t.InvalidIdErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Update(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
-func (t *GroupHandlerTest) TestUpdateGrpcErr() {
-	want := t.ServiceDownErr
-
-	c := &mock.ContextMock{}
-	c.On("UserID").Return(t.Group.LeaderID)
-	c.On("Bind", &dto.GroupDto{}).Return(t.GroupDto, nil)
-
-	srv := new(mock.ServiceMock)
-	srv.On("Update", t.GroupDto, t.Group.LeaderID).Return(nil, t.ServiceDownErr)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.Update(c)
 
 	assert.Equal(t.T(), want, c.V)
 }
@@ -550,6 +462,121 @@ func (t *GroupHandlerTest) TestLeaveGrpcErr() {
 
 	h := NewHandler(srv, v)
 	h.Leave(c)
+
+	assert.Equal(t.T(), want, c.V)
+}
+
+func createBaanSlices() *dto.SelectBaan {
+	var baanIds []string
+	for i := 0; i < 3; i++ {
+		baanIds = append(baanIds, uuid.New().String())
+	}
+
+	return &dto.SelectBaan{Baans: baanIds}
+}
+
+func (t *GroupHandlerTest) TestSelectBaanSuccess() {
+	baans := createBaanSlices()
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.Group.LeaderID)
+	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
+
+	srv := new(mock.ServiceMock)
+	srv.On("SelectBaan", t.Group.LeaderID, baans.Baans).Return(true, nil)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.SelectBaan(c)
+
+	assert.Equal(t.T(), http.StatusNoContent, c.Status)
+}
+
+func (t *GroupHandlerTest) TestSelectBaanInvalidInput() {
+	baans := createBaanSlices()
+
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusBadRequest,
+		Message:    "Invalid Input",
+		Data:       nil,
+	}
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.Group.LeaderID)
+	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
+
+	srv := new(mock.ServiceMock)
+	srv.On("SelectBaan", t.Group.LeaderID, baans.Baans).Return(false, want)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.SelectBaan(c)
+
+	assert.Equal(t.T(), want, c.V)
+}
+
+func (t *GroupHandlerTest) TestSelectBaanForbiddenActio() {
+	baans := createBaanSlices()
+
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusForbidden,
+		Message:    "Forbidden Action",
+		Data:       nil,
+	}
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.Group.LeaderID)
+	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
+
+	srv := new(mock.ServiceMock)
+	srv.On("SelectBaan", t.Group.LeaderID, baans.Baans).Return(false, want)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.SelectBaan(c)
+
+	assert.Equal(t.T(), want, c.V)
+}
+
+func (t *GroupHandlerTest) TestSelectBaanInternalErr() {
+	baans := createBaanSlices()
+
+	want := t.ServiceDownErr
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.Group.LeaderID)
+	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
+
+	srv := new(mock.ServiceMock)
+	srv.On("SelectBaan", t.Group.LeaderID, baans.Baans).Return(false, t.ServiceDownErr)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.SelectBaan(c)
+
+	assert.Equal(t.T(), want, c.V)
+}
+
+func (t *GroupHandlerTest) TestSelectBaanFailed() {
+	baans := createBaanSlices()
+
+	want := t.ServiceDownErr
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.Group.LeaderID)
+	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
+
+	srv := new(mock.ServiceMock)
+	srv.On("SelectBaan", t.Group.LeaderID, baans.Baans).Return(false, t.ServiceDownErr)
+
+	v, _ := validator.NewValidator()
+
+	h := NewHandler(srv, v)
+	h.SelectBaan(c)
 
 	assert.Equal(t.T(), want, c.V)
 }
