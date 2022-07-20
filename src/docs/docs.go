@@ -392,73 +392,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "put": {
-                "security": [
-                    {
-                        "AuthToken": []
-                    }
-                ],
-                "description": "Return the group dto if successfully",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "group"
-                ],
-                "summary": "Update the existing group",
-                "parameters": [
-                    {
-                        "description": "Group dto",
-                        "name": "groupDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.GroupDto"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/proto.Group"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseForbiddenErr"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
-                        }
-                    }
-                }
             }
         },
         "/group/leave": {
@@ -581,6 +514,78 @@ const docTemplate = `{
                         "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/group/select": {
+            "put": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return nothing if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "group"
+                ],
+                "summary": "select baan for the group (leader only)",
+                "parameters": [
+                    {
+                        "description": "Select baan dto",
+                        "name": "selectBaanDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SelectBaan"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseForbiddenErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
                         }
                     },
                     "503": {
@@ -1048,31 +1053,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.GroupDto": {
-            "type": "object",
-            "required": [
-                "leader_id",
-                "members",
-                "token"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "leader_id": {
-                    "type": "string"
-                },
-                "members": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.UserInfo"
-                    }
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.RedeemNewToken": {
             "type": "object",
             "required": [
@@ -1187,6 +1167,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.SelectBaan": {
+            "type": "object",
+            "required": [
+                "baans"
+            ],
+            "properties": {
+                "baans": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.UserDto": {
             "type": "object",
             "required": [
@@ -1239,28 +1233,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UserInfo": {
-            "type": "object",
-            "required": [
-                "firstname",
-                "image_url",
-                "lastname"
-            ],
-            "properties": {
-                "firstname": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "lastname": {
                     "type": "string"
                 }
             }
@@ -1430,7 +1402,7 @@ const docTemplate = `{
         "proto.UserInfo": {
             "type": "object",
             "properties": {
-                "firstName": {
+                "firstname": {
                     "type": "string"
                 },
                 "id": {
@@ -1439,7 +1411,7 @@ const docTemplate = `{
                 "imageUrl": {
                     "type": "string"
                 },
-                "lastName": {
+                "lastname": {
                     "type": "string"
                 }
             }
@@ -1454,35 +1426,35 @@ const docTemplate = `{
     },
     "tags": [
         {
-            "description": "# Health Check Tag API Documentation\r\n**Health Check** functions goes here",
+            "description": "# Health Check Tag API Documentation\n**Health Check** functions goes here",
             "name": "health check"
         },
         {
-            "description": "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here",
+            "description": "# Vaccine Tag API Documentation\n**Vaccine** functions goes here",
             "name": "vaccine"
         },
         {
-            "description": "# Auth Tag API Documentation\r\n**Auth** functions goes here",
+            "description": "# Auth Tag API Documentation\n**Auth** functions goes here",
             "name": "auth"
         },
         {
-            "description": "# User Tag API Documentation\r\n**User** functions goes here",
+            "description": "# User Tag API Documentation\n**User** functions goes here",
             "name": "user"
         },
         {
-            "description": "# File Tag API Documentation\r\n**File** functions goes here",
+            "description": "# File Tag API Documentation\n**File** functions goes here",
             "name": "file"
         },
         {
-            "description": "# Group Tag API Documentation\r\n**Group** functions goes here",
+            "description": "# Group Tag API Documentation\n**Group** functions goes here",
             "name": "group"
         },
         {
-            "description": "# Baan Tag API Documentation\r\n**Baan** functions goes here",
+            "description": "# Baan Tag API Documentation\n**Baan** functions goes here",
             "name": "baan"
         },
         {
-            "description": "# Event Tag API Documentation\r\n**Event** functions goes here",
+            "description": "# Event Tag API Documentation\n**Event** functions goes here",
             "name": "event"
         }
     ]
@@ -1495,7 +1467,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"https", "http"},
 	Title:            "RNKM Backend",
-	Description:      "# RNKM API\r\nThis is the documentation for https://freshersfairs.com",
+	Description:      "# RNKM API\nThis is the documentation for https://freshersfairs.com",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

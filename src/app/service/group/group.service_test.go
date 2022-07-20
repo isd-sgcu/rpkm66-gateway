@@ -2,7 +2,9 @@ package group
 
 import (
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	constant "github.com/isd-sgcu/rnkm65-gateway/src/constant/baan"
 	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/group"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/pkg/errors"
@@ -35,15 +37,15 @@ func TestGroupService(t *testing.T) {
 func (t *GroupServiceTest) SetupTest() {
 	t.User = &proto.UserInfo{
 		Id:        faker.UUIDDigit(),
-		FirstName: faker.FirstName(),
-		LastName:  faker.LastName(),
+		Firstname: faker.FirstName(),
+		Lastname:  faker.LastName(),
 		ImageUrl:  faker.URL(),
 	}
 
 	t.UserDto = &dto.UserInfo{
 		ID:        t.User.Id,
-		Firstname: t.User.FirstName,
-		Lastname:  t.User.LastName,
+		Firstname: t.User.Firstname,
+		Lastname:  t.User.Lastname,
 		ImageUrl:  t.User.ImageUrl,
 	}
 
@@ -467,5 +469,118 @@ func (t *GroupServiceTest) TestLeaveGrpcErr() {
 	actual, err := srv.Leave(t.User.Id)
 
 	assert.Nil(t.T(), actual)
+	assert.Equal(t.T(), want, err)
+}
+
+func createBaanSlices() ([]*proto.Baan, []string) {
+	var result []*proto.Baan
+	var baanIds []string
+
+	for i := 0; i < 3; i++ {
+		b := &proto.Baan{
+			Id:            uuid.New().String(),
+			NameTH:        faker.Word(),
+			DescriptionTH: faker.Paragraph(),
+			NameEN:        faker.Word(),
+			DescriptionEN: faker.Paragraph(),
+			Size:          constant.M,
+			Facebook:      faker.Word(),
+			FacebookUrl:   faker.URL(),
+			Instagram:     faker.Word(),
+			InstagramUrl:  faker.URL(),
+			Line:          faker.Word(),
+			LineUrl:       faker.URL(),
+			ImageUrl:      faker.URL(),
+		}
+
+		result = append(result, b)
+		baanIds = append(baanIds, b.Id)
+	}
+	return result, baanIds
+}
+
+func (t *GroupServiceTest) TestUpdateSelectBaanSuccess() {
+	_, baanIds := createBaanSlices()
+
+	c := &group.ClientMock{}
+	c.On("SelectBaan", &proto.SelectBaanRequest{
+		UserId: t.Group.Id,
+		Baans:  baanIds,
+	}).Return(&proto.SelectBaanResponse{Success: true}, nil)
+
+	srv := NewService(c)
+
+	actual, err := srv.SelectBaan(t.Group.Id, baanIds)
+
+	assert.Nil(t.T(), err)
+	assert.True(t.T(), actual)
+}
+
+func (t *GroupServiceTest) TestUpdateSelectBaanInvalidInput() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusBadRequest,
+		Message:    "Invalid Input",
+		Data:       nil,
+	}
+
+	_, baanIds := createBaanSlices()
+
+	c := &group.ClientMock{}
+	c.On("SelectBaan", &proto.SelectBaanRequest{
+		UserId: t.Group.Id,
+		Baans:  baanIds,
+	}).Return(nil, status.Error(codes.InvalidArgument, "Duplicated baan"))
+
+	srv := NewService(c)
+
+	actual, err := srv.SelectBaan(t.Group.Id, baanIds)
+
+	assert.False(t.T(), actual)
+	assert.Equal(t.T(), want, err)
+}
+
+func (t *GroupServiceTest) TestUpdateSelectBaanForbbidenInput() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusForbidden,
+		Message:    "Forbidden Action",
+		Data:       nil,
+	}
+
+	_, baanIds := createBaanSlices()
+
+	c := &group.ClientMock{}
+	c.On("SelectBaan", &proto.SelectBaanRequest{
+		UserId: t.Group.Id,
+		Baans:  baanIds,
+	}).Return(nil, status.Error(codes.PermissionDenied, "forbidden action"))
+
+	srv := NewService(c)
+
+	actual, err := srv.SelectBaan(t.Group.Id, baanIds)
+
+	assert.False(t.T(), actual)
+	assert.Equal(t.T(), want, err)
+}
+
+func (t *GroupServiceTest) TestUpdateSelectBaanInternalServiceErr() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusInternalServerError,
+		Message:    "Service is down",
+		Data:       nil,
+	}
+
+	_, baanIds := createBaanSlices()
+
+	c := &group.ClientMock{}
+	c.On("SelectBaan", &proto.SelectBaanRequest{
+		UserId: t.Group.Id,
+		Baans:  baanIds,
+	}).Return(nil, status.Error(codes.Internal, "Something wrong"))
+
+	srv := NewService(c)
+
+	actual, err := srv.SelectBaan(t.Group.Id, baanIds)
+
+	assert.False(t.T(), actual)
 	assert.Equal(t.T(), want, err)
 }
