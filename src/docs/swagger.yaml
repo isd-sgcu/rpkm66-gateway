@@ -274,7 +274,9 @@ info:
   contact:
     email: sd.team.sgcu@gmail.com
     name: ISD Team
-  description: "# RNKM API\r\nThis is the documentation for https://freshersfairs.com"
+  description: |-
+    # RNKM API
+    This is the documentation for https://freshersfairs.com
   title: RNKM Backend
   version: "1.0"
 paths:
@@ -924,20 +926,35 @@ securityDefinitions:
     type: apiKey
 swagger: "2.0"
 tags:
-- description: "# Health Check Tag API Documentation\r\n**Health Check** functions
-    goes here"
+- description: |-
+    # Health Check Tag API Documentation
+    **Health Check** functions goes here
   name: health check
-- description: "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here"
+- description: |-
+    # Vaccine Tag API Documentation
+    **Vaccine** functions goes here
   name: vaccine
-- description: "# Auth Tag API Documentation\r\n**Auth** functions goes here"
+- description: |-
+    # Auth Tag API Documentation
+    **Auth** functions goes here
   name: auth
-- description: "# User Tag API Documentation\r\n**User** functions goes here"
+- description: |-
+    # User Tag API Documentation
+    **User** functions goes here
   name: user
-- description: "# File Tag API Documentation\r\n**File** functions goes here"
+- description: |-
+    # File Tag API Documentation
+    **File** functions goes here
   name: file
-- description: "# Group Tag API Documentation\r\n**Group** functions goes here"
+- description: |-
+    # Group Tag API Documentation
+    **Group** functions goes here
   name: group
-- description: "# Baan Tag API Documentation\r\n**Baan** functions goes here"
+- description: |-
+    # Baan Tag API Documentation
+    **Baan** functions goes here
   name: baan
-- description: "# Event Tag API Documentation\r\n**Event** functions goes here"
+- description: |-
+    # Event Tag API Documentation
+    **Event** functions goes here
   name: event
