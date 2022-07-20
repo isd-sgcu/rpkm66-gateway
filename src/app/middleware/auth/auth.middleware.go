@@ -4,7 +4,7 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
-	role "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
+	phase "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"net/http"
 	"strings"
 )
@@ -35,6 +35,8 @@ func NewAuthGuard(s auth.IService, e map[string]struct{}, p string) Guard {
 }
 
 func (m *Guard) Use(ctx IContext) {
+	m.isValidate = true
+
 	m.Validate(ctx)
 
 	if !m.isValidate {
@@ -107,7 +109,7 @@ func (m *Guard) CheckConfig(ctx IContext) {
 		return
 	}
 
-	phses, ok := role.MapPath2Phase[path]
+	phses, ok := phase.MapPath2Phase[path]
 	if !ok {
 		ctx.Next()
 		return
