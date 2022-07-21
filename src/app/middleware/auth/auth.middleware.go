@@ -4,6 +4,7 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
+	"github.com/isd-sgcu/rnkm65-gateway/src/config"
 	phase "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"net/http"
 	"strings"
@@ -12,7 +13,7 @@ import (
 type Guard struct {
 	service    auth.IService
 	excludes   map[string]struct{}
-	phase      string
+	conf       config.App
 	isValidate bool
 }
 
@@ -25,11 +26,11 @@ type IContext interface {
 	Next()
 }
 
-func NewAuthGuard(s auth.IService, e map[string]struct{}, p string) Guard {
+func NewAuthGuard(s auth.IService, e map[string]struct{}, conf config.App) Guard {
 	return Guard{
 		service:    s,
 		excludes:   e,
-		phase:      p,
+		conf:       conf,
 		isValidate: true,
 	}
 }
@@ -43,13 +44,16 @@ func (m *Guard) Use(ctx IContext) {
 		return
 	}
 
-	m.CheckConfig(ctx)
+	if !m.conf.Debug {
+		m.CheckConfig(ctx)
 
-	if !m.isValidate {
-		return
+		if !m.isValidate {
+			return
+		}
 	}
 
 	ctx.Next()
+
 }
 
 func (m *Guard) Validate(ctx IContext) {
@@ -115,7 +119,7 @@ func (m *Guard) CheckConfig(ctx IContext) {
 		return
 	}
 
-	currentPhase := m.phase
+	currentPhase := m.conf.Phase
 	for _, phs := range phses {
 		if phs == currentPhase {
 			ctx.Next()

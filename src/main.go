@@ -139,7 +139,7 @@ func main() {
 	bnSrv := baanSrv.NewService(bnClient)
 	bnHdr := baanHdr.NewHandler(bnSrv)
 
-	authGuard := guard.NewAuthGuard(athSrv, auth.ExcludePath, conf.Guard.Phase)
+	authGuard := guard.NewAuthGuard(athSrv, auth.ExcludePath, conf.App)
 
 	r := router.NewFiberRouter(&authGuard, conf.App)
 
