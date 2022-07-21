@@ -522,7 +522,7 @@ func (s *Service) SelectBaan(userId string, baanIds []string) (bool, *dto.Respon
 					Msg("invalid baan ids")
 				return false, &dto.ResponseErr{
 					StatusCode: http.StatusBadRequest,
-					Message:    "Invalid Input",
+					Message:    "Invalid numbers of baan or bann is duplicated",
 					Data:       nil,
 				}
 
@@ -539,6 +539,18 @@ func (s *Service) SelectBaan(userId string, baanIds []string) (bool, *dto.Respon
 					Data:       nil,
 				}
 
+			case codes.NotFound:
+				log.Error().
+					Err(err).
+					Str("service", "group").
+					Str("module", "leave").
+					Str("user_id", userId).
+					Msg("not found baan")
+				return false, &dto.ResponseErr{
+					StatusCode: http.StatusNotFound,
+					Message:    "Not found baan",
+					Data:       nil,
+				}
 			case codes.Internal:
 				log.Error().
 					Err(err).
