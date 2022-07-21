@@ -519,7 +519,7 @@ func (t *GroupServiceTest) TestUpdateSelectBaanSuccess() {
 func (t *GroupServiceTest) TestUpdateSelectBaanInvalidInput() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusBadRequest,
-		Message:    "Invalid Input",
+		Message:    "Invalid numbers of baan or bann is duplicated",
 		Data:       nil,
 	}
 
