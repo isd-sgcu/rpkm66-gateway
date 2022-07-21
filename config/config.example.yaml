@@ -2,6 +2,7 @@ app:
   port: 3000
   debug: true
   max_file_size: 10
+  phase: "register"
 
 service:
   backend: localhost:3001
@@ -11,6 +12,3 @@ service:
 vaccine:
   host: localhost:8000
   api_key: <api key>
-
-guard:
-  phase: "register"
