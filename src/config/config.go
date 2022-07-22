@@ -12,15 +12,11 @@ type Service struct {
 }
 
 type App struct {
-	Port        int  `mapstructure:"port"`
-	Debug       bool `mapstructure:"debug"`
-	MaxFileSize int  `mapstructure:"max_file_size"`
+	Port        int    `mapstructure:"port"`
+	Debug       bool   `mapstructure:"debug"`
+	Phase       string `mapstructure:"phase"`
+	MaxFileSize int    `mapstructure:"max_file_size"`
 }
-
-type Guard struct {
-	Phase string `mapstructure:"phase"`
-}
-
 type Vaccine struct {
 	Host   string `mapstructure:"host"`
 	ApiKey string `mapstructure:"api_key"`
@@ -29,7 +25,6 @@ type Vaccine struct {
 type Config struct {
 	Service Service `mapstructure:"service"`
 	App     App     `mapstructure:"app"`
-	Guard   Guard   `mapstructure:"guard"`
 	Vaccine Vaccine `mapstructure:"vaccine"`
 }
 

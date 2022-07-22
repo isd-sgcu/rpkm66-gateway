@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"regexp"
+	"github.com/google/uuid"
 	"strconv"
 	"strings"
 )
@@ -15,26 +15,53 @@ func IsExisted(e map[string]struct{}, key string) bool {
 	return false
 }
 
-func FormatPath(method string, path string, id int32) string {
-	if id > 0 {
-		path = strings.Replace(path, strconv.Itoa(int(id)), ":id", 1)
+func FormatPath(method string, path string, keys []string) string {
+	for _, key := range keys {
+		path = strings.Replace(path, key, ":id", 1)
 	}
 
 	return fmt.Sprintf("%v %v", method, path)
 }
 
-func FindIntFromStr(s string) []int32 {
-	re := regexp.MustCompile("[0-9]+")
-	nums := re.FindAllString(s, -1)
+func FindIntFromStr(s string, sep string) []string {
+	spliteds := strings.Split(s, sep)
 
-	var result []int32
+	var result []string
 
-	for _, num := range nums {
-		n, _ := strconv.Atoi(num)
-		result = append(result, int32(n))
+	for _, splited := range spliteds {
+		_, err := strconv.Atoi(splited)
+		if err == nil {
+			result = append(result, splited)
+		}
 	}
 
 	return result
+}
+
+func FindUUIDFromStr(s string, sep string) []string {
+	spliteds := strings.Split(s, sep)
+
+	var result []string
+
+	for _, splited := range spliteds {
+		_, err := uuid.Parse(splited)
+		if err == nil {
+			result = append(result, splited)
+		}
+	}
+
+	return result
+}
+
+func MergeStringSlice(s1 []string, s2 []string) []string {
+	return append(s1, s2...)
+}
+
+func FindIDFromPath(path string) []string {
+	uuids := FindUUIDFromStr(path, "/")
+	ids := FindIntFromStr(path, "/")
+
+	return MergeStringSlice(ids, uuids)
 }
 
 func BoolAdr(b bool) *bool {

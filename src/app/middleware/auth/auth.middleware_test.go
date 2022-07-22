@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/config"
 	role "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/auth"
 	"github.com/stretchr/testify/assert"
@@ -13,6 +14,7 @@ import (
 
 type AuthGuardTest struct {
 	suite.Suite
+	conf            config.App
 	ExcludePath     map[string]struct{}
 	UserId          string
 	Token           string
@@ -51,6 +53,13 @@ func (u *AuthGuardTest) SetupTest() {
 		"POST /exclude":     {},
 		"POST /exclude/:id": {},
 	}
+
+	u.conf = config.App{
+		Port:        3000,
+		Debug:       true,
+		Phase:       "register",
+		MaxFileSize: 10000000,
+	}
 }
 
 func (u *AuthGuardTest) TestValidateSuccess() {
@@ -71,7 +80,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	c.On("StoreValue", "Role", role.USER)
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath, "register")
+	h := NewAuthGuard(srv, u.ExcludePath, u.conf)
 	h.Validate(c)
 
 	actual := c.Header["UserId"]
@@ -89,7 +98,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePath() {
 	c.On("Token").Return("")
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath, "register")
+	h := NewAuthGuard(srv, u.ExcludePath, u.conf)
 	h.Validate(c)
 
 	c.AssertNumberOfCalls(u.T(), "Next", 1)
@@ -105,7 +114,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePathWithID() {
 	c.On("Token").Return("")
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath, "register")
+	h := NewAuthGuard(srv, u.ExcludePath, u.conf)
 	h.Validate(c)
 
 	c.AssertNumberOfCalls(u.T(), "Next", 1)
@@ -123,7 +132,7 @@ func (u *AuthGuardTest) TestValidateFailed() {
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(nil, u.UnauthorizedErr)
 
-	h := NewAuthGuard(srv, u.ExcludePath, "register")
+	h := NewAuthGuard(srv, u.ExcludePath, u.conf)
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -140,7 +149,7 @@ func (u *AuthGuardTest) TestValidateTokenNotIncluded() {
 	c.On("Token").Return("")
 	srv.On("Validate")
 
-	h := NewAuthGuard(srv, u.ExcludePath, "register")
+	h := NewAuthGuard(srv, u.ExcludePath, u.conf)
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -158,13 +167,13 @@ func (u *AuthGuardTest) TestValidateTokenGrpcErr() {
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(nil, u.ServiceDownErr)
 
-	h := NewAuthGuard(srv, u.ExcludePath, "register")
+	h := NewAuthGuard(srv, u.ExcludePath, u.conf)
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
 }
 
-func testConfigSuccess(t *testing.T, u *AuthGuardTest, phs string, mth string, pth string) {
+func testConfigSuccess(t *testing.T, u *AuthGuardTest, conf config.App, mth string, pth string) {
 	srv := new(auth.ServiceMock)
 	c := new(auth.ContextMock)
 
@@ -172,22 +181,27 @@ func testConfigSuccess(t *testing.T, u *AuthGuardTest, phs string, mth string, p
 	c.On("Path").Return(pth)
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath, phs)
+	h := NewAuthGuard(srv, u.ExcludePath, conf)
 	h.CheckConfig(c)
 
 	c.AssertNumberOfCalls(t, "Next", 1)
 }
 
 func (u *AuthGuardTest) TestConfigSuccess() {
-	testConfigSuccess(u.T(), u, "register", "GET", "/user")
-	testConfigSuccess(u.T(), u, "register", "PUT", "/user")
-	testConfigSuccess(u.T(), u, "select", "GET", "/group/1")
-	testConfigSuccess(u.T(), u, "select", "DELETE", "/group/members/2")
-	testConfigSuccess(u.T(), u, "eventDay", "POST", "/qr/checkin/verify")
-	testConfigSuccess(u.T(), u, "eStamp", "POST", "/qr/estamp/confirm")
+	u.conf.Phase = "register"
+	testConfigSuccess(u.T(), u, u.conf, "GET", "/user")
+	testConfigSuccess(u.T(), u, u.conf, "PUT", "/user")
+	u.conf.Phase = "select"
+	testConfigSuccess(u.T(), u, u.conf, "GET", "/group/1")
+	testConfigSuccess(u.T(), u, u.conf, "DELETE", "/group/members/2")
+	testConfigSuccess(u.T(), u, u.conf, "DELETE", "/group/leave")
+	u.conf.Phase = "eventDay"
+	testConfigSuccess(u.T(), u, u.conf, "POST", "/qr/checkin/verify")
+	u.conf.Phase = "eStamp"
+	testConfigSuccess(u.T(), u, u.conf, "POST", "/qr/estamp/confirm")
 }
 
-func testConfigFail(t *testing.T, u *AuthGuardTest, phs string, mth string, pth string) {
+func testConfigFail(t *testing.T, u *AuthGuardTest, conf config.App, mth string, pth string) {
 	want := u.ForbiddenErr
 
 	srv := new(auth.ServiceMock)
@@ -197,16 +211,20 @@ func testConfigFail(t *testing.T, u *AuthGuardTest, phs string, mth string, pth 
 	c.On("Path").Return(pth)
 	c.On("Next")
 
-	h := NewAuthGuard(srv, u.ExcludePath, phs)
+	h := NewAuthGuard(srv, u.ExcludePath, conf)
 	h.CheckConfig(c)
 
 	assert.Equal(t, want, c.V)
 }
 
 func (u *AuthGuardTest) TestConfigFail() {
-	testConfigFail(u.T(), u, "register", "GET", "/group")
-	testConfigFail(u.T(), u, "select", "PUT", "/file/upload")
-	testConfigFail(u.T(), u, "select", "GET", "/estamp/1")
-	testConfigFail(u.T(), u, "eventDay", "PUT", "/group")
-	testConfigFail(u.T(), u, "eStamp", "GET", "/group")
+	u.conf.Phase = "register"
+	testConfigFail(u.T(), u, u.conf, "GET", "/group")
+	u.conf.Phase = "select"
+	testConfigFail(u.T(), u, u.conf, "PUT", "/file/upload")
+	testConfigFail(u.T(), u, u.conf, "GET", "/estamp/1")
+	u.conf.Phase = "eventDay"
+	testConfigFail(u.T(), u, u.conf, "PUT", "/group")
+	u.conf.Phase = "emStamp"
+	testConfigFail(u.T(), u, u.conf, "GET", "/group")
 }

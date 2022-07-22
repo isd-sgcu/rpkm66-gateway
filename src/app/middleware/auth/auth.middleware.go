@@ -4,7 +4,8 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
-	role "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
+	"github.com/isd-sgcu/rnkm65-gateway/src/config"
+	phase "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"net/http"
 	"strings"
 )
@@ -12,7 +13,7 @@ import (
 type Guard struct {
 	service    auth.IService
 	excludes   map[string]struct{}
-	phase      string
+	conf       config.App
 	isValidate bool
 }
 
@@ -25,42 +26,43 @@ type IContext interface {
 	Next()
 }
 
-func NewAuthGuard(s auth.IService, e map[string]struct{}, p string) Guard {
+func NewAuthGuard(s auth.IService, e map[string]struct{}, conf config.App) Guard {
 	return Guard{
 		service:    s,
 		excludes:   e,
-		phase:      p,
+		conf:       conf,
 		isValidate: true,
 	}
 }
 
 func (m *Guard) Use(ctx IContext) {
+	m.isValidate = true
+
 	m.Validate(ctx)
 
 	if !m.isValidate {
 		return
 	}
 
-	m.CheckConfig(ctx)
+	if !m.conf.Debug {
+		m.CheckConfig(ctx)
 
-	if !m.isValidate {
-		return
+		if !m.isValidate {
+			return
+		}
 	}
 
 	ctx.Next()
+
 }
 
 func (m *Guard) Validate(ctx IContext) {
 	method := ctx.Method()
 	path := ctx.Path()
 
-	var id int32
-	ids := utils.FindIntFromStr(path)
-	if len(ids) > 0 {
-		id = ids[0]
-	}
+	ids := utils.FindIDFromPath(path)
 
-	path = utils.FormatPath(method, path, id)
+	path = utils.FormatPath(method, path, ids)
 	if utils.IsExisted(m.excludes, path) {
 		ctx.Next()
 		return
@@ -96,27 +98,28 @@ func (m *Guard) CheckConfig(ctx IContext) {
 	pathSlice := strings.Split(path, "/")
 	//paths which can have a token is "/group/token"
 	if pathSlice[1] == "group" {
-		if len(pathSlice) > 2 && pathSlice[2] != "members" {
+		if len(pathSlice) > 2 && pathSlice[2] != "members" && pathSlice[2] != "leave" {
 			token := pathSlice[2]
 			path = strings.Replace(path, token, ":token", 1)
 		}
 	}
 
-	var id int32
-	ids := utils.FindIntFromStr(path)
-	if len(ids) > 0 {
-		id = ids[0]
+	ids := utils.FindIDFromPath(path)
+
+	path = utils.FormatPath(method, path, ids)
+
+	if utils.IsExisted(m.excludes, path) {
+		ctx.Next()
+		return
 	}
 
-	path = utils.FormatPath(method, path, id)
-
-	phses, ok := role.MapPath2Phase[path]
+	phses, ok := phase.MapPath2Phase[path]
 	if !ok {
 		ctx.Next()
 		return
 	}
 
-	currentPhase := m.phase
+	currentPhase := m.conf.Phase
 	for _, phs := range phses {
 		if phs == currentPhase {
 			ctx.Next()
