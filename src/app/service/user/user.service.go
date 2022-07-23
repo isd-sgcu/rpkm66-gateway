@@ -106,11 +106,11 @@ func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.Response
 	return res.User, nil
 }
 
-func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *Service) Update(id string, in *dto.UpdateUserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	usrDto := &proto.User{
+	usrReq := &proto.UpdateUserRequest{
 		Id:              id,
 		Title:           in.Title,
 		Firstname:       in.Firstname,
@@ -123,10 +123,9 @@ func (s *Service) Update(id string, in *dto.UserDto) (result *proto.User, err *d
 		FoodRestriction: in.FoodRestriction,
 		AllergyMedicine: in.AllergyMedicine,
 		Disease:         in.Disease,
-		CanSelectBaan:   *in.CanSelectBaan,
 	}
 
-	res, errRes := s.client.Update(ctx, &proto.UpdateUserRequest{User: usrDto})
+	res, errRes := s.client.Update(ctx, usrReq)
 	if errRes != nil {
 		st, ok := status.FromError(errRes)
 		if ok {
