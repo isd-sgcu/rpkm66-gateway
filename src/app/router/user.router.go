@@ -26,6 +26,13 @@ func (r *FiberRouter) PutUser(path string, h func(ctx user.IContext)) {
 	})
 }
 
+func (r *FiberRouter) PatchUser(path string, h func(ctx user.IContext)) {
+	r.user.Patch(path, func(c *fiber.Ctx) error {
+		h(NewFiberCtx(c))
+		return nil
+	})
+}
+
 func (r *FiberRouter) DeleteUser(path string, h func(ctx user.IContext)) {
 	r.user.Delete(path, func(c *fiber.Ctx) error {
 		h(NewFiberCtx(c))

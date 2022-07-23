@@ -142,6 +142,47 @@ func (t *UserRouterTest) TestPutUserRouter() {
 	}
 }
 
+func (t *UserRouterTest) TestPatchUserRouter() {
+	tests := []struct {
+		description  string
+		route        string
+		expectedCode int
+	}{
+		{
+			description:  "PATCH /user status 200",
+			route:        "/user",
+			expectedCode: http.StatusOK,
+		},
+		{
+			description:  "PATCH HTTP status 404, when route is not exists",
+			route:        "/not-found",
+			expectedCode: http.StatusNotFound,
+		},
+	}
+
+	g := mock.GuardMock{}
+	conf := config.App{
+		Port:        3000,
+		Debug:       true,
+		MaxFileSize: 1000000,
+	}
+
+	r := NewFiberRouter(&g, conf)
+
+	r.PatchUser("/", func(ctx user.IContext) {
+		ctx.JSON(http.StatusOK, map[string]string{
+			"message": "Hello World",
+		})
+	})
+
+	for _, test := range tests {
+		req := httptest.NewRequest("PATCH", test.route, nil)
+		res, _ := r.Test(req, 1)
+
+		assert.Equal(t.T(), test.expectedCode, res.StatusCode, test.description)
+	}
+}
+
 func (t *UserRouterTest) TestDeleteUserRouter() {
 	tests := []struct {
 		description  string

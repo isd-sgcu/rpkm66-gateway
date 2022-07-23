@@ -196,6 +196,17 @@ definitions:
       size:
         type: integer
     type: object
+  proto.BaanInfo:
+    properties:
+      id:
+        type: string
+      imageUrl:
+        type: string
+      nameEN:
+        type: string
+      nameTH:
+        type: string
+    type: object
   proto.FindByTokenGroupResponse:
     properties:
       id:
@@ -207,6 +218,10 @@ definitions:
     type: object
   proto.Group:
     properties:
+      baans:
+        items:
+          $ref: '#/definitions/proto.BaanInfo'
+        type: array
       id:
         type: string
       leaderID:
@@ -727,6 +742,41 @@ paths:
       tags:
       - group
   /user:
+    patch:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Update the user data if exists
+      tags:
+      - user
     post:
       consumes:
       - application/json
