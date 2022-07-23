@@ -150,7 +150,7 @@ func (h *Handler) Update(ctx IContext) {
 // CreateOrUpdate is a function that Create new user if it doesn't exist and Update the user data if exists
 // @Summary Create new user if it doesn't exist and Update the user data if exists
 // @Description Return the user dto if successfully
-// @Param user body dto.UserDto true "user dto"
+// @Param user body dto.UpdateUserDto true "user dto"
 // @Tags user
 // @Accept json
 // @Produce json

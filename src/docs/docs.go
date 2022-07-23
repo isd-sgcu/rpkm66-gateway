@@ -742,7 +742,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UserDto"
+                            "$ref": "#/definitions/dto.UpdateUserDto"
                         }
                     }
                 ],
@@ -1233,6 +1233,44 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "dto.UpdateUserDto": {
+            "type": "object",
+            "properties": {
+                "allergy_food": {
+                    "type": "string"
+                },
+                "allergy_medicine": {
+                    "type": "string"
+                },
+                "disease": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "food_restriction": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "line_id": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
