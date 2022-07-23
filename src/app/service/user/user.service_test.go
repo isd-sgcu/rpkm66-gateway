@@ -20,6 +20,8 @@ type UserServiceTest struct {
 	User           *proto.User
 	UserReq        *proto.User
 	UserDto        *dto.UserDto
+	UpdateUserDto  *dto.UpdateUserDto
+	UpdateUserReq  *proto.UpdateUserRequest
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 }
@@ -75,6 +77,35 @@ func (t *UserServiceTest) SetupTest() {
 		AllergyMedicine: t.User.AllergyMedicine,
 		Disease:         t.User.Disease,
 		CanSelectBaan:   utils.BoolAdr(t.User.CanSelectBaan),
+	}
+
+	t.UpdateUserDto = &dto.UpdateUserDto{
+		Title:           t.User.Title,
+		Firstname:       t.User.Firstname,
+		Lastname:        t.User.Lastname,
+		Nickname:        t.User.Nickname,
+		Phone:           t.User.Phone,
+		LineID:          t.User.LineID,
+		Email:           t.User.Email,
+		AllergyFood:     t.User.AllergyFood,
+		FoodRestriction: t.User.FoodRestriction,
+		AllergyMedicine: t.User.AllergyMedicine,
+		Disease:         t.User.Disease,
+	}
+
+	t.UpdateUserReq = &proto.UpdateUserRequest{
+		Id:              t.User.Id,
+		Title:           t.User.Title,
+		Firstname:       t.User.Firstname,
+		Lastname:        t.User.Lastname,
+		Nickname:        t.User.Nickname,
+		Phone:           t.User.Phone,
+		LineID:          t.User.LineID,
+		Email:           t.User.Email,
+		AllergyFood:     t.User.AllergyFood,
+		FoodRestriction: t.User.FoodRestriction,
+		AllergyMedicine: t.User.AllergyMedicine,
+		Disease:         t.User.Disease,
 	}
 
 	t.ServiceDownErr = &dto.ResponseErr{
@@ -188,14 +219,12 @@ func (t *UserServiceTest) TestVerifyFailed() {
 func (t *UserServiceTest) TestUpdateSuccess() {
 	want := t.User
 
-	t.UserReq.Id = t.User.Id
-
 	c := &user.ClientMock{}
-	c.On("Update", t.UserReq).Return(&proto.UpdateUserResponse{User: want}, nil)
+	c.On("Update", t.UpdateUserReq).Return(&proto.UpdateUserResponse{User: t.User}, nil)
 
 	srv := NewService(c)
 
-	actual, err := srv.Update(t.User.Id, t.UserDto)
+	actual, err := srv.Update(t.User.Id, t.UpdateUserDto)
 
 	assert.Nil(t.T(), err)
 	assert.Equal(t.T(), want, actual)
@@ -204,14 +233,12 @@ func (t *UserServiceTest) TestUpdateSuccess() {
 func (t *UserServiceTest) TestUpdateNotFound() {
 	want := t.NotFoundErr
 
-	t.UserReq.Id = t.User.Id
-
 	c := &user.ClientMock{}
-	c.On("Update", t.UserReq).Return(nil, status.Error(codes.NotFound, "User not found"))
+	c.On("Update", t.UpdateUserReq).Return(nil, status.Error(codes.NotFound, "User not found"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Update(t.User.Id, t.UserDto)
+	actual, err := srv.Update(t.User.Id, t.UpdateUserDto)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)
@@ -220,14 +247,12 @@ func (t *UserServiceTest) TestUpdateNotFound() {
 func (t *UserServiceTest) TestUpdateGrpcErr() {
 	want := t.ServiceDownErr
 
-	t.UserReq.Id = t.User.Id
-
 	c := &user.ClientMock{}
-	c.On("Update", t.UserReq).Return(nil, errors.New("Service is down"))
+	c.On("Update", t.UpdateUserReq).Return(nil, errors.New("Service is down"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Update(t.User.Id, t.UserDto)
+	actual, err := srv.Update(t.User.Id, t.UpdateUserDto)
 
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), want, err)

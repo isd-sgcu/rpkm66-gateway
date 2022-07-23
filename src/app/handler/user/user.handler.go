@@ -30,7 +30,7 @@ type IContext interface {
 type IService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 	Create(*dto.UserDto) (*proto.User, *dto.ResponseErr)
-	Update(string, *dto.UserDto) (*proto.User, *dto.ResponseErr)
+	Update(string, *dto.UpdateUserDto) (*proto.User, *dto.ResponseErr)
 	CreateOrUpdate(*dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Delete(string) (bool, *dto.ResponseErr)
 }
@@ -113,43 +113,31 @@ func (h *Handler) Create(ctx IContext) {
 	return
 }
 
+// Update is a function that Update the user data if exists
+// @Summary Update the user data if exists
+// @Description Return the user dto if successfully
+// @Param user body dto.UserDto true "user dto"
+// @Tags user
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.User
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid request body
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
+// @Security     AuthToken
+// @Router /user [patch]
 func (h *Handler) Update(ctx IContext) {
-	id, err := ctx.ID()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
-		})
-		return
-	}
-
 	usrId := ctx.UserID()
-	if usrId != id {
-		ctx.JSON(http.StatusForbidden, &dto.ResponseErr{
-			StatusCode: http.StatusForbidden,
-			Message:    "Insufficiency permission to update user",
-		})
-		return
-	}
 
-	usrDto := dto.UserDto{}
+	usrDto := dto.UpdateUserDto{}
 
-	err = ctx.Bind(&usrDto)
+	err := ctx.Bind(&usrDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	if errors := h.validate.Validate(usrDto); errors != nil {
-		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Invalid body request",
-			Data:       errors,
-		})
-		return
-	}
-
-	user, errRes := h.service.Update(id, &usrDto)
+	user, errRes := h.service.Update(usrId, &usrDto)
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)
 		return
@@ -162,7 +150,7 @@ func (h *Handler) Update(ctx IContext) {
 // CreateOrUpdate is a function that Create new user if it doesn't exist and Update the user data if exists
 // @Summary Create new user if it doesn't exist and Update the user data if exists
 // @Description Return the user dto if successfully
-// @Param user body dto.UserDto true "user dto"
+// @Param user body dto.UpdateUserDto true "user dto"
 // @Tags user
 // @Accept json
 // @Produce json

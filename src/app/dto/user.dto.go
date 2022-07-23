@@ -16,3 +16,17 @@ type UserDto struct {
 	GroupId         string `json:"group_id"`
 	CanSelectBaan   *bool  `json:"can_select_baan" validate:"required"`
 }
+
+type UpdateUserDto struct {
+	Title           string `json:"title"`
+	Firstname       string `json:"firstname"`
+	Lastname        string `json:"lastname"`
+	Nickname        string `json:"nickname"`
+	Phone           string `json:"phone"`
+	LineID          string `json:"line_id"`
+	Email           string `json:"email"`
+	AllergyFood     string `json:"allergy_food"`
+	FoodRestriction string `json:"food_restriction"`
+	AllergyMedicine string `json:"allergy_medicine"`
+	Disease         string `json:"disease"`
+}
