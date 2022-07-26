@@ -27,6 +27,12 @@ definitions:
         example: 1
         type: integer
     type: object
+  dto.ConfirmEstampRequest:
+    properties:
+      event_id:
+        example: ec5b9355-0b6c-11ed-b88b-0250cf8509e4
+        type: string
+    type: object
   dto.Credential:
     properties:
       access_token:
@@ -205,6 +211,12 @@ definitions:
     required:
     - hcert
     type: object
+  dto.VerifyEstampRequest:
+    properties:
+      event_id:
+        example: ec5b9355-0b6c-11ed-b88b-0250cf8509e4
+        type: string
+    type: object
   dto.VerifyTicket:
     properties:
       ticket:
@@ -257,6 +269,30 @@ definitions:
       success:
         type: boolean
     type: object
+  proto.ConfirmEstampResponse:
+    type: object
+  proto.Event:
+    properties:
+      code:
+        type: string
+      descriptionEN:
+        type: string
+      descriptionTH:
+        type: string
+      id:
+        type: string
+      nameEN:
+        type: string
+      nameTH:
+        type: string
+    type: object
+  proto.FindAllEventWithTypeResponse:
+    properties:
+      event:
+        items:
+          $ref: '#/definitions/proto.Event'
+        type: array
+    type: object
   proto.FindByTokenGroupResponse:
     properties:
       id:
@@ -265,6 +301,18 @@ definitions:
         $ref: '#/definitions/proto.UserInfo'
       token:
         type: string
+    type: object
+  proto.FindEventByIDResponse:
+    properties:
+      event:
+        $ref: '#/definitions/proto.Event'
+    type: object
+  proto.GetUserEstampResponse:
+    properties:
+      eventList:
+        items:
+          $ref: '#/definitions/proto.Event'
+        type: array
     type: object
   proto.Group:
     properties:
@@ -339,9 +387,7 @@ info:
   contact:
     email: sd.team.sgcu@gmail.com
     name: ISD Team
-  description: |-
-    # RNKM API
-    This is the documentation for https://freshersfairs.com
+  description: "# RNKM API\r\nThis is the documentation for https://freshersfairs.com"
   title: RNKM Backend
   version: "1.0"
 paths:
@@ -551,6 +597,108 @@ paths:
       summary: Get the user's baan
       tags:
       - baan
+  /estamp:
+    get:
+      description: Get get all event with the given type
+      parameters:
+      - description: id
+        in: query
+        name: eventType
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.FindAllEventWithTypeResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Get all event by type
+      tags:
+      - event
+  /estamp/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get detail of event using event id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.FindEventByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Get event detail
+      tags:
+      - event
+  /estamp/user:
+    get:
+      consumes:
+      - application/json
+      description: Get estamp id overview on what user has *Return {} with success
+        status code if user has no estamp
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.GetUserEstampResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Get user estamp
+      tags:
+      - event
   /file/upload:
     post:
       consumes:
@@ -905,6 +1053,86 @@ paths:
       summary: Get Token
       tags:
       - QR
+  /qr/estamp/confirm:
+    post:
+      consumes:
+      - application/json
+      description: get estamp
+      parameters:
+      - description: Event id
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ConfirmEstampRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/proto.ConfirmEstampResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: Confirm Estamp
+      tags:
+      - QR
+  /qr/estamp/verify:
+    post:
+      consumes:
+      - application/json
+      description: check if estamp exist
+      parameters:
+      - description: event id
+        in: body
+        name: event_id
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyEstampRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.FindEventByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseBadRequestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ResponseUnauthorizedErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseInternalErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseServiceDownErr'
+      security:
+      - AuthToken: []
+      summary: check if estamp exist
+      tags:
+      - QR
   /user:
     patch:
       consumes:
@@ -1145,35 +1373,20 @@ tags:
     description: Chula SSO documentation
     url: https://account.it.chula.ac.th/wiki/doku.php?id=how_does_it_work
   name: Chula SSO
-- description: |-
-    # Health Check Tag API Documentation
-    **Health Check** functions goes here
+- description: "# Health Check Tag API Documentation\r\n**Health Check** functions
+    goes here"
   name: health check
-- description: |-
-    # Vaccine Tag API Documentation
-    **Vaccine** functions goes here
+- description: "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here"
   name: vaccine
-- description: |-
-    # Auth Tag API Documentation
-    **Auth** functions goes here
+- description: "# Auth Tag API Documentation\r\n**Auth** functions goes here"
   name: auth
-- description: |-
-    # User Tag API Documentation
-    **User** functions goes here
+- description: "# User Tag API Documentation\r\n**User** functions goes here"
   name: user
-- description: |-
-    # File Tag API Documentation
-    **File** functions goes here
+- description: "# File Tag API Documentation\r\n**File** functions goes here"
   name: file
-- description: |-
-    # Group Tag API Documentation
-    **Group** functions goes here
+- description: "# Group Tag API Documentation\r\n**Group** functions goes here"
   name: group
-- description: |-
-    # Baan Tag API Documentation
-    **Baan** functions goes here
+- description: "# Baan Tag API Documentation\r\n**Baan** functions goes here"
   name: baan
-- description: |-
-    # Event Tag API Documentation
-    **Event** functions goes here
+- description: "# Event Tag API Documentation\r\n**Event** functions goes here"
   name: event

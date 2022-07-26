@@ -1,6 +1,8 @@
 package health_check
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type Handler struct {
 }

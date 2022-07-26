@@ -17,11 +17,13 @@ import (
 type UserHandlerTest struct {
 	suite.Suite
 	User           *proto.User
+	Events         []*proto.Event
 	UserDto        *dto.UserDto
 	UpdateUserDto  *dto.UpdateUserDto
 	BindErr        *dto.ResponseErr
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
+	InternalErr    *dto.ResponseErr
 }
 
 func TestUserHandler(t *testing.T) {
@@ -48,6 +50,35 @@ func (t *UserHandlerTest) SetupTest() {
 		ImageUrl:        faker.URL(),
 		CanSelectBaan:   true,
 		BaanId:          faker.UUIDDigit(),
+	}
+
+	t.Events = make([]*proto.Event, 3)
+
+	t.Events[0] = &proto.Event{
+		Id:            faker.UUIDDigit(),
+		NameTH:        faker.Word(),
+		DescriptionTH: faker.Word(),
+		NameEN:        faker.Word(),
+		DescriptionEN: faker.Word(),
+		Code:          faker.Word(),
+	}
+
+	t.Events[1] = &proto.Event{
+		Id:            faker.UUIDDigit(),
+		NameTH:        faker.Word(),
+		DescriptionTH: faker.Word(),
+		NameEN:        faker.Word(),
+		DescriptionEN: faker.Word(),
+		Code:          faker.Word(),
+	}
+
+	t.Events[2] = &proto.Event{
+		Id:            faker.UUIDDigit(),
+		NameTH:        faker.Word(),
+		DescriptionTH: faker.Word(),
+		NameEN:        faker.Word(),
+		DescriptionEN: faker.Word(),
+		Code:          faker.Word(),
 	}
 
 	t.UserDto = &dto.UserDto{
@@ -95,6 +126,12 @@ func (t *UserHandlerTest) SetupTest() {
 	t.BindErr = &dto.ResponseErr{
 		StatusCode: http.StatusBadRequest,
 		Message:    "Invalid ID",
+	}
+
+	t.InternalErr = &dto.ResponseErr{
+		StatusCode: http.StatusInternalServerError,
+		Message:    "Internal Server Error",
+		Data:       nil,
 	}
 }
 
@@ -436,5 +473,120 @@ func (t *UserHandlerTest) TestDeleteGrpcErr() {
 	h.Delete(c)
 
 	assert.Equal(t.T(), want, c.V)
+	assert.Equal(t.T(), http.StatusServiceUnavailable, c.Status)
+}
+
+func (t *UserHandlerTest) TestGetUserEstampSuccess() {
+	want := &proto.GetUserEstampResponse{
+		EventList: []*proto.Event{
+			t.Events[0],
+			t.Events[1],
+		},
+	}
+
+	s := &mock.ServiceMock{}
+	s.On("GetUserEstamp", t.User.Id).Return(want, nil)
+
+	v, _ := validator.NewValidator()
+
+	hdr := NewHandler(s, v)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.User.Id, nil)
+
+	hdr.GetUserEstamp(c)
+
+	assert.Equal(t.T(), http.StatusOK, c.Status)
+	assert.Equal(t.T(), want, c.V)
+}
+
+func (t *UserHandlerTest) TestFindUserInternal() {
+	s := &mock.ServiceMock{}
+	s.On("GetUserEstamp", t.User.Id).Return(nil, t.InternalErr)
+
+	v, _ := validator.NewValidator()
+
+	hdr := NewHandler(s, v)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.User.Id, nil)
+
+	hdr.GetUserEstamp(c)
+
+	assert.Equal(t.T(), http.StatusInternalServerError, c.Status)
+	assert.Equal(t.T(), t.InternalErr, c.V)
+}
+
+func (t *UserHandlerTest) TestFindUserUnavailable() {
+	s := &mock.ServiceMock{}
+	s.On("GetUserEstamp", t.User.Id).Return(nil, t.ServiceDownErr)
+
+	v, _ := validator.NewValidator()
+
+	hdr := NewHandler(s, v)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.User.Id, nil)
+
+	hdr.GetUserEstamp(c)
+
+	assert.Equal(t.T(), http.StatusServiceUnavailable, c.Status)
+	assert.Equal(t.T(), t.ServiceDownErr, c.V)
+}
+
+func (t *UserHandlerTest) TestConfirmEstampSuccess() {
+	want := &proto.ConfirmEstampResponse{}
+
+	s := &mock.ServiceMock{}
+	s.On("ConfirmEstamp", t.User.Id, t.Events[0].Id).Return(want, nil)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.User.Id)
+	c.On("Bind", &dto.ConfirmEstampRequest{}).Return(&dto.ConfirmEstampRequest{
+		EventId: t.Events[0].Id,
+	}, nil)
+
+	v, _ := validator.NewValidator()
+
+	hdr := NewHandler(s, v)
+
+	hdr.ConfirmEstamp(c)
+
+	assert.Equal(t.T(), http.StatusNoContent, c.Status)
+	assert.Equal(t.T(), want, c.V)
+}
+
+func (t *UserHandlerTest) TestConfirmEstampBadRequest() {
+	s := &mock.ServiceMock{}
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.User.Id)
+	c.On("Bind", &dto.ConfirmEstampRequest{}).Return(nil, errors.New(""))
+
+	v, _ := validator.NewValidator()
+
+	hdr := NewHandler(s, v)
+
+	hdr.ConfirmEstamp(c)
+
+	assert.Equal(t.T(), http.StatusBadRequest, c.Status)
+}
+
+func (t *UserHandlerTest) TestConfirmEstampInnerError() {
+	s := &mock.ServiceMock{}
+	s.On("ConfirmEstamp", t.User.Id, t.Events[0].Id).Return(nil, t.ServiceDownErr)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.User.Id)
+	c.On("Bind", &dto.ConfirmEstampRequest{}).Return(&dto.ConfirmEstampRequest{
+		EventId: t.Events[0].Id,
+	}, nil)
+
+	v, _ := validator.NewValidator()
+
+	hdr := NewHandler(s, v)
+
+	hdr.ConfirmEstamp(c)
+
 	assert.Equal(t.T(), http.StatusServiceUnavailable, c.Status)
 }

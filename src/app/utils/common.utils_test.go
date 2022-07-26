@@ -43,6 +43,7 @@ func (u *UtilTest) TestFormatPathWithID() {
 	testFormatPathWithID(u.T(), "POST", "/user/1", []string{"1"}, "POST /user/:id")
 	testFormatPathWithID(u.T(), "GET", "/user/join/1", []string{"1"}, "GET /user/join/:id")
 	testFormatPathWithID(u.T(), "PUT", "/group/1/join", []string{"1"}, "PUT /group/:id/join")
+	testFormatPathWithID(u.T(), "GET", "/estamp/1", []string{"1"}, "GET /estamp/:id")
 	testFormatPathWithID(u.T(), "DELETE", "/group/1/kick/2", []string{"1", "2"}, "DELETE /group/:id/kick/:id")
 	testFormatPathWithID(u.T(), "DELETE", "/group", []string{"1", "2"}, "DELETE /group")
 }

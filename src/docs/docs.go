@@ -342,6 +342,165 @@ const docTemplate = `{
                 }
             }
         },
+        "/estamp": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Get get all event with the given type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "Get all event by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "eventType",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.FindAllEventWithTypeResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/estamp/user": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Get estamp id overview on what user has *Return {} with success status code if user has no estamp",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "Get user estamp",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.GetUserEstampResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/estamp/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Get detail of event using event id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "Get event detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.FindEventByIDResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
         "/file/upload": {
             "post": {
                 "security": [
@@ -895,6 +1054,132 @@ const docTemplate = `{
                 }
             }
         },
+        "/qr/estamp/confirm": {
+            "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "get estamp",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "QR"
+                ],
+                "summary": "Confirm Estamp",
+                "parameters": [
+                    {
+                        "description": "Event id",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ConfirmEstampRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/proto.ConfirmEstampResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/qr/estamp/verify": {
+            "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "check if estamp exist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "QR"
+                ],
+                "summary": "check if estamp exist",
+                "parameters": [
+                    {
+                        "description": "event id",
+                        "name": "event_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.VerifyEstampRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.FindEventByIDResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseBadRequestErr"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseInternalErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "put": {
                 "security": [
@@ -1290,6 +1575,15 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ConfirmEstampRequest": {
+            "type": "object",
+            "properties": {
+                "event_id": {
+                    "type": "string",
+                    "example": "ec5b9355-0b6c-11ed-b88b-0250cf8509e4"
+                }
+            }
+        },
         "dto.Credential": {
             "type": "object",
             "properties": {
@@ -1549,6 +1843,15 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.VerifyEstampRequest": {
+            "type": "object",
+            "properties": {
+                "event_id": {
+                    "type": "string",
+                    "example": "ec5b9355-0b6c-11ed-b88b-0250cf8509e4"
+                }
+            }
+        },
         "dto.VerifyTicket": {
             "type": "object",
             "required": [
@@ -1629,6 +1932,43 @@ const docTemplate = `{
                 }
             }
         },
+        "proto.ConfirmEstampResponse": {
+            "type": "object"
+        },
+        "proto.Event": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "descriptionEN": {
+                    "type": "string"
+                },
+                "descriptionTH": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "nameEN": {
+                    "type": "string"
+                },
+                "nameTH": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.FindAllEventWithTypeResponse": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/proto.Event"
+                    }
+                }
+            }
+        },
         "proto.FindByTokenGroupResponse": {
             "type": "object",
             "properties": {
@@ -1640,6 +1980,25 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "proto.FindEventByIDResponse": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "$ref": "#/definitions/proto.Event"
+                }
+            }
+        },
+        "proto.GetUserEstampResponse": {
+            "type": "object",
+            "properties": {
+                "eventList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/proto.Event"
+                    }
                 }
             }
         },
@@ -1766,35 +2125,35 @@ const docTemplate = `{
             }
         },
         {
-            "description": "# Health Check Tag API Documentation\n**Health Check** functions goes here",
+            "description": "# Health Check Tag API Documentation\r\n**Health Check** functions goes here",
             "name": "health check"
         },
         {
-            "description": "# Vaccine Tag API Documentation\n**Vaccine** functions goes here",
+            "description": "# Vaccine Tag API Documentation\r\n**Vaccine** functions goes here",
             "name": "vaccine"
         },
         {
-            "description": "# Auth Tag API Documentation\n**Auth** functions goes here",
+            "description": "# Auth Tag API Documentation\r\n**Auth** functions goes here",
             "name": "auth"
         },
         {
-            "description": "# User Tag API Documentation\n**User** functions goes here",
+            "description": "# User Tag API Documentation\r\n**User** functions goes here",
             "name": "user"
         },
         {
-            "description": "# File Tag API Documentation\n**File** functions goes here",
+            "description": "# File Tag API Documentation\r\n**File** functions goes here",
             "name": "file"
         },
         {
-            "description": "# Group Tag API Documentation\n**Group** functions goes here",
+            "description": "# Group Tag API Documentation\r\n**Group** functions goes here",
             "name": "group"
         },
         {
-            "description": "# Baan Tag API Documentation\n**Baan** functions goes here",
+            "description": "# Baan Tag API Documentation\r\n**Baan** functions goes here",
             "name": "baan"
         },
         {
-            "description": "# Event Tag API Documentation\n**Event** functions goes here",
+            "description": "# Event Tag API Documentation\r\n**Event** functions goes here",
             "name": "event"
         }
     ]
@@ -1807,7 +2166,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{"https", "http"},
 	Title:            "RNKM Backend",
-	Description:      "# RNKM API\nThis is the documentation for https://freshersfairs.com",
+	Description:      "# RNKM API\r\nThis is the documentation for https://freshersfairs.com",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

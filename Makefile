@@ -5,6 +5,7 @@ proto:
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. file.proto
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. group.proto
 	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. checkin.proto
+	protoc --proto_path=src/proto --go_out=. --go-grpc_out=. event.proto
 
 create-doc:
 	swag init -d ./src -o ./src/docs -md ./src/docs/markdown

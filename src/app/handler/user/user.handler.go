@@ -3,15 +3,25 @@ package user
 import (
 	"fmt"
 
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"net/http"
+
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/estamp"
+	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
+	"github.com/isd-sgcu/rnkm65-gateway/src/interfaces/qr"
+	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 )
 
 type Handler struct {
 	service  IService
 	validate *validate.DtoValidator
+}
+
+type IContext interface {
+	JSON(int, interface{})
+	UserID() string
+	Bind(interface{}) error
+	ID() (string, error)
 }
 
 func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
@@ -21,19 +31,14 @@ func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
 	}
 }
 
-type IContext interface {
-	Bind(interface{}) error
-	JSON(int, interface{})
-	ID() (string, error)
-	UserID() string
-}
-
 type IService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 	Create(*dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Update(string, *dto.UpdateUserDto) (*proto.User, *dto.ResponseErr)
 	CreateOrUpdate(*dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Delete(string) (bool, *dto.ResponseErr)
+	GetUserEstamp(string) (*proto.GetUserEstampResponse, *dto.ResponseErr)
+	ConfirmEstamp(string, string) (*proto.ConfirmEstampResponse, *dto.ResponseErr)
 }
 
 // FindOne is a function that get the user data by id
@@ -229,5 +234,67 @@ func (h *Handler) Delete(ctx IContext) {
 	}
 
 	ctx.JSON(http.StatusOK, user)
+	return
+}
+
+// Get estamp overview id on what user has
+// @Summary Get user estamp
+// @Description Get estamp id overview on what user has *Return {} with success status code if user has no estamp
+// @Tags event
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.GetUserEstampResponse OK
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 500 {object} dto.ResponseInternalErr Internal server error
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
+// @Router /estamp/user [get]
+// @Security     AuthToken
+func (h *Handler) GetUserEstamp(ctx estamp.IContext) {
+	id := ctx.UserID()
+
+	res, errRes := h.service.GetUserEstamp(id)
+
+	if errRes != nil {
+		ctx.JSON(errRes.StatusCode, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, res)
+	return
+}
+
+// get estamp for user
+// @Summary Confirm Estamp
+// @Description get estamp
+// @Param token body dto.ConfirmEstampRequest true "Event id"
+// @Tags QR
+// @Accept json
+// @Produce json
+// @Success 204 {object} proto.ConfirmEstampResponse OK
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid body request
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 500 {object} dto.ResponseInternalErr Internal server error
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
+// @Router /qr/estamp/confirm [post]
+// @Security     AuthToken
+func (h *Handler) ConfirmEstamp(ctx qr.IContext) {
+	userid := ctx.UserID()
+	ce := &dto.ConfirmEstampRequest{}
+
+	err := ctx.Bind(ce)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	res, errRes := h.service.ConfirmEstamp(userid, ce.EventId)
+
+	if errRes != nil {
+		ctx.JSON(errRes.StatusCode, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, res)
 	return
 }

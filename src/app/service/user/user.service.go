@@ -307,3 +307,134 @@ func (s *Service) Delete(id string) (result bool, err *dto.ResponseErr) {
 
 	return res.Success, nil
 }
+
+func (s *Service) GetUserEstamp(userid string) (*proto.GetUserEstampResponse, *dto.ResponseErr) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := s.client.GetUserEstamp(ctx, &proto.GetUserEstampRequest{
+		UId: userid,
+	})
+
+	if err != nil {
+		st, ok := status.FromError(err)
+
+		if !ok {
+			log.Error().
+				Err(err).
+				Str("service", "estamp").
+				Str("module", "find_by_id").
+				Msg("\"Error parsing\" error")
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusInternalServerError,
+				Message:    "Internal Server Error",
+				Data:       nil,
+			}
+		}
+
+		switch st.Code() {
+		case codes.Unavailable:
+			log.Error().
+				Err(err).
+				Str("service", "checkin").
+				Str("module", "find_user_estamp").
+				Msg("Service is down")
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusServiceUnavailable,
+				Message:    "Service is down",
+				Data:       nil,
+			}
+		case codes.NotFound:
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusNotFound,
+				Message:    "User not found",
+				Data:       nil,
+			}
+		case codes.PermissionDenied:
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusForbidden,
+				Message:    "Forbidden resource",
+				Data:       nil,
+			}
+		default:
+			log.Error().
+				Err(err).
+				Str("service", "checkin").
+				Str("module", "find_user_estamp").
+				Msg("Unhandled error")
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusInternalServerError,
+				Message:    "Internal Server Error",
+				Data:       nil,
+			}
+		}
+	}
+
+	return res, nil
+}
+
+func (s *Service) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstampResponse, *dto.ResponseErr) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := s.client.ConfirmEstamp(ctx, &proto.ConfirmEstampRequest{
+		UId: uid,
+		EId: eid,
+	})
+
+	if err != nil {
+		st, ok := status.FromError(err)
+
+		if !ok {
+			log.Error().
+				Err(err).
+				Str("service", "estamp").
+				Str("module", "confirm_estamp").
+				Msg("\"Error parsing\" error")
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusInternalServerError,
+				Message:    "Internal Server Error",
+				Data:       nil,
+			}
+		}
+
+		switch st.Code() {
+		case codes.Unavailable:
+			log.Error().
+				Err(err).
+				Str("service", "checkin").
+				Str("module", "confirm_estamp").
+				Msg("Service is down")
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusServiceUnavailable,
+				Message:    "Service is down",
+				Data:       nil,
+			}
+		case codes.NotFound:
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusNotFound,
+				Message:    "User not found",
+				Data:       nil,
+			}
+		case codes.PermissionDenied:
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusForbidden,
+				Message:    "Forbidden resource",
+				Data:       nil,
+			}
+		default:
+			log.Error().
+				Err(err).
+				Str("service", "checkin").
+				Str("module", "confirm_estamp").
+				Msg("Unhandled error")
+			return nil, &dto.ResponseErr{
+				StatusCode: http.StatusInternalServerError,
+				Message:    "Internal Server Error",
+				Data:       nil,
+			}
+		}
+	}
+
+	return res, nil
+}
