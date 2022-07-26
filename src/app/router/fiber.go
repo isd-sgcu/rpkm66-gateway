@@ -3,6 +3,7 @@ package router
 import (
 	"bytes"
 	"fmt"
+
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -24,6 +25,7 @@ type FiberRouter struct {
 	group   fiber.Router
 	vaccine fiber.Router
 	baan    fiber.Router
+	qr      fiber.Router
 }
 
 type IGuard interface {
@@ -55,7 +57,9 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	baan := NewGroupRouteWithAuthMiddleware(r, "/baan", authGuard.Use)
 	group := NewGroupRouteWithAuthMiddleware(r, "/group", authGuard.Use)
 
-	return &FiberRouter{r, user, auth, file, group, vaccine, baan}
+	qr := NewGroupRouteWithAuthMiddleware(r, "/qr", authGuard.Use)
+
+	return &FiberRouter{r, user, auth, file, group, vaccine, baan, qr}
 }
 
 func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx guard.IContext)) fiber.Router {
