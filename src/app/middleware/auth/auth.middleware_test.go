@@ -219,12 +219,12 @@ func testConfigFail(t *testing.T, u *AuthGuardTest, conf config.App, mth string,
 
 func (u *AuthGuardTest) TestConfigFail() {
 	u.conf.Phase = "register"
-	testConfigFail(u.T(), u, u.conf, "GET", "/group")
+	testConfigFail(u.T(), u, u.conf, "PUT", "/group")
 	u.conf.Phase = "select"
 	testConfigFail(u.T(), u, u.conf, "PUT", "/file/upload")
 	testConfigFail(u.T(), u, u.conf, "GET", "/estamp/1")
 	u.conf.Phase = "eventDay"
 	testConfigFail(u.T(), u, u.conf, "PUT", "/group")
 	u.conf.Phase = "emStamp"
-	testConfigFail(u.T(), u, u.conf, "GET", "/group")
+	testConfigFail(u.T(), u, u.conf, "PUT", "/group")
 }
