@@ -12,7 +12,6 @@ var MapPath2Phase = map[string][]string{
 	"PATCH /user":               {"register", "select", "eventDay", "eStamp"},
 	"POST /vaccine/verify":      {"register"},
 	"PUT /file/upload":          {"register"},
-	"GET /group":                {"select"},
 	"GET /group/:token":         {"select"},
 	"POST /group/:token":        {"select"},
 	"DELETE /group/leave":       {"select"},
