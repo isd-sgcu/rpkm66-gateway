@@ -52,6 +52,11 @@ import (
 // @name                        Authorization
 // @description					Description for what is this security definition being used
 
+// @tag.name Chula SSO
+// @tag.description Chula SSO documentation
+// @tag.docs.url https://account.it.chula.ac.th/wiki/doku.php?id=how_does_it_work
+// @tag.docs.description Chula SSO documentation
+
 // @tag.name health check
 // @tag.description.markdown
 
