@@ -47,6 +47,7 @@ func (t *UserServiceTest) SetupTest() {
 		AllergyMedicine: faker.Word(),
 		Disease:         faker.Word(),
 		CanSelectBaan:   true,
+		BaanId:          faker.UUIDDigit(),
 	}
 
 	t.UserReq = &proto.User{

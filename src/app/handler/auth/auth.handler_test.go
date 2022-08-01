@@ -45,6 +45,7 @@ func (t *AuthHandlerTest) SetupTest() {
 		AllergyMedicine: faker.Word(),
 		Disease:         faker.Word(),
 		ImageUrl:        faker.URL(),
+		BaanId:          faker.UUIDDigit(),
 	}
 
 	t.Credential = &proto.Credential{

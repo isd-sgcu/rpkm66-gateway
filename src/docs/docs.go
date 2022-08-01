@@ -235,6 +235,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/baan/user": {
+            "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
+                "description": "Return the baan dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "baan"
+                ],
+                "summary": "Get the user's baan",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Baan"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseUnauthorizedErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseNotfoundErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseServiceDownErr"
+                        }
+                    }
+                }
+            }
+        },
         "/baan/{id}": {
             "get": {
                 "security": [
@@ -1632,6 +1678,9 @@ const docTemplate = `{
                 "allergyMedicine": {
                     "type": "string"
                 },
+                "baanId": {
+                    "type": "string"
+                },
                 "canSelectBaan": {
                     "type": "boolean"
                 },
@@ -1648,9 +1697,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "foodRestriction": {
-                    "type": "string"
-                },
-                "groupId": {
                     "type": "string"
                 },
                 "id": {

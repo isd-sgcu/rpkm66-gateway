@@ -47,6 +47,7 @@ func (t *UserHandlerTest) SetupTest() {
 		Disease:         faker.Word(),
 		ImageUrl:        faker.URL(),
 		CanSelectBaan:   true,
+		BaanId:          faker.UUIDDigit(),
 	}
 
 	t.UserDto = &dto.UserDto{
