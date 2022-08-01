@@ -4,6 +4,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/baan"
+	mockUsr "github.com/isd-sgcu/rnkm65-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,7 @@ import (
 type BaanHandlerTest struct {
 	suite.Suite
 	Baan           *proto.Baan
+	User           *proto.User
 	userId         string
 	BindErr        *dto.ResponseErr
 	NotFoundErr    *dto.ResponseErr
@@ -40,6 +42,26 @@ func (t *BaanHandlerTest) SetupTest() {
 		Line:          faker.URL(),
 		LineUrl:       faker.URL(),
 		ImageUrl:      faker.URL(),
+	}
+
+	t.User = &proto.User{
+		Id:              faker.UUIDDigit(),
+		Title:           faker.Word(),
+		Firstname:       faker.FirstName(),
+		Lastname:        faker.LastName(),
+		Nickname:        faker.Name(),
+		StudentID:       faker.Word(),
+		Faculty:         faker.Word(),
+		Year:            faker.Word(),
+		Phone:           faker.Phonenumber(),
+		LineID:          faker.Word(),
+		Email:           faker.Email(),
+		AllergyFood:     faker.Word(),
+		FoodRestriction: faker.Word(),
+		AllergyMedicine: faker.Word(),
+		Disease:         faker.Word(),
+		ImageUrl:        faker.URL(),
+		BaanId:          t.Baan.Id,
 	}
 
 	t.userId = faker.UUIDDigit()
@@ -95,9 +117,11 @@ func (t *BaanHandlerTest) TestFindAllBaanSuccess() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindAll").Return(want, nil)
 
+	usrSrv := new(mockUsr.ServiceMock)
+
 	c := &mock.ContextMock{}
 
-	h := NewHandler(srv)
+	h := NewHandler(srv, usrSrv)
 	h.FindAll(c)
 
 	assert.Equal(t.T(), want, c.V)
@@ -110,10 +134,12 @@ func (t *BaanHandlerTest) TestFindOneBaan() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.Baan.Id).Return(want, nil)
 
+	usrSrv := new(mockUsr.ServiceMock)
+
 	c := &mock.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
-	h := NewHandler(srv)
+	h := NewHandler(srv, usrSrv)
 	h.FindOne(c)
 
 	assert.Equal(t.T(), want, c.V)
@@ -126,10 +152,12 @@ func (t *BaanHandlerTest) TestFindOneFoundErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.Baan.Id).Return(nil, t.NotFoundErr)
 
+	usrSrv := new(mockUsr.ServiceMock)
+
 	c := &mock.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
-	h := NewHandler(srv)
+	h := NewHandler(srv, usrSrv)
 	h.FindOne(c)
 
 	assert.Equal(t.T(), want, c.V)
@@ -146,10 +174,12 @@ func (t *BaanHandlerTest) TestFindOneBadReqeust() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.Baan.Id).Return(nil, want)
 
+	usrSrv := new(mockUsr.ServiceMock)
+
 	c := &mock.ContextMock{}
 	c.On("ID").Return("", errors.New("Cannot parse id"))
 
-	h := NewHandler(srv)
+	h := NewHandler(srv, usrSrv)
 	h.FindOne(c)
 
 	assert.Equal(t.T(), want, c.V)
@@ -162,10 +192,73 @@ func (t *BaanHandlerTest) TestFindOneGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.Baan.Id).Return(nil, t.ServiceDownErr)
 
+	usrSrv := new(mockUsr.ServiceMock)
+
 	c := &mock.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
-	h := NewHandler(srv)
+	h := NewHandler(srv, usrSrv)
+	h.FindOne(c)
+
+	assert.Equal(t.T(), want, c.V)
+	assert.Equal(t.T(), http.StatusServiceUnavailable, c.Status)
+}
+
+func (t *BaanHandlerTest) TestGetUserBaanSuccess() {
+	want := t.Baan
+
+	srv := new(mock.ServiceMock)
+	srv.On("FindOne", t.Baan.Id).Return(want, nil)
+
+	usrSrv := new(mockUsr.ServiceMock)
+	usrSrv.On("FindOne", t.userId).Return(t.User, nil)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.userId)
+
+	h := NewHandler(srv, usrSrv)
+	h.GetUserBaan(c)
+
+	assert.Equal(t.T(), want, c.V)
+	assert.Equal(t.T(), http.StatusOK, c.Status)
+}
+
+func (t *BaanHandlerTest) TestGetUserBaanNotHaveBaan() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusNotFound,
+		Message:    "Baan not found",
+	}
+	t.User.BaanId = ""
+
+	srv := new(mock.ServiceMock)
+	srv.On("FindOne", "").Return(nil, want)
+
+	usrSrv := new(mockUsr.ServiceMock)
+	usrSrv.On("FindOne", t.userId).Return(t.User, nil)
+
+	c := &mock.ContextMock{}
+	c.On("UserID").Return(t.userId)
+
+	h := NewHandler(srv, usrSrv)
+	h.GetUserBaan(c)
+
+	assert.Equal(t.T(), want, c.V)
+	assert.Equal(t.T(), http.StatusNotFound, c.Status)
+}
+
+func (t *BaanHandlerTest) TestGetUserBaanGrpcErr() {
+	want := t.ServiceDownErr
+
+	srv := new(mock.ServiceMock)
+	srv.On("FindOne", t.Baan.Id).Return(nil, t.ServiceDownErr)
+
+	usrSrv := new(mockUsr.ServiceMock)
+	usrSrv.On("FindOne", t.userId).Return(nil, t.ServiceDownErr)
+
+	c := &mock.ContextMock{}
+	c.On("ID").Return(t.Baan.Id, nil)
+
+	h := NewHandler(srv, usrSrv)
 	h.FindOne(c)
 
 	assert.Equal(t.T(), want, c.V)
