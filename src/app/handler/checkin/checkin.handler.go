@@ -4,18 +4,26 @@ import (
 	"net/http"
 
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
+	"github.com/isd-sgcu/rnkm65-gateway/src/interfaces/qr"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 )
 
-type ICheckinService interface {
+type IService interface {
 	CheckinVerify(string, int) (*proto.CheckinVerifyResponse, *dto.ResponseErr)
 	CheckinConfirm(token string) (*proto.CheckinConfirmResponse, *dto.ResponseErr)
+}
+
+type Handler struct {
+	checkinService IService
+	validate       *validate.DtoValidator
 }
 
 type IContext interface {
 	JSON(int, interface{})
 	UserID() string
 	Bind(interface{}) error
+	ID() (string, error)
 }
 
 // qr checkin which checkin for event day
@@ -32,7 +40,7 @@ type IContext interface {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/checkin/verify [post]
 // @Security     AuthToken
-func (h *Handler) CheckinVerify(ctx IContext) {
+func (h *Handler) CheckinVerify(ctx qr.IContext) {
 	userid := ctx.UserID()
 	cvr := &dto.CheckinVerifyRequest{}
 
@@ -53,6 +61,13 @@ func (h *Handler) CheckinVerify(ctx IContext) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func NewHandler(checkinService IService, v *validate.DtoValidator) *Handler {
+	return &Handler{
+		checkinService: checkinService,
+		validate:       v,
+	}
+}
+
 // qr checkin which checkin for event day
 // @Summary Confirm Checkin
 // @Description Use token to confirm checkin
@@ -68,7 +83,7 @@ func (h *Handler) CheckinVerify(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/checkin/confirm [post]
 // @Security     AuthToken
-func (h *Handler) CheckinConfirm(ctx IContext) {
+func (h *Handler) CheckinConfirm(ctx qr.IContext) {
 	ccr := &dto.CheckinConfirmRequest{}
 
 	err := ctx.Bind(ccr)

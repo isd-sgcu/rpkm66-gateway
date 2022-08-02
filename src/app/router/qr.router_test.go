@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/qr"
 	"github.com/isd-sgcu/rnkm65-gateway/src/config"
+	"github.com/isd-sgcu/rnkm65-gateway/src/interfaces/qr"
 	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
