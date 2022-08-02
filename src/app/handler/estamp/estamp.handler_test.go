@@ -42,6 +42,7 @@ func (t *EstampHandlerTest) SetupTest() {
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Word(),
 		Code:          faker.Word(),
+		ImageURL:      faker.URL(),
 	}
 
 	t.Events[1] = &proto.Event{
@@ -51,6 +52,7 @@ func (t *EstampHandlerTest) SetupTest() {
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Word(),
 		Code:          faker.Word(),
+		ImageURL:      faker.URL(),
 	}
 
 	t.Events[2] = &proto.Event{
@@ -60,6 +62,7 @@ func (t *EstampHandlerTest) SetupTest() {
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Word(),
 		Code:          faker.Word(),
+		ImageURL:      faker.URL(),
 	}
 
 	t.EventType = "estamp"
