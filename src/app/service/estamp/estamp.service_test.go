@@ -59,6 +59,7 @@ func (t *EStampServiceTest) SetupTest() {
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Word(),
 		Code:          faker.Word(),
+		ImageURL:      faker.URL(),
 	}
 
 	t.Event2 = &proto.Event{
@@ -68,6 +69,7 @@ func (t *EStampServiceTest) SetupTest() {
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Word(),
 		Code:          faker.Word(),
+		ImageURL:      faker.URL(),
 	}
 
 	t.Event3 = &proto.Event{
@@ -77,6 +79,7 @@ func (t *EStampServiceTest) SetupTest() {
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Word(),
 		Code:          faker.Word(),
+		ImageURL:      faker.URL(),
 	}
 
 	t.NotFoundErr = &dto.ResponseErr{

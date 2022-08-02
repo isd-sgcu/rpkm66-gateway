@@ -20,6 +20,7 @@ message Event{
   string nameEN = 4;
   string descriptionEN = 5;
   string code = 6;
+  string imageURL = 7;
 }
 
 //FindAll
@@ -27,7 +28,7 @@ message Event{
 message FindAllEventRequest{
     string id = 1;
 }
-
+  
 message FindAllEventResponse {
     repeated Event event = 1;
 }

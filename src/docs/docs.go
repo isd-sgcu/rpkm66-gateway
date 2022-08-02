@@ -1950,6 +1950,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "imageURL": {
+                    "type": "string"
+                },
                 "nameEN": {
                     "type": "string"
                 },
