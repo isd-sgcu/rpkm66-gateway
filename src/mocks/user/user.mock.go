@@ -41,8 +41,8 @@ func (s *ServiceMock) Create(in *dto.UserDto) (result *proto.User, err *dto.Resp
 	return
 }
 
-func (s *ServiceMock) Verify(id string) (result bool, err *dto.ResponseErr) {
-	args := s.Called(id)
+func (s *ServiceMock) Verify(id string, verifyType string) (result bool, err *dto.ResponseErr) {
+	args := s.Called(id, verifyType)
 
 	if args.Get(0) != nil {
 		result = args.Bool(0)

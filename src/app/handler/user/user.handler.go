@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"strconv"
 
 	"net/http"
 
@@ -37,6 +38,7 @@ type IService interface {
 	Update(string, *dto.UpdateUserDto) (*proto.User, *dto.ResponseErr)
 	CreateOrUpdate(*dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Delete(string) (bool, *dto.ResponseErr)
+	Verify(string, string) (bool, *dto.ResponseErr)
 	GetUserEstamp(string) (*proto.GetUserEstampResponse, *dto.ResponseErr)
 	ConfirmEstamp(string, string) (*proto.ConfirmEstampResponse, *dto.ResponseErr)
 }
@@ -237,7 +239,7 @@ func (h *Handler) Delete(ctx IContext) {
 	return
 }
 
-// Get estamp overview id on what user has
+// GetUserEstamp overview id on what user has
 // @Summary Get user estamp
 // @Description Get estamp id overview on what user has *Return {} with success status code if user has no estamp
 // @Tags event
@@ -263,7 +265,7 @@ func (h *Handler) GetUserEstamp(ctx estamp.IContext) {
 	return
 }
 
-// get estamp for user
+// ConfirmEstamp for user
 // @Summary Confirm Estamp
 // @Description get estamp
 // @Param token body dto.ConfirmEstampRequest true "Event id"
@@ -289,6 +291,56 @@ func (h *Handler) ConfirmEstamp(ctx qr.IContext) {
 	}
 
 	res, errRes := h.service.ConfirmEstamp(userid, ce.EventId)
+
+	if errRes != nil {
+		ctx.JSON(errRes.StatusCode, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, res)
+	return
+}
+
+// VerifyTicket for user
+// @Summary Verify the freshmen night
+// @Description check status is user already redeem the ticket
+// @Tags QR
+// @Accept json
+// @Produce json
+// @Success 204 {object} proto.ConfirmEstampResponse OK
+// @Failure 400 {object} dto.ResponseBadRequestErr Invalid body request
+// @Failure 401 {object} dto.ResponseUnauthorizedErr Unauthorized
+// @Failure 500 {object} dto.ResponseInternalErr Internal server error
+// @Failure 503 {object} dto.ResponseServiceDownErr Service is down
+// @Router /qr/ticket [post]
+// @Security     AuthToken
+func (h *Handler) VerifyTicket(ctx qr.IContext) {
+	userid := ctx.UserID()
+
+	usr, errRes := h.service.FindOne(userid)
+	if errRes != nil {
+		ctx.JSON(errRes.StatusCode, errRes)
+		return
+	}
+
+	yearInt, err := strconv.Atoi(usr.Year)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid year",
+		})
+		return
+	}
+
+	if yearInt > 1 {
+		ctx.JSON(http.StatusForbidden, &dto.ResponseErr{
+			StatusCode: http.StatusForbidden,
+			Message:    "Forbidden year",
+		})
+		return
+	}
+
+	res, errRes := h.service.Verify(usr.StudentID, "ticket")
 
 	if errRes != nil {
 		ctx.JSON(errRes.StatusCode, errRes)

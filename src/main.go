@@ -193,6 +193,7 @@ func main() {
 	r.PostQr("/checkin/confirm", ciHandler.CheckinConfirm)
 	r.PostQr("/estamp/verify", estampHdr.VerifyEstamp)
 	r.PostQr("/estamp/confirm", userHdr.ConfirmEstamp)
+	r.PostQr("/ticket", userHdr.VerifyTicket)
 
 	r.GetEstamp("/:id", estampHdr.FindEventByID)
 	r.GetEstamp("/", estampHdr.FindAllEventWithType)

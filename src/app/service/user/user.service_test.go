@@ -230,11 +230,11 @@ func (t *UserServiceTest) TestCreateGrpcErr() {
 
 func (t *UserServiceTest) TestVerifySuccess() {
 	c := &user.ClientMock{}
-	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID}).Return(&proto.VerifyUserResponse{Success: true}, nil)
+	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID, VerifyType: "vaccine"}).Return(&proto.VerifyUserResponse{Success: true}, nil)
 
 	srv := NewService(c)
 
-	actual, err := srv.Verify(t.User.StudentID)
+	actual, err := srv.Verify(t.User.StudentID, "vaccine")
 
 	assert.Nil(t.T(), err)
 	assert.True(t.T(), actual)
@@ -244,11 +244,11 @@ func (t *UserServiceTest) TestVerifyFailed() {
 	want := t.NotFoundErr
 
 	c := &user.ClientMock{}
-	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID}).Return(&proto.VerifyUserResponse{Success: true}, status.Error(codes.NotFound, "User not found"))
+	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID, VerifyType: "vaccine"}).Return(&proto.VerifyUserResponse{Success: true}, status.Error(codes.NotFound, "User not found"))
 
 	srv := NewService(c)
 
-	actual, err := srv.Verify(t.User.StudentID)
+	actual, err := srv.Verify(t.User.StudentID, "vaccine")
 
 	assert.False(t.T(), actual)
 	assert.Equal(t.T(), want, err)
