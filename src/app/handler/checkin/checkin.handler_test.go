@@ -9,7 +9,7 @@ import (
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	cst "github.com/isd-sgcu/rnkm65-gateway/src/constant/checkin"
-	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/checkin"
+	cmock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/checkin"
 	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -73,13 +73,13 @@ func (t *CheckinHandlerTest) TestCheckinVerifySuccess() {
 		CheckinType:  t.CheckinType,
 	}
 
-	s := &mock.ServiceMock{}
+	s := &cmock.ServiceMock{}
 	s.On("CheckinVerify", t.User.Id, t.EventType).Return(&proto.CheckinVerifyResponse{
 		CheckinToken: t.Token,
 		CheckinType:  t.CheckinType,
 	}, nil)
 
-	c := &mock.ContextMock{}
+	c := &cmock.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinVerifyRequest{}).Return(&dto.CheckinVerifyRequest{
 		EventType: t.EventType,
@@ -96,13 +96,13 @@ func (t *CheckinHandlerTest) TestCheckinVerifySuccess() {
 }
 
 func (t *CheckinHandlerTest) TestCheckinVerifyBadRequest() {
-	s := &mock.ServiceMock{}
+	s := &cmock.ServiceMock{}
 	s.On("CheckinVerify", t.User.Id, t.EventType).Return(&proto.CheckinVerifyResponse{
 		CheckinToken: t.Token,
 		CheckinType:  t.CheckinType,
 	}, nil)
 
-	c := &mock.ContextMock{}
+	c := &cmock.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinVerifyRequest{}).Return(nil, errors.New(""))
 
@@ -116,10 +116,10 @@ func (t *CheckinHandlerTest) TestCheckinVerifyBadRequest() {
 }
 
 func (t *CheckinHandlerTest) TestCheckinVerifyThrowInnerError() {
-	s := &mock.ServiceMock{}
+	s := &cmock.ServiceMock{}
 	s.On("CheckinVerify", t.User.Id, t.EventType).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &cmock.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinVerifyRequest{}).Return(&dto.CheckinVerifyRequest{
 		EventType: t.EventType,
@@ -140,12 +140,12 @@ func (t *CheckinHandlerTest) TestCheckinConfirmSuccess() {
 		Success: true,
 	}
 
-	s := &mock.ServiceMock{}
+	s := &cmock.ServiceMock{}
 	s.On("CheckinConfirm", t.Token).Return(&proto.CheckinConfirmResponse{
 		Success: true,
 	}, nil)
 
-	c := &mock.ContextMock{}
+	c := &cmock.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinConfirmRequest{}).Return(&dto.CheckinConfirmRequest{
 		Token: t.Token,
@@ -162,12 +162,12 @@ func (t *CheckinHandlerTest) TestCheckinConfirmSuccess() {
 }
 
 func (t *CheckinHandlerTest) TestCheckinConfirmBadRequest() {
-	s := &mock.ServiceMock{}
+	s := &cmock.ServiceMock{}
 	s.On("CheckinConfirm", t.Token).Return(&proto.CheckinConfirmResponse{
 		Success: true,
 	}, nil)
 
-	c := &mock.ContextMock{}
+	c := &cmock.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinConfirmRequest{}).Return(nil, errors.New(""))
 
@@ -181,10 +181,10 @@ func (t *CheckinHandlerTest) TestCheckinConfirmBadRequest() {
 }
 
 func (t *CheckinHandlerTest) TestCheckinConfirmThrowInnerError() {
-	s := &mock.ServiceMock{}
+	s := &cmock.ServiceMock{}
 	s.On("CheckinConfirm", t.Token).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &cmock.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinConfirmRequest{}).Return(&dto.CheckinConfirmRequest{
 		Token: t.Token,

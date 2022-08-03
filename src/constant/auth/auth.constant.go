@@ -5,6 +5,7 @@ var ExcludePath = map[string]struct{}{
 	"POST /auth/refreshToken": {},
 	"GET /baan":               {},
 	"GET /baan/:id":           {},
+	"GET /estamp":             {},
 }
 
 var MapPath2Phase = map[string][]string{

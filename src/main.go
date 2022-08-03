@@ -3,14 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-
 	vaccineClient "github.com/isd-sgcu/rnkm65-gateway/src/app/client/vaccine"
 	authHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
 	baanHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/baan"
+	ciHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/checkin"
+	eHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/estamp"
 	fileHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/file"
 	grpHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/group"
 	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
-	qrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/qr"
 	usrHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
 	vaccineHdr "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/vaccine"
 	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
@@ -18,6 +18,7 @@ import (
 	authSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/auth"
 	baanSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/baan"
 	ciSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/checkin"
+	eSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/estamp"
 	fileSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/file"
 	grpSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/group"
 	usrSrv "github.com/isd-sgcu/rnkm65-gateway/src/app/service/user"
@@ -51,6 +52,11 @@ import (
 // @in                          header
 // @name                        Authorization
 // @description					Description for what is this security definition being used
+
+// @tag.name Chula SSO
+// @tag.description Chula SSO documentation
+// @tag.docs.url https://account.it.chula.ac.th/wiki/doku.php?id=how_does_it_work
+// @tag.docs.description Chula SSO documentation
 
 // @tag.name health check
 // @tag.description.markdown
@@ -140,12 +146,16 @@ func main() {
 
 	bnClient := proto.NewBaanServiceClient(backendConn)
 	bnSrv := baanSrv.NewService(bnClient)
-	bnHdr := baanHdr.NewHandler(bnSrv)
+	bnHdr := baanHdr.NewHandler(bnSrv, userSrv)
 
 	checkinClient := proto.NewCheckinServiceClient(backendConn)
 	checkinSrv := ciSrv.NewService(checkinClient)
 
-	qrHandler := qrHdr.NewHandler(checkinSrv, v)
+	estampClient := proto.NewEventServiceClient(backendConn)
+	estampSrv := eSrv.NewService(estampClient)
+	estampHdr := eHdr.NewHandler(estampSrv, v)
+
+	ciHandler := ciHdr.NewHandler(checkinSrv, v)
 	authGuard := guard.NewAuthGuard(athSrv, auth.ExcludePath, conf.App)
 
 	r := router.NewFiberRouter(&authGuard, conf.App)
@@ -179,8 +189,14 @@ func main() {
 	r.PutGroup("/select", gHdr.SelectBaan)
 	r.DeleteGroup("/members/:member_id", gHdr.DeleteMember)
 
-	r.PostQr("/checkin/verify", qrHandler.CheckinVerify)
-	r.PostQr("/checkin/confirm", qrHandler.CheckinConfirm)
+	r.PostQr("/checkin/verify", ciHandler.CheckinVerify)
+	r.PostQr("/checkin/confirm", ciHandler.CheckinConfirm)
+	r.PostQr("/estamp/verify", estampHdr.VerifyEstamp)
+	r.PostQr("/estamp/confirm", userHdr.ConfirmEstamp)
+
+	r.GetEstamp("/:id", estampHdr.FindEventByID)
+	r.GetEstamp("/", estampHdr.FindAllEventWithType)
+	r.GetEstamp("/user", userHdr.GetUserEstamp)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

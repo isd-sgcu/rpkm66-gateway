@@ -49,6 +49,11 @@ func (c *ContextMock) JSON(status int, v interface{}) {
 	c.Status = status
 }
 
+func (c *ContextMock) UserID() string {
+	args := c.Called()
+	return args.String(0)
+}
+
 type ServiceMock struct {
 	mock.Mock
 }

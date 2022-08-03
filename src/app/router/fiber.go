@@ -3,7 +3,6 @@ package router
 import (
 	"bytes"
 	"fmt"
-
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -26,6 +25,7 @@ type FiberRouter struct {
 	vaccine fiber.Router
 	baan    fiber.Router
 	qr      fiber.Router
+	estamp  fiber.Router
 }
 
 type IGuard interface {
@@ -56,10 +56,10 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	vaccine := NewGroupRouteWithAuthMiddleware(r, "/vaccine", authGuard.Use)
 	baan := NewGroupRouteWithAuthMiddleware(r, "/baan", authGuard.Use)
 	group := NewGroupRouteWithAuthMiddleware(r, "/group", authGuard.Use)
-
 	qr := NewGroupRouteWithAuthMiddleware(r, "/qr", authGuard.Use)
+	estamp := NewGroupRouteWithAuthMiddleware(r, "/estamp", authGuard.Use)
 
-	return &FiberRouter{r, user, auth, file, group, vaccine, baan, qr}
+	return &FiberRouter{r, user, auth, file, group, vaccine, baan, qr, estamp}
 }
 
 func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx guard.IContext)) fiber.Router {
@@ -130,6 +130,10 @@ func (c *FiberCtx) StoreValue(k string, v string) {
 
 func (c *FiberCtx) Next() {
 	c.Ctx.Next()
+}
+
+func (c *FiberCtx) Query(key string) string {
+	return c.Ctx.Query(key)
 }
 
 func (c *FiberCtx) File(key string, allowContent map[string]struct{}, maxSize int64) (*dto.DecomposedFile, error) {
