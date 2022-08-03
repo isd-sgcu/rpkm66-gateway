@@ -77,7 +77,7 @@ func (h *Handler) VerifyTicket(c IContext) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Success 201 {object} proto.User
+// @Success 200 {object} proto.User
 // @Failure 401 {object} dto.ResponseUnauthorizedErr "Invalid token"
 // @Failure 503 {object} dto.ResponseServiceDownErr "Service is down"
 // @Security     AuthToken

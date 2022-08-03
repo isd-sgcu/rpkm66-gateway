@@ -71,7 +71,7 @@ func (t *ServiceTest) TestVerifySuccess() {
 	want := t.VaccineRes
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.User.StudentID).Return(true, nil)
+	userSrv.On("Verify", t.User.StudentID, "vaccine").Return(true, nil)
 	userSrv.On("FindOne", t.User.Id).Return(t.User, nil)
 
 	req := &dto.VaccineRequest{
@@ -94,7 +94,7 @@ func (t *ServiceTest) TestVerifyNotFound() {
 	want := t.NotFoundErr
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.User.StudentID).Return(false, t.NotFoundErr)
+	userSrv.On("Verify", t.User.StudentID, "vaccine").Return(false, t.NotFoundErr)
 	userSrv.On("FindOne", t.User.Id).Return(t.User, nil)
 
 	req := &dto.VaccineRequest{
@@ -121,7 +121,7 @@ func (t *ServiceTest) TestVerifyInvalidQR() {
 	}
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.User.StudentID).Return(false, t.NotFoundErr)
+	userSrv.On("Verify", t.User.StudentID, "vaccine").Return(false, t.NotFoundErr)
 	userSrv.On("FindOne", t.User.Id).Return(t.User, nil)
 
 	req := &dto.VaccineRequest{
@@ -144,7 +144,7 @@ func (t *ServiceTest) TestVerifyGrpcError() {
 	want := t.ServiceDownErr
 
 	userSrv := uMock.ServiceMock{}
-	userSrv.On("Verify", t.User.StudentID).Return(false, t.ServiceDownErr)
+	userSrv.On("Verify", t.User.StudentID, "vaccine").Return(false, t.ServiceDownErr)
 	userSrv.On("FindOne", t.User.Id).Return(nil, t.ServiceDownErr)
 
 	req := &dto.VaccineRequest{

@@ -14,7 +14,7 @@ type Service struct {
 
 type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
-	Verify(string) (bool, *dto.ResponseErr)
+	Verify(string, string) (bool, *dto.ResponseErr)
 }
 
 type IClient interface {
@@ -50,7 +50,6 @@ func (s *Service) Verify(hcert string, userId string) (*dto.VaccineResponse, *dt
 	}, res)
 
 	if err != nil {
-
 		log.Error().
 			Err(err).
 			Str("service", "vaccine").
@@ -65,7 +64,7 @@ func (s *Service) Verify(hcert string, userId string) (*dto.VaccineResponse, *dt
 		}
 	}
 
-	ok, errRes := s.userService.Verify(res.Uid)
+	ok, errRes := s.userService.Verify(res.Uid, "vaccine")
 	if errRes != nil {
 
 		log.Error().Interface("error", errRes).

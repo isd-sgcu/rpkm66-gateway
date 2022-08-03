@@ -168,7 +168,7 @@ func (s *Service) Update(id string, in *dto.UpdateUserDto) (result *proto.User, 
 	return res.User, nil
 }
 
-func (s *Service) Verify(studentId string) (result bool, err *dto.ResponseErr) {
+func (s *Service) Verify(studentId string, verifyType string) (result bool, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -178,7 +178,7 @@ func (s *Service) Verify(studentId string) (result bool, err *dto.ResponseErr) {
 		Str("student_id", studentId).
 		Msg("Trying to verify the user")
 
-	res, errRes := s.client.Verify(ctx, &proto.VerifyUserRequest{StudentId: studentId})
+	res, errRes := s.client.Verify(ctx, &proto.VerifyUserRequest{StudentId: studentId, VerifyType: verifyType})
 	if errRes != nil {
 		return false, &dto.ResponseErr{
 			StatusCode: http.StatusNotFound,
