@@ -175,11 +175,21 @@ func (s *Service) Verify(studentId string, verifyType string) (result bool, err 
 	log.Info().
 		Str("service", "user").
 		Str("module", "verify").
+		Str("type", verifyType).
 		Str("student_id", studentId).
 		Msg("Trying to verify the user")
 
 	res, errRes := s.client.Verify(ctx, &proto.VerifyUserRequest{StudentId: studentId, VerifyType: verifyType})
 	if errRes != nil {
+
+		log.Error().
+			Err(errRes).
+			Str("service", "user").
+			Str("module", "verify").
+			Str("type", verifyType).
+			Str("student_id", studentId).
+			Msg("Error while verifying")
+
 		return false, &dto.ResponseErr{
 			StatusCode: http.StatusNotFound,
 			Message:    "User not found",
@@ -190,6 +200,7 @@ func (s *Service) Verify(studentId string, verifyType string) (result bool, err 
 	log.Info().
 		Str("service", "user").
 		Str("module", "verify").
+		Str("type", verifyType).
 		Str("student_id", studentId).
 		Msg("Verified the user")
 
@@ -402,7 +413,7 @@ func (s *Service) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstampRes
 		case codes.Unavailable:
 			log.Error().
 				Err(err).
-				Str("service", "checkin").
+				Str("service", "estamp").
 				Str("module", "confirm_estamp").
 				Msg("Service is down")
 			return nil, &dto.ResponseErr{
@@ -425,7 +436,7 @@ func (s *Service) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstampRes
 		default:
 			log.Error().
 				Err(err).
-				Str("service", "checkin").
+				Str("service", "estamp").
 				Str("module", "confirm_estamp").
 				Msg("Unhandled error")
 			return nil, &dto.ResponseErr{
@@ -435,6 +446,11 @@ func (s *Service) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstampRes
 			}
 		}
 	}
+
+	log.Info().
+		Str("service", "estamp").
+		Str("module", "confirm_estamp").
+		Msg("Successfully confirm estamp")
 
 	return res, nil
 }
