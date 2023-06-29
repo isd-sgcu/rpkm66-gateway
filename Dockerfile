@@ -17,7 +17,7 @@ RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc go mod do
 COPY . .
 
 # Build the application
-RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc go build -o server ./src/.
+RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc CGO_ENABLED=0 go build -o server ./src/.
 
 # Create master image
 FROM alpine AS master
@@ -31,8 +31,8 @@ COPY --from=base /app/server ./
 # Set ENV to production
 ENV GO_ENV production
 
-# Expose port 3001
-EXPOSE 3001
+# Expose port 3000
+EXPOSE 3000
 
 # Run the application
 CMD ["./server"]
