@@ -24,6 +24,12 @@ func (c *ContextMock) Bind(v interface{}) error {
 		switch v.(type) {
 		case *dto.GroupDto:
 			*v.(*dto.GroupDto) = *args.Get(0).(*dto.GroupDto)
+		case *dto.RedeemNewToken:
+			*v.(*dto.RedeemNewToken) = *args.Get(0).(*dto.RedeemNewToken)
+		case *dto.VerifyTicket:
+			*v.(*dto.VerifyTicket) = *args.Get(0).(*dto.VerifyTicket)
+		case *dto.VerifyEstampRequest:
+			*v.(*dto.VerifyEstampRequest) = *args.Get(0).(*dto.VerifyEstampRequest)
 		case *dto.SelectBaan:
 			*v.(*dto.SelectBaan) = *args.Get(0).(*dto.SelectBaan)
 		case *dto.UserDto:
