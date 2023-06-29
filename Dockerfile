@@ -17,7 +17,7 @@ RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc go mod do
 COPY . .
 
 # Build the application
-RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc CGO_ENABLED=0 go build -o server ./src/cmd/main.go
+RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc CGO_ENABLED=0 go build -o server ./cmd/main.go
 
 # Create master image
 FROM alpine AS master

@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package group;
+
+import "baan.proto";
+
+option go_package = "proto";
+
+service GroupService {
+  rpc FindOne(FindOneGroupRequest) returns (FindOneGroupResponse) {}
+  rpc FindByToken(FindByTokenGroupRequest) returns (FindByTokenGroupResponse) {}
+  rpc Update(UpdateGroupRequest) returns (UpdateGroupResponse) {}
+  rpc Join(JoinGroupRequest) returns (JoinGroupResponse) {}
+  rpc DeleteMember(DeleteMemberGroupRequest) returns (DeleteMemberGroupResponse){}
+  rpc Leave(LeaveGroupRequest) returns (LeaveGroupResponse){}
+  rpc SelectBaan(SelectBaanRequest) returns (SelectBaanResponse) {}
+}
+
+message Group{
+  string id = 1;
+  string leaderID = 2;
+  string token = 3;
+  repeated UserInfo members = 4;
+  repeated baan.BaanInfo baans = 5;
+}
+
+message UserInfo {
+  string id = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string imageUrl = 4;
+}
+
+//Find One
+message FindOneGroupRequest{
+  string userId = 1;
+}
+
+message FindOneGroupResponse{
+  Group group = 1;
+}
+
+// Find By Token
+
+message FindByTokenGroupRequest{
+  string token = 1;
+}
+
+message FindByTokenGroupResponse{
+  string id = 1;
+  string token = 2;
+  UserInfo leader = 3;
+}
+
+// Update
+
+message UpdateGroupRequest{
+  Group group = 1;
+  string leaderId = 2;
+}
+
+message UpdateGroupResponse{
+  Group group = 1;
+}
+
+//Join
+
+message JoinGroupRequest{
+  string token = 1;
+  string userId = 2;
+}
+
+message JoinGroupResponse{
+  Group group = 1;
+}
+
+// Delete
+
+message DeleteMemberGroupRequest{
+  string userId = 1;
+  string leaderId = 2;
+}
+
+message DeleteMemberGroupResponse{
+  Group group = 1;
+}
+
+//Leave
+
+message LeaveGroupRequest{
+  string userId = 1;
+}
+
+message LeaveGroupResponse{
+  Group group = 1;
+}
+
+// Select Baan
+
+message SelectBaanRequest{
+  string userId = 1;
+  repeated string baans = 2;
+}
+
+message SelectBaanResponse{
+  bool success = 1;
+}
