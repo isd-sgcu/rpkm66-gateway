@@ -2,8 +2,8 @@ package rctx
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/isd-sgcu/rpkm66-gateway/app/dto"
-	"github.com/isd-sgcu/rpkm66-gateway/app/rctx"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/rctx"
 )
 
 type Context interface {

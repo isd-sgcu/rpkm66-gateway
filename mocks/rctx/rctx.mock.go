@@ -1,7 +1,7 @@
 package rctx
 
 import (
-	"github.com/isd-sgcu/rpkm66-gateway/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/stretchr/testify/mock"
 )
 

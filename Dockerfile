@@ -30,6 +30,7 @@ COPY --from=base /app/server ./
 
 # Set ENV to production
 ENV GO_ENV production
+ENV GIN_MODE release
 
 # Run the application
 CMD ["./server"]

@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/isd-sgcu/rpkm66-gateway/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
