@@ -12,17 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.EventServiceClient
 }
 
-func NewService(client proto.EventServiceClient) *Service {
-	return &Service{
+func NewService(client proto.EventServiceClient) *serviceImpl {
+	return &serviceImpl{
 		client: client,
 	}
 }
 
-func (s *Service) FindEventByID(id string) (*proto.FindEventByIDResponse, *dto.ResponseErr) {
+func (s *serviceImpl) FindEventByID(id string) (*proto.FindEventByIDResponse, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -87,7 +87,7 @@ func (s *Service) FindEventByID(id string) (*proto.FindEventByIDResponse, *dto.R
 	return res, nil
 }
 
-func (s *Service) FindAllEventWithType(eventType string) (*proto.FindAllEventWithTypeResponse, *dto.ResponseErr) {
+func (s *serviceImpl) FindAllEventWithType(eventType string) (*proto.FindAllEventWithTypeResponse, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

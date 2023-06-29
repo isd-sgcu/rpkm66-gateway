@@ -9,30 +9,19 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/user"
 )
 
 type Handler struct {
-	service  IService
+	service  user.Service
 	validate *validate.DtoValidator
 }
 
-func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
+func NewHandler(service user.Service, validate *validate.DtoValidator) *Handler {
 	return &Handler{
 		service:  service,
 		validate: validate,
 	}
-}
-
-type IService interface {
-	FindOne(string) (*proto.User, *dto.ResponseErr)
-	Create(*dto.UserDto) (*proto.User, *dto.ResponseErr)
-	Update(string, *dto.UpdateUserDto) (*proto.User, *dto.ResponseErr)
-	CreateOrUpdate(*dto.UserDto) (*proto.User, *dto.ResponseErr)
-	Delete(string) (bool, *dto.ResponseErr)
-	Verify(string, string) (bool, *dto.ResponseErr)
-	GetUserEstamp(string) (*proto.GetUserEstampResponse, *dto.ResponseErr)
-	ConfirmEstamp(string, string) (*proto.ConfirmEstampResponse, *dto.ResponseErr)
 }
 
 // FindOne is a function that get the user data by id

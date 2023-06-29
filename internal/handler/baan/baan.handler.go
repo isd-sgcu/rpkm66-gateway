@@ -5,24 +5,20 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/baan"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 )
 
 type Handler struct {
-	service     IService
+	service     baan.Service
 	userService IUserService
-}
-
-type IService interface {
-	FindAll() ([]*proto.Baan, *dto.ResponseErr)
-	FindOne(string) (*proto.Baan, *dto.ResponseErr)
 }
 
 type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 }
 
-func NewHandler(service IService, userService IUserService) *Handler {
+func NewHandler(service baan.Service, userService IUserService) *Handler {
 	return &Handler{service: service, userService: userService}
 }
 

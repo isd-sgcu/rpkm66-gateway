@@ -12,15 +12,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.BaanServiceClient
 }
 
-func NewService(client proto.BaanServiceClient) *Service {
-	return &Service{client: client}
+func NewService(client proto.BaanServiceClient) *serviceImpl {
+	return &serviceImpl{client: client}
 }
 
-func (s *Service) FindAll() ([]*proto.Baan, *dto.ResponseErr) {
+func (s *serviceImpl) FindAll() ([]*proto.Baan, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -40,7 +40,7 @@ func (s *Service) FindAll() ([]*proto.Baan, *dto.ResponseErr) {
 	return res.Baans, nil
 }
 
-func (s *Service) FindOne(id string) (*proto.Baan, *dto.ResponseErr) {
+func (s *serviceImpl) FindOne(id string) (*proto.Baan, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

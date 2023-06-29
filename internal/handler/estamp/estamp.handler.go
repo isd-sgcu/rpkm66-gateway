@@ -5,26 +5,21 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/estamp"
 
 	validate "github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 )
 
 type Handler struct {
-	service  IEstampService
+	service  estamp.Service
 	validate *validate.DtoValidator
 }
 
-func NewHandler(estampService IEstampService, v *validate.DtoValidator) *Handler {
+func NewHandler(estampService estamp.Service, v *validate.DtoValidator) *Handler {
 	return &Handler{
 		service:  estampService,
 		validate: v,
 	}
-}
-
-type IEstampService interface {
-	FindEventByID(string) (*proto.FindEventByIDResponse, *dto.ResponseErr)
-	FindAllEventWithType(string) (*proto.FindAllEventWithTypeResponse, *dto.ResponseErr)
 }
 
 // Get detail of event using event id

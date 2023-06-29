@@ -7,29 +7,19 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/group"
 )
 
 type Handler struct {
-	service  IService
+	service  group.Service
 	validate *validate.DtoValidator
 }
 
-func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
+func NewHandler(service group.Service, validate *validate.DtoValidator) *Handler {
 	return &Handler{
 		service:  service,
 		validate: validate,
 	}
-}
-
-type IService interface {
-	FindOne(string) (*proto.Group, *dto.ResponseErr)
-	FindByToken(string) (*proto.FindByTokenGroupResponse, *dto.ResponseErr)
-	Update(*dto.GroupDto, string) (*proto.Group, *dto.ResponseErr)
-	Join(string, string) (*proto.Group, *dto.ResponseErr)
-	DeleteMember(string, string) (*proto.Group, *dto.ResponseErr)
-	Leave(string) (*proto.Group, *dto.ResponseErr)
-	SelectBaan(string, []string) (bool, *dto.ResponseErr)
 }
 
 // FindOne is a function that get the group data

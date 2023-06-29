@@ -13,15 +13,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.FileServiceClient
 }
 
-func NewService(client proto.FileServiceClient) *Service {
-	return &Service{client: client}
+func NewService(client proto.FileServiceClient) *serviceImpl {
+	return &serviceImpl{client: client}
 }
 
-func (s *Service) Upload(file *dto.DecomposedFile, userId string, tag file.Tag, fileType file.Type) (string, *dto.ResponseErr) {
+func (s *serviceImpl) Upload(file *dto.DecomposedFile, userId string, tag file.Tag, fileType file.Type) (string, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

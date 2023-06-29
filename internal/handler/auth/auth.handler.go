@@ -6,26 +6,21 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 )
 
 type Handler struct {
-	service    IService
+	service    auth.Service
 	usrService IUserService
 	validate   *validate.DtoValidator
-}
-
-type IService interface {
-	VerifyTicket(string) (*proto.Credential, *dto.ResponseErr)
-	Validate(string) (*dto.TokenPayloadAuth, *dto.ResponseErr)
-	RefreshToken(string) (*proto.Credential, *dto.ResponseErr)
 }
 
 type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 }
 
-func NewHandler(service IService, usrService IUserService, validate *validate.DtoValidator) *Handler {
+func NewHandler(service auth.Service, usrService IUserService, validate *validate.DtoValidator) *Handler {
 	return &Handler{
 		service:    service,
 		usrService: usrService,

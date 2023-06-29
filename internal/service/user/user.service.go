@@ -12,17 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.UserServiceClient
 }
 
-func NewService(client proto.UserServiceClient) *Service {
-	return &Service{
+func NewService(client proto.UserServiceClient) *serviceImpl {
+	return &serviceImpl{
 		client: client,
 	}
 }
 
-func (s *Service) FindOne(id string) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) FindOne(id string) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -69,7 +69,7 @@ func (s *Service) FindOne(id string) (result *proto.User, err *dto.ResponseErr) 
 	return res.User, nil
 }
 
-func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) Create(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -107,7 +107,7 @@ func (s *Service) Create(in *dto.UserDto) (result *proto.User, err *dto.Response
 	return res.User, nil
 }
 
-func (s *Service) Update(id string, in *dto.UpdateUserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) Update(id string, in *dto.UpdateUserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -169,7 +169,7 @@ func (s *Service) Update(id string, in *dto.UpdateUserDto) (result *proto.User, 
 	return res.User, nil
 }
 
-func (s *Service) Verify(studentId string, verifyType string) (result bool, err *dto.ResponseErr) {
+func (s *serviceImpl) Verify(studentId string, verifyType string) (result bool, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -208,7 +208,7 @@ func (s *Service) Verify(studentId string, verifyType string) (result bool, err 
 	return res.Success, nil
 }
 
-func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -273,7 +273,7 @@ func (s *Service) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.
 	return res.User, nil
 }
 
-func (s *Service) Delete(id string) (result bool, err *dto.ResponseErr) {
+func (s *serviceImpl) Delete(id string) (result bool, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -320,7 +320,7 @@ func (s *Service) Delete(id string) (result bool, err *dto.ResponseErr) {
 	return res.Success, nil
 }
 
-func (s *Service) GetUserEstamp(userid string) (*proto.GetUserEstampResponse, *dto.ResponseErr) {
+func (s *serviceImpl) GetUserEstamp(userid string) (*proto.GetUserEstampResponse, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -385,7 +385,7 @@ func (s *Service) GetUserEstamp(userid string) (*proto.GetUserEstampResponse, *d
 	return res, nil
 }
 
-func (s *Service) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstampResponse, *dto.ResponseErr) {
+func (s *serviceImpl) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstampResponse, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

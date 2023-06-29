@@ -12,17 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.AuthServiceClient
 }
 
-func NewService(client proto.AuthServiceClient) *Service {
-	return &Service{
+func NewService(client proto.AuthServiceClient) *serviceImpl {
+	return &serviceImpl{
 		client: client,
 	}
 }
 
-func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseErr) {
+func (s *serviceImpl) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -121,7 +121,7 @@ func (s *Service) VerifyTicket(ticket string) (*proto.Credential, *dto.ResponseE
 	return res.Credential, nil
 }
 
-func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseErr) {
+func (s *serviceImpl) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -171,7 +171,7 @@ func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseEr
 	}, nil
 }
 
-func (s *Service) RefreshToken(token string) (*proto.Credential, *dto.ResponseErr) {
+func (s *serviceImpl) RefreshToken(token string) (*proto.Credential, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

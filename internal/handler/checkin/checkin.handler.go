@@ -6,16 +6,11 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/checkin"
 )
 
-type IService interface {
-	CheckinVerify(string, int) (*proto.CheckinVerifyResponse, *dto.ResponseErr)
-	CheckinConfirm(token string) (*proto.CheckinConfirmResponse, *dto.ResponseErr)
-}
-
 type Handler struct {
-	checkinService IService
+	checkinService checkin.Service
 	validate       *validate.DtoValidator
 }
 
@@ -54,7 +49,7 @@ func (h *Handler) CheckinVerify(ctx rctx.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func NewHandler(checkinService IService, v *validate.DtoValidator) *Handler {
+func NewHandler(checkinService checkin.Service, v *validate.DtoValidator) *Handler {
 	return &Handler{
 		checkinService: checkinService,
 		validate:       v,

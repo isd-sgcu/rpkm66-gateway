@@ -12,17 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.GroupServiceClient
 }
 
-func NewService(client proto.GroupServiceClient) *Service {
-	return &Service{
+func NewService(client proto.GroupServiceClient) *serviceImpl {
+	return &serviceImpl{
 		client: client,
 	}
 }
 
-func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *serviceImpl) FindOne(id string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -93,7 +93,7 @@ func (s *Service) FindOne(id string) (result *proto.Group, err *dto.ResponseErr)
 	return res.Group, nil
 }
 
-func (s *Service) FindByToken(token string) (result *proto.FindByTokenGroupResponse, err *dto.ResponseErr) {
+func (s *serviceImpl) FindByToken(token string) (result *proto.FindByTokenGroupResponse, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -152,7 +152,7 @@ func (s *Service) FindByToken(token string) (result *proto.FindByTokenGroupRespo
 	return res, nil
 }
 
-func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *serviceImpl) Update(in *dto.GroupDto, leaderId string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -243,7 +243,7 @@ func (s *Service) Update(in *dto.GroupDto, leaderId string) (result *proto.Group
 	return res.Group, nil
 }
 
-func (s *Service) Join(token string, userId string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *serviceImpl) Join(token string, userId string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -325,7 +325,7 @@ func (s *Service) Join(token string, userId string) (result *proto.Group, err *d
 	return res.Group, nil
 }
 
-func (s *Service) DeleteMember(userId string, leaderId string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *serviceImpl) DeleteMember(userId string, leaderId string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -408,7 +408,7 @@ func (s *Service) DeleteMember(userId string, leaderId string) (result *proto.Gr
 	return res.Group, nil
 }
 
-func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseErr) {
+func (s *serviceImpl) Leave(userId string) (result *proto.Group, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -502,7 +502,7 @@ func (s *Service) Leave(userId string) (result *proto.Group, err *dto.ResponseEr
 	return res.Group, nil
 }
 
-func (s *Service) SelectBaan(userId string, baanIds []string) (bool, *dto.ResponseErr) {
+func (s *serviceImpl) SelectBaan(userId string, baanIds []string) (bool, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

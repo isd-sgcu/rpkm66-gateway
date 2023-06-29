@@ -12,17 +12,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type serviceImpl struct {
 	client proto.CheckinServiceClient
 }
 
-func NewService(client proto.CheckinServiceClient) *Service {
-	return &Service{
+func NewService(client proto.CheckinServiceClient) *serviceImpl {
+	return &serviceImpl{
 		client: client,
 	}
 }
 
-func (s *Service) CheckinVerify(userid string, eventType int) (*proto.CheckinVerifyResponse, *dto.ResponseErr) {
+func (s *serviceImpl) CheckinVerify(userid string, eventType int) (*proto.CheckinVerifyResponse, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -90,7 +90,7 @@ func (s *Service) CheckinVerify(userid string, eventType int) (*proto.CheckinVer
 	}, nil
 }
 
-func (s *Service) CheckinConfirm(token string) (*proto.CheckinConfirmResponse, *dto.ResponseErr) {
+func (s *serviceImpl) CheckinConfirm(token string) (*proto.CheckinConfirmResponse, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

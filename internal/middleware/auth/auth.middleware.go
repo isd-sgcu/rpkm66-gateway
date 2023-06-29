@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
-	"github.com/isd-sgcu/rpkm66-gateway/internal/handler/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
+	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/auth"
 )
 
 type Guard struct {
-	authSvc auth.IService
+	authSvc auth.Service
 }
 
-func NewAuthGuard(authSvc auth.IService) Guard {
+func NewAuthGuard(authSvc auth.Service) Guard {
 	return Guard{
 		authSvc,
 	}

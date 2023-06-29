@@ -7,25 +7,22 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/constant/file"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
+	fileSvc "github.com/isd-sgcu/rpkm66-gateway/pkg/service/file"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 	"github.com/rs/zerolog/log"
 )
 
 type Handler struct {
-	service     IService
+	service     fileSvc.Service
 	usrService  IUserService
 	MaxFileSize int64
-}
-
-type IService interface {
-	Upload(*dto.DecomposedFile, string, file.Tag, file.Type) (string, *dto.ResponseErr)
 }
 
 type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 }
 
-func NewHandler(service IService, usrService IUserService, maxFileSize int) *Handler {
+func NewHandler(service fileSvc.Service, usrService IUserService, maxFileSize int) *Handler {
 	return &Handler{
 		service:     service,
 		usrService:  usrService,
