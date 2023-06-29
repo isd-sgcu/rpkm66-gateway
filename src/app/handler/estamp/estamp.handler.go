@@ -4,23 +4,15 @@ import (
 	"net/http"
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 
 	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
-	"github.com/isd-sgcu/rpkm66-gateway/src/interfaces/qr"
 )
 
 type Handler struct {
 	service  IEstampService
 	validate *validate.DtoValidator
-}
-
-type IContext interface {
-	JSON(int, interface{})
-	UserID() string
-	Bind(interface{}) error
-	ID() (string, error)
-	Query(string) string
 }
 
 func NewHandler(estampService IEstampService, v *validate.DtoValidator) *Handler {
@@ -49,7 +41,7 @@ type IEstampService interface {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /estamp/{id} [get]
 // @Security     AuthToken
-func (h *Handler) FindEventByID(ctx IContext) {
+func (h *Handler) FindEventByID(ctx rctx.Context) {
 	id, err := ctx.ID()
 
 	if err != nil {
@@ -81,7 +73,7 @@ func (h *Handler) FindEventByID(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/estamp/verify [post]
 // @Security     AuthToken
-func (h *Handler) VerifyEstamp(ctx qr.IContext) {
+func (h *Handler) VerifyEstamp(ctx rctx.Context) {
 	ve := &dto.VerifyEstampRequest{}
 
 	err := ctx.Bind(ve)
@@ -114,7 +106,7 @@ func (h *Handler) VerifyEstamp(ctx qr.IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /estamp [get]
 // @Security     AuthToken
-func (h *Handler) FindAllEventWithType(ctx IContext) {
+func (h *Handler) FindAllEventWithType(ctx rctx.Context) {
 	eventType := ctx.Query("eventType")
 
 	res, errRes := h.service.FindAllEventWithType(eventType)

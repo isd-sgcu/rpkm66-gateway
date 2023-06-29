@@ -9,6 +9,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	role "github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -67,7 +68,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	want := u.UserId
 
 	srv := new(auth.ServiceMock)
-	c := &auth.ContextMock{
+	c := &rctx.ContextMock{
 		Header: map[string]string{},
 	}
 
@@ -92,7 +93,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 
 func (u *AuthGuardTest) TestValidateSkippedFromExcludePath() {
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return("POST")
 	c.On("Path").Return("/exclude")
@@ -108,7 +109,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePath() {
 
 func (u *AuthGuardTest) TestValidateSkippedFromExcludePathWithID() {
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return("POST")
 	c.On("Path").Return("/exclude/1")
@@ -126,7 +127,7 @@ func (u *AuthGuardTest) TestValidateFailed() {
 	want := u.UnauthorizedErr
 
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
@@ -143,7 +144,7 @@ func (u *AuthGuardTest) TestValidateTokenNotIncluded() {
 	want := u.UnauthorizedErr
 
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
@@ -161,7 +162,7 @@ func (u *AuthGuardTest) TestValidateTokenGrpcErr() {
 	want := u.ServiceDownErr
 
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
@@ -176,7 +177,7 @@ func (u *AuthGuardTest) TestValidateTokenGrpcErr() {
 
 func testConfigSuccess(t *testing.T, u *AuthGuardTest, conf config.App, mth string, pth string) {
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return(mth)
 	c.On("Path").Return(pth)
@@ -206,7 +207,7 @@ func testConfigFail(t *testing.T, u *AuthGuardTest, conf config.App, mth string,
 	want := u.ForbiddenErr
 
 	srv := new(auth.ServiceMock)
-	c := new(auth.ContextMock)
+	c := new(rctx.ContextMock)
 
 	c.On("Method").Return(mth)
 	c.On("Path").Return(pth)

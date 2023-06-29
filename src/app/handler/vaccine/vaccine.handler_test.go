@@ -7,6 +7,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/vaccine"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/stretchr/testify/assert"
@@ -77,7 +78,7 @@ func (t *HandlerTest) TestVerifySuccess() {
 		Uid:       t.user.StudentID,
 	}, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.user.Id, nil)
 	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert}, nil)
 
@@ -95,7 +96,7 @@ func (t *HandlerTest) TestVerifyNotFound() {
 	srv := new(mock.ServiceMock)
 	srv.On("Verify", t.hcert, t.user.Id).Return(nil, t.NotFoundErr)
 
-	c := new(mock.ContextMock)
+	c := new(rctx.ContextMock)
 	c.On("UserID").Return(t.user.Id, nil)
 	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert}, nil)
 
@@ -114,7 +115,7 @@ func (t *HandlerTest) TestVerifyGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("Verify", t.hcert, t.user.Id).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.user.Id, nil)
 	c.On("Bind", &dto.Verify{}).Return(&dto.Verify{HCert: t.hcert}, nil)
 

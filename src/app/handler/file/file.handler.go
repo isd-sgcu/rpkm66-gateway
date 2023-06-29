@@ -6,6 +6,7 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/constant/file"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/rs/zerolog/log"
 )
@@ -22,13 +23,6 @@ type IService interface {
 
 type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
-}
-
-type IContext interface {
-	File(string, map[string]struct{}, int64) (*dto.DecomposedFile, error)
-	JSON(int, interface{})
-	UserID() string
-	GetFormData(string) string
 }
 
 func NewHandler(service IService, usrService IUserService, maxFileSize int) *Handler {
@@ -52,7 +46,7 @@ func NewHandler(service IService, usrService IUserService, maxFileSize int) *Han
 // @Failure 504 {object} dto.ResponseGatewayTimeoutErr Gateway timeout
 // @Security     AuthToken
 // @Router /file/upload [post]
-func (h *Handler) Upload(c IContext) {
+func (h *Handler) Upload(c rctx.Context) {
 	id := c.UserID()
 
 	tag := getTagNumber(c.GetFormData("tag"))

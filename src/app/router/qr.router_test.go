@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
-	"github.com/isd-sgcu/rpkm66-gateway/src/interfaces/qr"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -42,7 +42,7 @@ func (t *HealthCheckRouterTest) TestCheckinVerifyRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PostQr("/checkin/verify", func(ctx qr.IContext) {
+	r.PostQr("/checkin/verify", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
@@ -79,7 +79,7 @@ func (t *HealthCheckRouterTest) TestCheckinConfirmRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PostQr("/checkin/confirm", func(ctx qr.IContext) {
+	r.PostQr("/checkin/confirm", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})

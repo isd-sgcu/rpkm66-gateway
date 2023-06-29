@@ -5,10 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/group"
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/user"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -48,7 +47,7 @@ func (t *GroupRouterTest) TestGetGroupRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.GetUser("/", func(ctx user.IContext) {
+	r.GetUser("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
@@ -89,7 +88,7 @@ func (t *GroupRouterTest) TestPostGroupRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PostGroup("/", func(ctx group.IContext) {
+	r.PostGroup("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusCreated, map[string]string{
 			"message": "Hello World",
 		})
@@ -130,7 +129,7 @@ func (t *GroupRouterTest) TestPutGroupRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PutGroup("/", func(ctx group.IContext) {
+	r.PutGroup("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
@@ -171,7 +170,7 @@ func (t *GroupRouterTest) TestDeleteGroupRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.DeleteGroup("/", func(ctx group.IContext) {
+	r.DeleteGroup("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})

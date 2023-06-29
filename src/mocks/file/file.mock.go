@@ -34,36 +34,6 @@ func (c *ClientMock) GetSignedUrl(_ context.Context, in *proto.GetSignedUrlReque
 	return res, args.Error(1)
 }
 
-type ContextMock struct {
-	mock.Mock
-	V interface{}
-}
-
-func (c *ContextMock) UserID() string {
-	args := c.Called()
-	return args.String(0)
-}
-
-func (c *ContextMock) JSON(_ int, v interface{}) {
-	c.V = v
-}
-
-func (c *ContextMock) File(key string, allowContent map[string]struct{}, _ int64) (res *dto.DecomposedFile, err error) {
-	args := c.Called(key, allowContent)
-
-	if args.Get(0) != nil {
-		res = args.Get(0).(*dto.DecomposedFile)
-	}
-
-	return res, args.Error(1)
-}
-
-func (c *ContextMock) GetFormData(key string) string {
-	args := c.Called(key)
-
-	return args.String(0)
-}
-
 type ServiceMock struct {
 	mock.Mock
 }

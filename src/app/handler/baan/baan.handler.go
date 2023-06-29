@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
@@ -21,12 +22,6 @@ type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
 }
 
-type IContext interface {
-	ID() (string, error)
-	UserID() string
-	JSON(_ int, v interface{})
-}
-
 func NewHandler(service IService, userService IUserService) *Handler {
 	return &Handler{service: service, userService: userService}
 }
@@ -42,7 +37,7 @@ func NewHandler(service IService, userService IUserService) *Handler {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /baan [get]
-func (h *Handler) FindAll(c IContext) {
+func (h *Handler) FindAll(c rctx.Context) {
 	result, err := h.service.FindAll()
 	if err != nil {
 		c.JSON(err.StatusCode, err)
@@ -66,7 +61,7 @@ func (h *Handler) FindAll(c IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /baan/{id} [get]
-func (h *Handler) FindOne(c IContext) {
+func (h *Handler) FindOne(c rctx.Context) {
 	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
@@ -98,7 +93,7 @@ func (h *Handler) FindOne(c IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /baan/user [get]
-func (h *Handler) GetUserBaan(c IContext) {
+func (h *Handler) GetUserBaan(c rctx.Context) {
 	id := c.UserID()
 
 	usr, err := h.userService.FindOne(id)

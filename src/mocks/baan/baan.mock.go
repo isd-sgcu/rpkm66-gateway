@@ -33,28 +33,6 @@ func (c *ClientMock) FindOneBaan(_ context.Context, in *proto.FindOneBaanRequest
 	return res, args.Error(1)
 }
 
-type ContextMock struct {
-	mock.Mock
-	V      interface{}
-	Status int
-}
-
-func (c *ContextMock) ID() (string, error) {
-	args := c.Called()
-
-	return args.String(0), args.Error(1)
-}
-
-func (c *ContextMock) JSON(status int, v interface{}) {
-	c.V = v
-	c.Status = status
-}
-
-func (c *ContextMock) UserID() string {
-	args := c.Called()
-	return args.String(0)
-}
-
 type ServiceMock struct {
 	mock.Mock
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/group"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -84,7 +85,7 @@ func (t *GroupHandlerTest) SetupTest() {
 func (t *GroupHandlerTest) TestFindOneSuccess() {
 	want := t.Group
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID, nil)
 
 	srv := new(mock.ServiceMock)
@@ -101,7 +102,7 @@ func (t *GroupHandlerTest) TestFindOneSuccess() {
 func (t *GroupHandlerTest) TestFindOneNotFound() {
 	want := t.NotFoundErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID, nil)
 
 	srv := new(mock.ServiceMock)
@@ -118,7 +119,7 @@ func (t *GroupHandlerTest) TestFindOneNotFound() {
 func (t *GroupHandlerTest) TestFindOneGrpcErr() {
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID, nil)
 
 	srv := new(mock.ServiceMock)
@@ -144,7 +145,7 @@ func (t *GroupHandlerTest) TestFindByTokenSuccess() {
 		},
 	}
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 
 	srv := new(mock.ServiceMock)
@@ -161,7 +162,7 @@ func (t *GroupHandlerTest) TestFindByTokenSuccess() {
 func (t *GroupHandlerTest) TestFindByTokenNotFound() {
 	want := t.NotFoundErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 
 	srv := new(mock.ServiceMock)
@@ -178,7 +179,7 @@ func (t *GroupHandlerTest) TestFindByTokenNotFound() {
 func (t *GroupHandlerTest) TestFindByTokenGrpcErr() {
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 
 	srv := new(mock.ServiceMock)
@@ -195,7 +196,7 @@ func (t *GroupHandlerTest) TestFindByTokenGrpcErr() {
 func (t *GroupHandlerTest) TestJoinSuccess() {
 	want := t.Group
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
@@ -212,7 +213,7 @@ func (t *GroupHandlerTest) TestJoinSuccess() {
 func (t *GroupHandlerTest) TestJoinForbidden() {
 	want := t.ForbiddenErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
@@ -229,7 +230,7 @@ func (t *GroupHandlerTest) TestJoinForbidden() {
 func (t *GroupHandlerTest) TestJoinInvalidId() {
 	want := t.InvalidIdErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("UserID").Return("abc")
 	srv := new(mock.ServiceMock)
@@ -246,7 +247,7 @@ func (t *GroupHandlerTest) TestJoinInvalidId() {
 func (t *GroupHandlerTest) TestJoinNotFound() {
 	want := t.NotFoundErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
@@ -263,7 +264,7 @@ func (t *GroupHandlerTest) TestJoinNotFound() {
 func (t *GroupHandlerTest) TestJoinGrpcErr() {
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.Token, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 	srv := new(mock.ServiceMock)
@@ -280,7 +281,7 @@ func (t *GroupHandlerTest) TestJoinGrpcErr() {
 func (t *GroupHandlerTest) TestDeleteMemberSuccess() {
 	want := t.Group
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.LeaderID, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 
@@ -298,7 +299,7 @@ func (t *GroupHandlerTest) TestDeleteMemberSuccess() {
 func (t *GroupHandlerTest) TestDeleteMemberNotFound() {
 	want := t.NotFoundErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.LeaderID, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 
@@ -316,7 +317,7 @@ func (t *GroupHandlerTest) TestDeleteMemberNotFound() {
 func (t *GroupHandlerTest) TestDeleteMemberInvalidID() {
 	want := t.InvalidIdErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return("", errors.New(t.InvalidIdErr.Message))
 
 	srv := new(mock.ServiceMock)
@@ -332,7 +333,7 @@ func (t *GroupHandlerTest) TestDeleteMemberInvalidID() {
 func (t *GroupHandlerTest) TestDeleteMemberForbidden() {
 	want := t.ForbiddenErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.LeaderID, nil)
 	c.On("UserID").Return(t.Group.LeaderID)
 
@@ -350,7 +351,7 @@ func (t *GroupHandlerTest) TestDeleteMemberForbidden() {
 func (t *GroupHandlerTest) TestDeleteMemberGrpcErr() {
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Param").Return(t.Group.LeaderID, nil)
 	c.On("UserID").Return(t.Group.LeaderID, nil)
 
@@ -368,7 +369,7 @@ func (t *GroupHandlerTest) TestDeleteMemberGrpcErr() {
 func (t *GroupHandlerTest) TestLeaveSuccess() {
 	want := t.Group
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 
 	srv := new(mock.ServiceMock)
@@ -385,7 +386,7 @@ func (t *GroupHandlerTest) TestLeaveSuccess() {
 func (t *GroupHandlerTest) TestLeaveInvalidId() {
 	want := t.InvalidIdErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return("abc")
 
 	srv := new(mock.ServiceMock)
@@ -402,7 +403,7 @@ func (t *GroupHandlerTest) TestLeaveInvalidId() {
 func (t *GroupHandlerTest) TestLeaveNotFound() {
 	want := t.NotFoundErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 
 	srv := new(mock.ServiceMock)
@@ -419,7 +420,7 @@ func (t *GroupHandlerTest) TestLeaveNotFound() {
 func (t *GroupHandlerTest) TestLeaveForbidden() {
 	want := t.ForbiddenErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 
 	srv := new(mock.ServiceMock)
@@ -436,7 +437,7 @@ func (t *GroupHandlerTest) TestLeaveForbidden() {
 func (t *GroupHandlerTest) TestLeaveInternalErr() {
 	want := t.InternalErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 
 	srv := new(mock.ServiceMock)
@@ -453,7 +454,7 @@ func (t *GroupHandlerTest) TestLeaveInternalErr() {
 func (t *GroupHandlerTest) TestLeaveGrpcErr() {
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 
 	srv := new(mock.ServiceMock)
@@ -479,7 +480,7 @@ func createBaanSlices() *dto.SelectBaan {
 func (t *GroupHandlerTest) TestSelectBaanSuccess() {
 	baans := createBaanSlices()
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
 
@@ -503,7 +504,7 @@ func (t *GroupHandlerTest) TestSelectBaanInvalidInput() {
 		Data:       nil,
 	}
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
 
@@ -527,7 +528,7 @@ func (t *GroupHandlerTest) TestSelectBaanForbiddenActio() {
 		Data:       nil,
 	}
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
 
@@ -547,7 +548,7 @@ func (t *GroupHandlerTest) TestSelectBaanInternalErr() {
 
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
 
@@ -567,7 +568,7 @@ func (t *GroupHandlerTest) TestSelectBaanFailed() {
 
 	want := t.ServiceDownErr
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Group.LeaderID)
 	c.On("Bind", &dto.SelectBaan{}).Return(baans, nil)
 

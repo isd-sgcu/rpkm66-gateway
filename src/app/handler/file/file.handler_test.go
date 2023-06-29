@@ -8,6 +8,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/constant/file"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/file"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	mockUsr "github.com/isd-sgcu/rpkm66-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/pkg/errors"
@@ -79,7 +80,7 @@ func (t *UserHandlerTest) SetupTest() {
 func (t *UserHandlerTest) TestUploadSuccess() {
 	want := &dto.FileResponse{Url: t.filename}
 
-	c := mock.ContextMock{}
+	c := rctx.ContextMock{}
 	c.On("File", t.key, file.AllowContentType).Return(t.fileDecompose, nil)
 	c.On("UserID").Return(t.user.Id)
 	c.On("GetFormData", "tag").Return("profile", nil)
@@ -105,7 +106,7 @@ func (t *UserHandlerTest) TestUploadInvalidFile() {
 		Data:       nil,
 	}
 
-	c := mock.ContextMock{}
+	c := rctx.ContextMock{}
 	c.On("File", t.key, file.AllowContentType).Return(nil, errors.New("Invalid content"))
 	c.On("UserID").Return(t.user.Id)
 	c.On("GetFormData", "tag").Return("profile", nil)
@@ -132,7 +133,7 @@ func (t *UserHandlerTest) TestUploadFailed() {
 func testUploadFailed(t *testing.T, err *dto.ResponseErr, key string, decomposedFile *dto.DecomposedFile, maxFileSize int, user *proto.User) {
 	want := err
 
-	c := mock.ContextMock{}
+	c := rctx.ContextMock{}
 	c.On("File", key, file.AllowContentType).Return(decomposedFile, nil)
 	c.On("UserID").Return(user.Id)
 	c.On("GetFormData", "tag").Return("profile", nil)
@@ -154,7 +155,7 @@ func testUploadFailed(t *testing.T, err *dto.ResponseErr, key string, decomposed
 func (t *UserHandlerTest) TestUploadGrpcErr() {
 	want := t.ServiceDownErr
 
-	c := mock.ContextMock{}
+	c := rctx.ContextMock{}
 	c.On("File", t.key, file.AllowContentType).Return(t.fileDecompose, nil)
 	c.On("UserID").Return(t.user.Id)
 	c.On("GetFormData", "tag").Return("profile", nil)

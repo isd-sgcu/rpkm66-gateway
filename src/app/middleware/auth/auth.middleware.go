@@ -9,6 +9,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	phase "github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 )
 
 type Guard struct {
@@ -16,15 +17,6 @@ type Guard struct {
 	excludes   map[string]struct{}
 	conf       config.App
 	isValidate bool
-}
-
-type IContext interface {
-	Token() string
-	Method() string
-	Path() string
-	StoreValue(string, string)
-	JSON(int, interface{})
-	Next()
 }
 
 func NewAuthGuard(s auth.IService, e map[string]struct{}, conf config.App) Guard {
@@ -36,7 +28,7 @@ func NewAuthGuard(s auth.IService, e map[string]struct{}, conf config.App) Guard
 	}
 }
 
-func (m *Guard) Use(ctx IContext) {
+func (m *Guard) Use(ctx rctx.Context) {
 	m.isValidate = true
 
 	m.Validate(ctx)
@@ -57,7 +49,7 @@ func (m *Guard) Use(ctx IContext) {
 
 }
 
-func (m *Guard) Validate(ctx IContext) {
+func (m *Guard) Validate(ctx rctx.Context) {
 	method := ctx.Method()
 	path := ctx.Path()
 
@@ -90,7 +82,7 @@ func (m *Guard) Validate(ctx IContext) {
 	ctx.Next()
 }
 
-func (m *Guard) CheckConfig(ctx IContext) {
+func (m *Guard) CheckConfig(ctx rctx.Context) {
 	method := ctx.Method()
 	path := ctx.Path()
 

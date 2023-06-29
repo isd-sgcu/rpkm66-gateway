@@ -5,30 +5,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type ContextMock struct {
-	mock.Mock
-	V      interface{}
-	Status int
-}
-
-func (c *ContextMock) JSON(status int, v interface{}) {
-	c.V = v
-	c.Status = status
-}
-
-func (c *ContextMock) Bind(v interface{}) error {
-	args := c.Called(v)
-
-	*v.(*dto.Verify) = *args.Get(0).(*dto.Verify)
-
-	return args.Error(1)
-}
-
-func (c *ContextMock) UserID() string {
-	args := c.Called()
-	return args.String(0)
-}
-
 type ServiceMock struct {
 	mock.Mock
 }

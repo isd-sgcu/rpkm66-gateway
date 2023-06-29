@@ -5,7 +5,7 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
-	"github.com/isd-sgcu/rpkm66-gateway/src/interfaces/qr"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
@@ -17,13 +17,6 @@ type IService interface {
 type Handler struct {
 	checkinService IService
 	validate       *validate.DtoValidator
-}
-
-type IContext interface {
-	JSON(int, interface{})
-	UserID() string
-	Bind(interface{}) error
-	ID() (string, error)
 }
 
 // qr checkin which checkin for event day
@@ -40,7 +33,7 @@ type IContext interface {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/checkin/verify [post]
 // @Security     AuthToken
-func (h *Handler) CheckinVerify(ctx qr.IContext) {
+func (h *Handler) CheckinVerify(ctx rctx.Context) {
 	userid := ctx.UserID()
 	cvr := &dto.CheckinVerifyRequest{}
 
@@ -83,7 +76,7 @@ func NewHandler(checkinService IService, v *validate.DtoValidator) *Handler {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/checkin/confirm [post]
 // @Security     AuthToken
-func (h *Handler) CheckinConfirm(ctx qr.IContext) {
+func (h *Handler) CheckinConfirm(ctx rctx.Context) {
 	ccr := &dto.CheckinConfirmRequest{}
 
 	err := ctx.Bind(ccr)

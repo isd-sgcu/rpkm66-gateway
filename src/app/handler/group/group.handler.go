@@ -6,6 +6,7 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
@@ -19,14 +20,6 @@ func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
 		service:  service,
 		validate: validate,
 	}
-}
-
-type IContext interface {
-	Bind(interface{}) error
-	JSON(int, interface{})
-	ID() (string, error)
-	Param(string) (string, error)
-	UserID() string
 }
 
 type IService interface {
@@ -51,7 +44,7 @@ type IService interface {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /group [get]
-func (h *Handler) FindOne(ctx IContext) {
+func (h *Handler) FindOne(ctx rctx.Context) {
 	userId := ctx.UserID()
 
 	group, errRes := h.service.FindOne(userId)
@@ -77,7 +70,7 @@ func (h *Handler) FindOne(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /group/{token} [get]
-func (h *Handler) FindByToken(ctx IContext) {
+func (h *Handler) FindByToken(ctx rctx.Context) {
 	tokenUrl, err := ctx.Param("token")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
@@ -115,7 +108,7 @@ func (h *Handler) FindByToken(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /group/{token} [post]
-func (h *Handler) Join(ctx IContext) {
+func (h *Handler) Join(ctx rctx.Context) {
 	tokenUrl, err := ctx.Param("token")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
@@ -154,7 +147,7 @@ func (h *Handler) Join(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /group/members/{member_id} [delete]
-func (h *Handler) DeleteMember(ctx IContext) {
+func (h *Handler) DeleteMember(ctx rctx.Context) {
 	userId, err := ctx.Param("member_id")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
@@ -192,7 +185,7 @@ func (h *Handler) DeleteMember(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /group/leave [delete]
-func (h *Handler) Leave(ctx IContext) {
+func (h *Handler) Leave(ctx rctx.Context) {
 	userId := ctx.UserID()
 
 	group, errRes := h.service.Leave(userId)
@@ -221,7 +214,7 @@ func (h *Handler) Leave(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /group/select [put]
-func (h *Handler) SelectBaan(ctx IContext) {
+func (h *Handler) SelectBaan(ctx rctx.Context) {
 	userId := ctx.UserID()
 
 	baans := dto.SelectBaan{}

@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/user"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -47,7 +47,7 @@ func (t *UserRouterTest) TestGetUserRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.GetUser("/", func(ctx user.IContext) {
+	r.GetUser("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
@@ -88,7 +88,7 @@ func (t *UserRouterTest) TestPostUserRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PostUser("/", func(ctx user.IContext) {
+	r.PostUser("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusCreated, map[string]string{
 			"message": "Hello World",
 		})
@@ -129,7 +129,7 @@ func (t *UserRouterTest) TestPutUserRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PutUser("/", func(ctx user.IContext) {
+	r.PutUser("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
@@ -170,7 +170,7 @@ func (t *UserRouterTest) TestPatchUserRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PatchUser("/", func(ctx user.IContext) {
+	r.PatchUser("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})
@@ -211,7 +211,7 @@ func (t *UserRouterTest) TestDeleteUserRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.DeleteUser("/", func(ctx user.IContext) {
+	r.DeleteUser("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})

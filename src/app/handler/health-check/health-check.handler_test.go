@@ -3,7 +3,7 @@ package health_check
 import (
 	"testing"
 
-	health_check "github.com/isd-sgcu/rpkm66-gateway/src/mocks/health-check"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -21,7 +21,7 @@ func (t *HealthCheckHandlerTest) TestCallHealthCheck() {
 		"Health": "OK!",
 	}
 
-	c := &health_check.ContextMock{}
+	c := &rctx.ContextMock{}
 	h := NewHandler()
 
 	h.HealthCheck(c)

@@ -7,6 +7,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/baan"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	mockUsr "github.com/isd-sgcu/rpkm66-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/pkg/errors"
@@ -120,7 +121,7 @@ func (t *BaanHandlerTest) TestFindAllBaanSuccess() {
 
 	usrSrv := new(mockUsr.ServiceMock)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 
 	h := NewHandler(srv, usrSrv)
 	h.FindAll(c)
@@ -137,7 +138,7 @@ func (t *BaanHandlerTest) TestFindOneBaan() {
 
 	usrSrv := new(mockUsr.ServiceMock)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
 	h := NewHandler(srv, usrSrv)
@@ -155,7 +156,7 @@ func (t *BaanHandlerTest) TestFindOneFoundErr() {
 
 	usrSrv := new(mockUsr.ServiceMock)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
 	h := NewHandler(srv, usrSrv)
@@ -177,7 +178,7 @@ func (t *BaanHandlerTest) TestFindOneBadReqeust() {
 
 	usrSrv := new(mockUsr.ServiceMock)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return("", errors.New("Cannot parse id"))
 
 	h := NewHandler(srv, usrSrv)
@@ -195,7 +196,7 @@ func (t *BaanHandlerTest) TestFindOneGrpcErr() {
 
 	usrSrv := new(mockUsr.ServiceMock)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
 	h := NewHandler(srv, usrSrv)
@@ -214,7 +215,7 @@ func (t *BaanHandlerTest) TestGetUserBaanSuccess() {
 	usrSrv := new(mockUsr.ServiceMock)
 	usrSrv.On("FindOne", t.userId).Return(t.User, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.userId)
 
 	h := NewHandler(srv, usrSrv)
@@ -237,7 +238,7 @@ func (t *BaanHandlerTest) TestGetUserBaanNotHaveBaan() {
 	usrSrv := new(mockUsr.ServiceMock)
 	usrSrv.On("FindOne", t.userId).Return(t.User, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.userId)
 
 	h := NewHandler(srv, usrSrv)
@@ -256,7 +257,7 @@ func (t *BaanHandlerTest) TestGetUserBaanGrpcErr() {
 	usrSrv := new(mockUsr.ServiceMock)
 	usrSrv.On("FindOne", t.userId).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.Baan.Id, nil)
 
 	h := NewHandler(srv, usrSrv)

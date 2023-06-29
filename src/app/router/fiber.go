@@ -11,9 +11,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/google/uuid"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
-	guard "github.com/isd-sgcu/rpkm66-gateway/src/app/middleware/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/pkg/errors"
 )
 
@@ -30,7 +30,7 @@ type FiberRouter struct {
 }
 
 type IGuard interface {
-	Use(guard.IContext)
+	Use(rctx.Context)
 }
 
 func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
@@ -63,7 +63,7 @@ func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	return &FiberRouter{r, user, auth, file, group, vaccine, baan, qr, estamp}
 }
 
-func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx guard.IContext)) fiber.Router {
+func NewGroupRouteWithAuthMiddleware(r *fiber.App, path string, middleware func(ctx rctx.Context)) fiber.Router {
 	return r.Group(path, func(c *fiber.Ctx) error {
 		middleware(NewFiberCtx(c))
 		return nil

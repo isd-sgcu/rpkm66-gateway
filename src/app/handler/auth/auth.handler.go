@@ -5,6 +5,7 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
@@ -22,12 +23,6 @@ type IService interface {
 
 type IUserService interface {
 	FindOne(string) (*proto.User, *dto.ResponseErr)
-}
-
-type IContext interface {
-	Bind(interface{}) error
-	JSON(int, interface{})
-	UserID() string
 }
 
 func NewHandler(service IService, usrService IUserService, validate *validate.DtoValidator) *Handler {
@@ -50,7 +45,7 @@ func NewHandler(service IService, usrService IUserService, validate *validate.Dt
 // @Failure 503 {object} dto.ResponseServiceDownErr "Service is down"
 // @Security     AuthToken
 // @Router /auth/verify [post]
-func (h *Handler) VerifyTicket(c IContext) {
+func (h *Handler) VerifyTicket(c rctx.Context) {
 	verifyTicket := dto.VerifyTicket{}
 
 	err := c.Bind(&verifyTicket)
@@ -83,7 +78,7 @@ func (h *Handler) VerifyTicket(c IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr "Service is down"
 // @Security     AuthToken
 // @Router /auth/me [get]
-func (h *Handler) Validate(c IContext) {
+func (h *Handler) Validate(c rctx.Context) {
 	userId := c.UserID()
 
 	usr, err := h.usrService.FindOne(userId)
@@ -116,7 +111,7 @@ func (h *Handler) Validate(c IContext) {
 // @Failure 500 {object} dto.ResponseInternalErr "Internal service error"
 // @Failure 503 {object} dto.ResponseServiceDownErr "Service is down"
 // @Router /auth/refreshToken [post]
-func (h *Handler) RefreshToken(c IContext) {
+func (h *Handler) RefreshToken(c rctx.Context) {
 	refreshToken := dto.RedeemNewToken{}
 
 	err := c.Bind(&refreshToken)

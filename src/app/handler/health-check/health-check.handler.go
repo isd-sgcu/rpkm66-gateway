@@ -2,13 +2,11 @@ package health_check
 
 import (
 	"net/http"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 )
 
 type Handler struct {
-}
-
-type IContext interface {
-	JSON(statusCode int, v interface{})
 }
 
 func NewHandler() *Handler {
@@ -23,7 +21,7 @@ func NewHandler() *Handler {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router / [get]
-func (h *Handler) HealthCheck(c IContext) {
+func (h *Handler) HealthCheck(c rctx.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"Health": "OK!",
 	})

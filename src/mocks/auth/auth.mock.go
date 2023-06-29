@@ -9,67 +9,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-type ContextMock struct {
-	mock.Mock
-	V               interface{}
-	Header          map[string]string
-	VerifyTicketDto *dto.VerifyTicket
-	RefreshTokenDto *dto.RedeemNewToken
-}
-
-func (c *ContextMock) Bind(v interface{}) error {
-	args := c.Called(v)
-
-	switch v.(type) {
-	case *dto.VerifyTicket:
-		*v.(*dto.VerifyTicket) = *c.VerifyTicketDto
-	case *dto.RedeemNewToken:
-		*v.(*dto.RedeemNewToken) = *c.RefreshTokenDto
-	}
-
-	return args.Error(1)
-}
-
-func (c *ContextMock) JSON(_ int, v interface{}) {
-	c.V = v
-}
-
-func (c *ContextMock) UserID() string {
-	args := c.Called()
-
-	return args.String(0)
-}
-
-func (c *ContextMock) Token() string {
-	args := c.Called()
-
-	return args.String(0)
-}
-
-func (c *ContextMock) StoreValue(key string, val string) {
-	_ = c.Called(key, val)
-
-	c.Header[key] = val
-}
-
-func (c *ContextMock) Method() string {
-	args := c.Called()
-
-	return args.String(0)
-}
-
-func (c *ContextMock) Path() string {
-	args := c.Called()
-
-	return args.String(0)
-}
-
-func (c *ContextMock) Next() {
-	_ = c.Called()
-
-	return
-}
-
 type ClientMock struct {
 	mock.Mock
 }

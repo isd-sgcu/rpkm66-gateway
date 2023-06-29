@@ -9,6 +9,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/estamp"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -110,7 +111,7 @@ func (t *EstampHandlerTest) TestFindByIdSuccess() {
 
 	hdr := NewHandler(s, v)
 
-	cm := &mock.ContextMock{}
+	cm := &rctx.ContextMock{}
 	cm.On("ID").Return(t.Events[0].Id, nil)
 
 	hdr.FindEventByID(cm)
@@ -125,7 +126,7 @@ func (t *EstampHandlerTest) TestFindByIdBadRequest() {
 
 	hdr := NewHandler(s, v)
 
-	cm := &mock.ContextMock{}
+	cm := &rctx.ContextMock{}
 	cm.On("ID").Return("", errors.New(""))
 
 	hdr.FindEventByID(cm)
@@ -140,7 +141,7 @@ func (t *EstampHandlerTest) TestFindByIdForbidden() {
 
 	hdr := NewHandler(s, v)
 
-	cm := &mock.ContextMock{}
+	cm := &rctx.ContextMock{}
 	cm.On("ID").Return(t.Events[0].Id, nil)
 
 	hdr.FindEventByID(cm)
@@ -155,7 +156,7 @@ func (t *EstampHandlerTest) TestFindByIdNotFound() {
 
 	hdr := NewHandler(s, v)
 
-	cm := &mock.ContextMock{}
+	cm := &rctx.ContextMock{}
 	cm.On("ID").Return(t.Events[0].Id, nil)
 
 	hdr.FindEventByID(cm)
@@ -170,7 +171,7 @@ func (t *EstampHandlerTest) TestFindByIdInternal() {
 
 	hdr := NewHandler(s, v)
 
-	cm := &mock.ContextMock{}
+	cm := &rctx.ContextMock{}
 	cm.On("ID").Return(t.Events[0].Id, nil)
 
 	hdr.FindEventByID(cm)
@@ -185,7 +186,7 @@ func (t *EstampHandlerTest) TestFindByIdUnavailable() {
 
 	hdr := NewHandler(s, v)
 
-	cm := &mock.ContextMock{}
+	cm := &rctx.ContextMock{}
 	cm.On("ID").Return(t.Events[0].Id, nil)
 
 	hdr.FindEventByID(cm)
@@ -203,7 +204,7 @@ func (t *EstampHandlerTest) TestVerifyEstampSuccess() {
 		Event: t.Events[0],
 	}, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.UId)
 	c.On("Bind", &dto.VerifyEstampRequest{}).Return(&dto.VerifyEstampRequest{
 		EventId: t.Events[0].Id,
@@ -222,7 +223,7 @@ func (t *EstampHandlerTest) TestVerifyEstampSuccess() {
 func (t *EstampHandlerTest) TestVerifyEstampBadRequest() {
 	s := &mock.ServiceMock{}
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.UId)
 	c.On("Bind", &dto.VerifyEstampRequest{}).Return(nil, errors.New(""))
 
@@ -239,7 +240,7 @@ func (t *EstampHandlerTest) TestVerifyEstampInnerError() {
 	s := &mock.ServiceMock{}
 	s.On("FindEventByID", t.Events[0].Id).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.UId)
 	c.On("Bind", &dto.VerifyEstampRequest{}).Return(&dto.VerifyEstampRequest{
 		EventId: t.Events[0].Id,
@@ -265,7 +266,7 @@ func (t *EstampHandlerTest) TestFindAllEventWithTypeSuccess() {
 	s := &mock.ServiceMock{}
 	s.On("FindAllEventWithType", t.EventType).Return(want, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Query", "eventType").Return(t.EventType)
 
 	v, _ := validator.NewValidator()
@@ -282,7 +283,7 @@ func (t *EstampHandlerTest) TestFindAllEventWithTypeInnerError() {
 	s := &mock.ServiceMock{}
 	s.On("FindAllEventWithType", t.EventType).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Query", "eventType").Return(t.EventType)
 
 	v, _ := validator.NewValidator()

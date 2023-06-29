@@ -8,6 +8,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/stretchr/testify/assert"
@@ -94,9 +95,7 @@ func (t *AuthHandlerTest) TestVerifyTicketSuccess() {
 
 	usrSrv := &user.ServiceMock{}
 
-	c := &mock.ContextMock{
-		VerifyTicketDto: &dto.VerifyTicket{Ticket: ticket},
-	}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.VerifyTicket{}).Return(&dto.VerifyTicket{Ticket: ticket}, nil)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -117,9 +116,7 @@ func (t *AuthHandlerTest) TestVerifyTicketInvalid() {
 
 	usrSrv := &user.ServiceMock{}
 
-	c := &mock.ContextMock{
-		VerifyTicketDto: &dto.VerifyTicket{Ticket: ticket},
-	}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.VerifyTicket{}).Return(&dto.VerifyTicket{Ticket: ticket}, nil)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -140,9 +137,7 @@ func (t *AuthHandlerTest) TestVerifyTicketGrpcErr() {
 
 	usrSrv := &user.ServiceMock{}
 
-	c := &mock.ContextMock{
-		VerifyTicketDto: &dto.VerifyTicket{Ticket: ticket},
-	}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.VerifyTicket{}).Return(&dto.VerifyTicket{Ticket: ticket}, nil)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -162,7 +157,7 @@ func (t *AuthHandlerTest) TestValidateSuccess() {
 	usrSrv := &user.ServiceMock{}
 	usrSrv.On("FindOne", t.Payload.UserId).Return(t.UserDto, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Payload.UserId)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -186,7 +181,7 @@ func (t *AuthHandlerTest) TestValidateInvalidUser() {
 	usrSrv := &user.ServiceMock{}
 	usrSrv.On("FindOne", t.Payload.UserId).Return(nil, t.NotFoundErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Payload.UserId)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -206,7 +201,7 @@ func (t *AuthHandlerTest) TestValidateGrpcErrUserService() {
 	usrSrv := &user.ServiceMock{}
 	usrSrv.On("FindOne", t.Payload.UserId).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.Payload.UserId)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -227,9 +222,7 @@ func (t *AuthHandlerTest) TestRedeemRefreshTokenSuccess() {
 
 	usrSrv := &user.ServiceMock{}
 
-	c := &mock.ContextMock{
-		RefreshTokenDto: &dto.RedeemNewToken{RefreshToken: token},
-	}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.RedeemNewToken{}).Return(&dto.RedeemNewToken{RefreshToken: token}, nil)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -250,9 +243,7 @@ func (t *AuthHandlerTest) TestRedeemRefreshTokenInvalid() {
 
 	usrSrv := &user.ServiceMock{}
 
-	c := &mock.ContextMock{
-		RefreshTokenDto: &dto.RedeemNewToken{RefreshToken: token},
-	}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.RedeemNewToken{}).Return(&dto.RedeemNewToken{RefreshToken: token}, nil)
 
 	h := NewHandler(srv, usrSrv, v)
@@ -273,9 +264,7 @@ func (t *AuthHandlerTest) TestRedeemRefreshTokenGrpc() {
 
 	usrSrv := &user.ServiceMock{}
 
-	c := &mock.ContextMock{
-		RefreshTokenDto: &dto.RedeemNewToken{RefreshToken: token},
-	}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.RedeemNewToken{}).Return(&dto.RedeemNewToken{RefreshToken: token}, nil)
 
 	h := NewHandler(srv, usrSrv, v)

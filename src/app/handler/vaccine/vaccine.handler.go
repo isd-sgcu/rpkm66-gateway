@@ -5,6 +5,7 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 )
 
 type Handler struct {
@@ -14,12 +15,6 @@ type Handler struct {
 
 type IService interface {
 	Verify(string, string) (*dto.VaccineResponse, *dto.ResponseErr)
-}
-
-type IContext interface {
-	Bind(interface{}) error
-	JSON(int, interface{})
-	UserID() string
 }
 
 func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
@@ -41,7 +36,7 @@ func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
 // @Failure 403 {object} dto.ResponseForbiddenErr Invalid phase
 // @Security     AuthToken
 // @Router /vaccine/verify [post]
-func (h *Handler) Verify(ctx IContext) {
+func (h *Handler) Verify(ctx rctx.Context) {
 	userId := ctx.UserID()
 
 	verifyReq := dto.Verify{}

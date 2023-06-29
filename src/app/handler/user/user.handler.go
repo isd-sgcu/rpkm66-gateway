@@ -7,22 +7,14 @@ import (
 	"net/http"
 
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/estamp"
 	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
-	"github.com/isd-sgcu/rpkm66-gateway/src/interfaces/qr"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
 type Handler struct {
 	service  IService
 	validate *validate.DtoValidator
-}
-
-type IContext interface {
-	JSON(int, interface{})
-	UserID() string
-	Bind(interface{}) error
-	ID() (string, error)
 }
 
 func NewHandler(service IService, validate *validate.DtoValidator) *Handler {
@@ -56,7 +48,7 @@ type IService interface {
 // @Failure 404 {object} dto.ResponseNotfoundErr Not found user
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /user/{id} [get]
-func (h *Handler) FindOne(ctx IContext) {
+func (h *Handler) FindOne(ctx rctx.Context) {
 	id, err := ctx.ID()
 
 	if err != nil {
@@ -93,7 +85,7 @@ func (h *Handler) FindOne(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user [post]
-func (h *Handler) Create(ctx IContext) {
+func (h *Handler) Create(ctx rctx.Context) {
 	usrDto := dto.UserDto{}
 
 	err := ctx.Bind(&usrDto)
@@ -134,7 +126,7 @@ func (h *Handler) Create(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user [patch]
-func (h *Handler) Update(ctx IContext) {
+func (h *Handler) Update(ctx rctx.Context) {
 	usrId := ctx.UserID()
 
 	usrDto := dto.UpdateUserDto{}
@@ -168,7 +160,7 @@ func (h *Handler) Update(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user [put]
-func (h *Handler) CreateOrUpdate(ctx IContext) {
+func (h *Handler) CreateOrUpdate(ctx rctx.Context) {
 	id := ctx.UserID()
 	usrDto := dto.UserDto{}
 
@@ -218,7 +210,7 @@ func (h *Handler) CreateOrUpdate(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Security     AuthToken
 // @Router /user/{id} [delete]
-func (h *Handler) Delete(ctx IContext) {
+func (h *Handler) Delete(ctx rctx.Context) {
 	id, err := ctx.ID()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
@@ -251,7 +243,7 @@ func (h *Handler) Delete(ctx IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /estamp/user [get]
 // @Security     AuthToken
-func (h *Handler) GetUserEstamp(ctx estamp.IContext) {
+func (h *Handler) GetUserEstamp(ctx rctx.Context) {
 	id := ctx.UserID()
 
 	res, errRes := h.service.GetUserEstamp(id)
@@ -279,7 +271,7 @@ func (h *Handler) GetUserEstamp(ctx estamp.IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/estamp/confirm [post]
 // @Security     AuthToken
-func (h *Handler) ConfirmEstamp(ctx qr.IContext) {
+func (h *Handler) ConfirmEstamp(ctx rctx.Context) {
 	userid := ctx.UserID()
 	ce := &dto.ConfirmEstampRequest{}
 
@@ -314,7 +306,7 @@ func (h *Handler) ConfirmEstamp(ctx qr.IContext) {
 // @Failure 503 {object} dto.ResponseServiceDownErr Service is down
 // @Router /qr/ticket [post]
 // @Security     AuthToken
-func (h *Handler) VerifyTicket(ctx qr.IContext) {
+func (h *Handler) VerifyTicket(ctx rctx.Context) {
 	userid := ctx.UserID()
 
 	usr, errRes := h.service.FindOne(userid)

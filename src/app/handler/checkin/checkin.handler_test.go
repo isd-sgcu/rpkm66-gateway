@@ -10,6 +10,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
 	cst "github.com/isd-sgcu/rpkm66-gateway/src/constant/checkin"
 	cmock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/checkin"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -79,7 +80,7 @@ func (t *CheckinHandlerTest) TestCheckinVerifySuccess() {
 		CheckinType:  t.CheckinType,
 	}, nil)
 
-	c := &cmock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinVerifyRequest{}).Return(&dto.CheckinVerifyRequest{
 		EventType: t.EventType,
@@ -102,7 +103,7 @@ func (t *CheckinHandlerTest) TestCheckinVerifyBadRequest() {
 		CheckinType:  t.CheckinType,
 	}, nil)
 
-	c := &cmock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinVerifyRequest{}).Return(nil, errors.New(""))
 
@@ -119,7 +120,7 @@ func (t *CheckinHandlerTest) TestCheckinVerifyThrowInnerError() {
 	s := &cmock.ServiceMock{}
 	s.On("CheckinVerify", t.User.Id, t.EventType).Return(nil, t.ServiceDownErr)
 
-	c := &cmock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinVerifyRequest{}).Return(&dto.CheckinVerifyRequest{
 		EventType: t.EventType,
@@ -145,7 +146,7 @@ func (t *CheckinHandlerTest) TestCheckinConfirmSuccess() {
 		Success: true,
 	}, nil)
 
-	c := &cmock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinConfirmRequest{}).Return(&dto.CheckinConfirmRequest{
 		Token: t.Token,
@@ -167,7 +168,7 @@ func (t *CheckinHandlerTest) TestCheckinConfirmBadRequest() {
 		Success: true,
 	}, nil)
 
-	c := &cmock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinConfirmRequest{}).Return(nil, errors.New(""))
 
@@ -184,7 +185,7 @@ func (t *CheckinHandlerTest) TestCheckinConfirmThrowInnerError() {
 	s := &cmock.ServiceMock{}
 	s.On("CheckinConfirm", t.Token).Return(nil, t.ServiceDownErr)
 
-	c := &cmock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.CheckinConfirmRequest{}).Return(&dto.CheckinConfirmRequest{
 		Token: t.Token,

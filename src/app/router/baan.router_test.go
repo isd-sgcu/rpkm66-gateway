@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/baan"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -47,7 +47,7 @@ func (t *BaanRouterTest) TestPostBaanRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.GetBaan("/", func(ctx baan.IContext) {
+	r.GetBaan("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})

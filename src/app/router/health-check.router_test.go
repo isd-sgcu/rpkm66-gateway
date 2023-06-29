@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	health_check "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/health-check"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -42,7 +42,7 @@ func (t *HealthCheckRouterTest) TestHealthCheckRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.GetHealthCheck("/", func(ctx health_check.IContext) {
+	r.GetHealthCheck("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusOK, map[string]string{
 			"message": "Hello World",
 		})

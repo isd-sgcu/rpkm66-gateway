@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/file"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -47,7 +47,7 @@ func (t *FileRouterTest) TestPostFileRouter() {
 
 	r := NewFiberRouter(&g, conf)
 
-	r.PostFile("/", func(ctx file.IContext) {
+	r.PostFile("/", func(ctx rctx.Context) {
 		ctx.JSON(http.StatusCreated, map[string]string{
 			"message": "Hello World",
 		})

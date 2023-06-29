@@ -8,6 +8,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/user"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/pkg/errors"
@@ -142,7 +143,7 @@ func (t *UserHandlerTest) TestFindOneUser() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.User.Id).Return(want, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
@@ -160,7 +161,7 @@ func (t *UserHandlerTest) TestFindOneFoundErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.User.Id).Return(nil, t.NotFoundErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
@@ -182,7 +183,7 @@ func (t *UserHandlerTest) TestFindOneInternalErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.User.Id).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return("", errors.New("Cannot parse id"))
 
 	v, _ := validator.NewValidator()
@@ -200,7 +201,7 @@ func (t *UserHandlerTest) TestFindOneGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("FindOne", t.User.Id).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
@@ -218,7 +219,7 @@ func (t *UserHandlerTest) TestCreateSuccess() {
 	srv := new(mock.ServiceMock)
 	srv.On("Create", t.UserDto).Return(want, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
 
 	v, _ := validator.NewValidator()
@@ -248,7 +249,7 @@ func (t *UserHandlerTest) TestCreateValidateErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("Create", t.UserDto).Return(t.User, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
 
 	v, _ := validator.NewValidator()
@@ -266,7 +267,7 @@ func (t *UserHandlerTest) TestCreateGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("Create", t.UserDto).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
 
 	v, _ := validator.NewValidator()
@@ -284,7 +285,7 @@ func (t *UserHandlerTest) TestUpdateSuccess() {
 	srv := new(mock.ServiceMock)
 	srv.On("Update", t.User.Id, t.UpdateUserDto).Return(want, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 	c.On("UserID").Return(t.User.Id, nil)
 	c.On("Bind", &dto.UpdateUserDto{}).Return(t.UpdateUserDto, nil)
@@ -303,7 +304,7 @@ func (t *UserHandlerTest) TestUpdateNotFound() {
 	srv := new(mock.ServiceMock)
 	srv.On("Update", t.User.Id, t.UpdateUserDto).Return(nil, t.NotFoundErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 	c.On("UserID").Return(t.User.Id, nil)
 	c.On("Bind", &dto.UpdateUserDto{}).Return(t.UpdateUserDto, nil)
@@ -323,7 +324,7 @@ func (t *UserHandlerTest) TestUpdateGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("Update", t.User.Id, t.UpdateUserDto).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 	c.On("UserID").Return(t.User.Id, nil)
 	c.On("Bind", &dto.UpdateUserDto{}).Return(t.UpdateUserDto, nil)
@@ -343,7 +344,7 @@ func (t *UserHandlerTest) TestCreateOrUpdateSuccess() {
 	srv := new(mock.ServiceMock)
 	srv.On("CreateOrUpdate", t.UserDto).Return(want, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
 
@@ -374,7 +375,7 @@ func (t *UserHandlerTest) TestCreateOrUpdateValidateErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("CreateOrUpdate", t.UserDto).Return(nil, t.BindErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
 	c.On("UserID").Return(t.User.Id)
 
@@ -393,7 +394,7 @@ func (t *UserHandlerTest) TestCreateOrUpdateGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("CreateOrUpdate", t.UserDto).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.UserDto{}).Return(t.UserDto, nil)
 
@@ -410,7 +411,7 @@ func (t *UserHandlerTest) TestDeleteSuccess() {
 	srv := new(mock.ServiceMock)
 	srv.On("Delete", t.User.Id).Return(true, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
@@ -428,7 +429,7 @@ func (t *UserHandlerTest) TestDeleteNotFound() {
 	srv := new(mock.ServiceMock)
 	srv.On("Delete", t.User.Id).Return(false, t.NotFoundErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 
 	v, _ := validator.NewValidator()
@@ -448,7 +449,7 @@ func (t *UserHandlerTest) TestDeleteInvalidID() {
 	srv := new(mock.ServiceMock)
 	srv.On("Delete", t.User.Id).Return(false, t.NotFoundErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return("", errors.New(want.Message))
 
 	v, _ := validator.NewValidator()
@@ -466,7 +467,7 @@ func (t *UserHandlerTest) TestDeleteGrpcErr() {
 	srv := new(mock.ServiceMock)
 	srv.On("Delete", t.User.Id).Return(false, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("ID").Return(t.User.Id, nil)
 	v, _ := validator.NewValidator()
 
@@ -492,7 +493,7 @@ func (t *UserHandlerTest) TestGetUserEstampSuccess() {
 
 	hdr := NewHandler(s, v)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id, nil)
 
 	hdr.GetUserEstamp(c)
@@ -509,7 +510,7 @@ func (t *UserHandlerTest) TestFindUserInternal() {
 
 	hdr := NewHandler(s, v)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id, nil)
 
 	hdr.GetUserEstamp(c)
@@ -526,7 +527,7 @@ func (t *UserHandlerTest) TestFindUserUnavailable() {
 
 	hdr := NewHandler(s, v)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id, nil)
 
 	hdr.GetUserEstamp(c)
@@ -541,7 +542,7 @@ func (t *UserHandlerTest) TestConfirmEstampSuccess() {
 	s := &mock.ServiceMock{}
 	s.On("ConfirmEstamp", t.User.Id, t.Events[0].Id).Return(want, nil)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.ConfirmEstampRequest{}).Return(&dto.ConfirmEstampRequest{
 		EventId: t.Events[0].Id,
@@ -560,7 +561,7 @@ func (t *UserHandlerTest) TestConfirmEstampSuccess() {
 func (t *UserHandlerTest) TestConfirmEstampBadRequest() {
 	s := &mock.ServiceMock{}
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.ConfirmEstampRequest{}).Return(nil, errors.New(""))
 
@@ -577,7 +578,7 @@ func (t *UserHandlerTest) TestConfirmEstampInnerError() {
 	s := &mock.ServiceMock{}
 	s.On("ConfirmEstamp", t.User.Id, t.Events[0].Id).Return(nil, t.ServiceDownErr)
 
-	c := &mock.ContextMock{}
+	c := &rctx.ContextMock{}
 	c.On("UserID").Return(t.User.Id)
 	c.On("Bind", &dto.ConfirmEstampRequest{}).Return(&dto.ConfirmEstampRequest{
 		EventId: t.Events[0].Id,
