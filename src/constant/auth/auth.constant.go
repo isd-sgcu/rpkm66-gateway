@@ -1,5 +1,7 @@
 package auth
 
+import "github.com/isd-sgcu/rpkm66-gateway/src/constant/phase"
+
 var ExcludePath = map[string]struct{}{
 	"POST /auth/verify":       {},
 	"POST /auth/refreshToken": {},
@@ -9,21 +11,21 @@ var ExcludePath = map[string]struct{}{
 }
 
 var MapPath2Phase = map[string][]string{
-	"PUT /user":                 {"register", "eventDay", "eStamp"},
-	"PATCH /user":               {"register", "select", "eventDay", "eStamp"},
-	"POST /vaccine/verify":      {"register", "eventDay", "eStamp"},
-	"PUT /file/upload":          {"register", "eventDay", "eStamp"},
-	"GET /group/:token":         {"select"},
-	"POST /group/:token":        {"select"},
-	"DELETE /group/leave":       {"select"},
-	"PUT /group":                {"select"},
-	"GET /baan":                 {"select"},
-	"GET /baan/:id":             {"select"},
-	"DELETE /group/members/:id": {"select"},
-	"POST /qr/checkin/verify":   {"eventDay", "eStamp"},
-	"POST /qr/checkin/confirm":  {"eventDay", "eStamp"},
-	"POST /qr/estamp/verify":    {"eStamp"},
-	"POST /qr/estamp/confirm":   {"eStamp"},
-	"GET /estamp":               {"eStamp"},
-	"GET /estamp/:id":           {"eStamp"},
+	"PUT /user":                 {phase.Register, phase.EventDay, phase.Estamp},
+	"PATCH /user":               {phase.Register, phase.Select, phase.EventDay, phase.Estamp},
+	"POST /vaccine/verify":      {phase.Register, phase.EventDay, phase.Estamp},
+	"PUT /file/upload":          {phase.Register, phase.EventDay, phase.Estamp},
+	"GET /group/:token":         {phase.Select},
+	"POST /group/:token":        {phase.Select},
+	"DELETE /group/leave":       {phase.Select},
+	"PUT /group":                {phase.Select},
+	"GET /baan":                 {phase.Select},
+	"GET /baan/:id":             {phase.Select},
+	"DELETE /group/members/:id": {phase.Select},
+	"POST /qr/checkin/verify":   {phase.EventDay, phase.Estamp},
+	"POST /qr/checkin/confirm":  {phase.EventDay, phase.Estamp},
+	"POST /qr/estamp/verify":    {phase.Estamp},
+	"POST /qr/estamp/confirm":   {phase.Estamp},
+	"GET /estamp":               {phase.Estamp},
+	"GET /estamp/:id":           {phase.Estamp},
 }
