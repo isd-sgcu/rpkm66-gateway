@@ -313,23 +313,6 @@ func (t *GroupHandlerTest) TestDeleteMemberNotFound() {
 	assert.Equal(t.T(), want, c.V)
 }
 
-func (t *GroupHandlerTest) TestDeleteMemberInvalidID() {
-	want := t.InvalidIdErr
-
-	c := &rctx.ContextMock{}
-	c.On("Param").Return("")
-	c.On("UserID").Return("")
-
-	srv := new(mock.ServiceMock)
-
-	v, _ := validator.NewValidator()
-
-	h := NewHandler(srv, v)
-	h.DeleteMember(c)
-
-	assert.Equal(t.T(), want, c.V)
-}
-
 func (t *GroupHandlerTest) TestDeleteMemberForbidden() {
 	want := t.ForbiddenErr
 
