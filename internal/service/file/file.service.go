@@ -2,15 +2,13 @@ package file
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/isd-sgcu/rpkm66-gateway/constant/file"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type serviceImpl struct {
@@ -34,50 +32,13 @@ func (s *serviceImpl) Upload(file *dto.DecomposedFile, userId string, tag file.T
 	})
 
 	if err != nil {
-		st, ok := status.FromError(err)
-		if ok {
-			switch st.Code() {
-			case codes.Unavailable:
-				log.Error().
-					Err(err).
-					Str("service", "file").
-					Str("module", "upload").
-					Str("user_id", userId).
-					Msg("Something wrong")
-				return "", &dto.ResponseErr{
-					StatusCode: http.StatusGatewayTimeout,
-					Message:    "Connection timeout",
-					Data:       nil,
-				}
-
-			default:
-				log.Error().
-					Err(err).
-					Str("service", "file").
-					Str("module", "upload").
-					Str("user_id", userId).
-					Msg("Error while connecting to service")
-				return "", &dto.ResponseErr{
-					StatusCode: http.StatusServiceUnavailable,
-					Message:    "Service is down",
-					Data:       nil,
-				}
-			}
-		}
-
 		log.Error().
 			Err(err).
 			Str("service", "file").
-			Str("module", "upload").
-			Str("user_id", userId).
-			Msg("Error while connecting to service")
+			Str("method", "upload file").
+			Msg("Error while upload file")
 
-		return "", &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
-
+		return "", utils.ServiceErrorHandler(err)
 	}
 
 	return res.Url, nil

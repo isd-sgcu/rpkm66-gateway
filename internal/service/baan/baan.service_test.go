@@ -8,7 +8,6 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/baan"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -51,7 +50,7 @@ func (t *BaanServiceTest) SetupTest() {
 
 	t.NotFoundErr = &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Message:    "Baan not found",
+		Message:    "Not Found",
 		Data:       nil,
 	}
 }
@@ -127,7 +126,7 @@ func (t *BaanServiceTest) TestFindOneGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &baan.ClientMock{}
-	c.On("FindOneBaan", &proto.FindOneBaanRequest{Id: t.Baan.Id}).Return(nil, errors.New("Service is down"))
+	c.On("FindOneBaan", &proto.FindOneBaanRequest{Id: t.Baan.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 	srv := NewService(c)
 
 	actual, err := srv.FindOne(t.Baan.Id)

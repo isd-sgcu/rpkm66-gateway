@@ -9,7 +9,6 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/user"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -149,13 +148,13 @@ func (t *UserServiceTest) SetupTest() {
 
 	t.NotFoundErr = &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Message:    "User not found",
+		Message:    "Not Found",
 		Data:       nil,
 	}
 
 	t.InternalErr = &dto.ResponseErr{
 		StatusCode: http.StatusInternalServerError,
-		Message:    "Internal Server Error",
+		Message:    "Internal Error",
 		Data:       nil,
 	}
 }
@@ -192,7 +191,7 @@ func (t *UserServiceTest) TestFindOneGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &user.ClientMock{}
-	c.On("FindOne", &proto.FindOneUserRequest{Id: t.User.Id}).Return(nil, errors.New("Service is down"))
+	c.On("FindOne", &proto.FindOneUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 	srv := NewService(c)
 
 	actual, err := srv.FindOne(t.User.Id)
@@ -219,7 +218,7 @@ func (t *UserServiceTest) TestCreateGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &user.ClientMock{}
-	c.On("Create", t.UserReq).Return(nil, errors.New("Service is down"))
+	c.On("Create", t.UserReq).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -287,7 +286,7 @@ func (t *UserServiceTest) TestUpdateGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &user.ClientMock{}
-	c.On("Update", t.UpdateUserReq).Return(nil, errors.New("Service is down"))
+	c.On("Update", t.UpdateUserReq).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -319,7 +318,7 @@ func (t *UserServiceTest) TestCreateOrUpdateGrpcErr() {
 	t.UserReq.Id = t.User.Id
 
 	c := &user.ClientMock{}
-	c.On("CreateOrUpdate", &proto.CreateOrUpdateUserRequest{User: t.UserReq}).Return(nil, errors.New("Service is down"))
+	c.On("CreateOrUpdate", &proto.CreateOrUpdateUserRequest{User: t.UserReq}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -359,7 +358,7 @@ func (t *UserServiceTest) TestDeleteGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &user.ClientMock{}
-	c.On("Delete", &proto.DeleteUserRequest{Id: t.User.Id}).Return(nil, errors.New("Service is down"))
+	c.On("Delete", &proto.DeleteUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 

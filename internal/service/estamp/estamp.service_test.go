@@ -84,7 +84,7 @@ func (t *EStampServiceTest) SetupTest() {
 
 	t.NotFoundErr = &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Message:    "Not found",
+		Message:    "Not Found",
 		Data:       nil,
 	}
 
@@ -96,7 +96,7 @@ func (t *EStampServiceTest) SetupTest() {
 
 	t.InternalErr = &dto.ResponseErr{
 		StatusCode: http.StatusInternalServerError,
-		Message:    "Internal Server Error",
+		Message:    "Internal Error",
 		Data:       nil,
 	}
 

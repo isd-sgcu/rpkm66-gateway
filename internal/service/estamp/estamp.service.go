@@ -2,14 +2,12 @@ package estamp
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type serviceImpl struct {
@@ -31,57 +29,13 @@ func (s *serviceImpl) FindEventByID(id string) (*proto.FindEventByIDResponse, *d
 	})
 
 	if err != nil {
-		st, ok := status.FromError(err)
+		log.Error().
+			Err(err).
+			Str("service", "estamp").
+			Str("method", "find event by id").
+			Msg("Error while find event by id")
 
-		if !ok {
-			log.Error().
-				Err(err).
-				Str("service", "estamp").
-				Str("module", "find_by_id").
-				Msg("\"Error parsing\" error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
-
-		switch st.Code() {
-		case codes.Unavailable:
-			log.Error().
-				Err(err).
-				Str("service", "checkin").
-				Str("module", "find_by_id").
-				Msg("Service is down")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusServiceUnavailable,
-				Message:    "Service is down",
-				Data:       nil,
-			}
-		case codes.NotFound:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusNotFound,
-				Message:    "Not found",
-				Data:       nil,
-			}
-		case codes.PermissionDenied:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusForbidden,
-				Message:    "Forbidden resource",
-				Data:       nil,
-			}
-		default:
-			log.Error().
-				Err(err).
-				Str("service", "checkin").
-				Str("module", "find_by_id").
-				Msg("Unhandled error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res, nil
@@ -96,57 +50,13 @@ func (s *serviceImpl) FindAllEventWithType(eventType string) (*proto.FindAllEven
 	})
 
 	if err != nil {
-		st, ok := status.FromError(err)
+		log.Error().
+			Err(err).
+			Str("service", "estamp").
+			Str("method", "find event with type").
+			Msg("Error while find event with type")
 
-		if !ok {
-			log.Error().
-				Err(err).
-				Str("service", "estamp").
-				Str("module", "find_all_event_with_type").
-				Msg("\"Error parsing\" error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
-
-		switch st.Code() {
-		case codes.Unavailable:
-			log.Error().
-				Err(err).
-				Str("service", "checkin").
-				Str("module", "find_all_event_with_type").
-				Msg("Service is down")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusServiceUnavailable,
-				Message:    "Service is down",
-				Data:       nil,
-			}
-		case codes.NotFound:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusNotFound,
-				Message:    "Not found",
-				Data:       nil,
-			}
-		case codes.PermissionDenied:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusForbidden,
-				Message:    "Forbidden resource",
-				Data:       nil,
-			}
-		default:
-			log.Error().
-				Err(err).
-				Str("service", "checkin").
-				Str("module", "find_all_event_with_type").
-				Msg("Unhandled error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res, nil

@@ -2,14 +2,12 @@ package user
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
 	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type serviceImpl struct {
@@ -22,54 +20,25 @@ func NewService(client proto.UserServiceClient) *serviceImpl {
 	}
 }
 
-func (s *serviceImpl) FindOne(id string) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) FindOne(id string) (*proto.User, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, errRes := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
-	if errRes != nil {
-		st, ok := status.FromError(errRes)
-		if ok {
-			switch st.Code() {
-			case codes.NotFound:
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusNotFound,
-					Message:    "User not found",
-					Data:       nil,
-				}
-			default:
-
-				log.Error().
-					Err(errRes).
-					Str("service", "user").
-					Str("module", "findOne").
-					Msg("Error while connecting to service")
-
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusServiceUnavailable,
-					Message:    "Service is down",
-					Data:       nil,
-				}
-			}
-		}
-
+	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
+	if err != nil {
 		log.Error().
-			Err(errRes).
+			Err(err).
 			Str("service", "user").
-			Str("module", "findOne").
-			Msg("Error while connecting to service")
+			Str("method", "find one user").
+			Msg("Error while find one user")
 
-		return nil, &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res.User, nil
 }
 
-func (s *serviceImpl) Create(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) Create(in *dto.UserDto) (*proto.User, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -88,26 +57,21 @@ func (s *serviceImpl) Create(in *dto.UserDto) (result *proto.User, err *dto.Resp
 		CanSelectBaan:   *in.CanSelectBaan,
 	}
 
-	res, errRes := s.client.Create(ctx, &proto.CreateUserRequest{User: usrDto})
-	if errRes != nil {
-
+	res, err := s.client.Create(ctx, &proto.CreateUserRequest{User: usrDto})
+	if err != nil {
 		log.Error().
-			Err(errRes).
+			Err(err).
 			Str("service", "user").
-			Str("module", "create").
-			Msg("Error while connecting to service")
+			Str("method", "create user").
+			Msg("Error while create user")
 
-		return nil, &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res.User, nil
 }
 
-func (s *serviceImpl) Update(id string, in *dto.UpdateUserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) Update(id string, in *dto.UpdateUserDto) (*proto.User, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -126,50 +90,21 @@ func (s *serviceImpl) Update(id string, in *dto.UpdateUserDto) (result *proto.Us
 		Disease:         in.Disease,
 	}
 
-	res, errRes := s.client.Update(ctx, usrReq)
-	if errRes != nil {
-		st, ok := status.FromError(errRes)
-		if ok {
-			switch st.Code() {
-			case codes.NotFound:
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusNotFound,
-					Message:    st.Message(),
-					Data:       nil,
-				}
-			default:
-
-				log.Error().
-					Err(errRes).
-					Str("service", "user").
-					Str("module", "update").
-					Msg("Error while connecting to service")
-
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusServiceUnavailable,
-					Message:    "Service is down",
-					Data:       nil,
-				}
-			}
-		}
-
+	res, err := s.client.Update(ctx, usrReq)
+	if err != nil {
 		log.Error().
-			Err(errRes).
+			Err(err).
 			Str("service", "user").
-			Str("module", "update").
-			Msg("Error while connecting to service")
+			Str("method", "update user").
+			Msg("Error while update user")
 
-		return nil, &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res.User, nil
 }
 
-func (s *serviceImpl) Verify(studentId string, verifyType string) (result bool, err *dto.ResponseErr) {
+func (s *serviceImpl) Verify(studentId string, verifyType string) (bool, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -180,22 +115,15 @@ func (s *serviceImpl) Verify(studentId string, verifyType string) (result bool, 
 		Str("student_id", studentId).
 		Msg("Trying to verify the user")
 
-	res, errRes := s.client.Verify(ctx, &proto.VerifyUserRequest{StudentId: studentId, VerifyType: verifyType})
-	if errRes != nil {
-
+	res, err := s.client.Verify(ctx, &proto.VerifyUserRequest{StudentId: studentId, VerifyType: verifyType})
+	if err != nil {
 		log.Error().
-			Err(errRes).
+			Err(err).
 			Str("service", "user").
-			Str("module", "verify").
-			Str("type", verifyType).
-			Str("student_id", studentId).
-			Msg("Error while verifying")
+			Str("method", "verify").
+			Msg("Error while verify")
 
-		return false, &dto.ResponseErr{
-			StatusCode: http.StatusNotFound,
-			Message:    "User not found",
-			Data:       nil,
-		}
+		return false, utils.ServiceErrorHandler(err)
 	}
 
 	log.Info().
@@ -208,7 +136,7 @@ func (s *serviceImpl) Verify(studentId string, verifyType string) (result bool, 
 	return res.Success, nil
 }
 
-func (s *serviceImpl) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
+func (s *serviceImpl) CreateOrUpdate(in *dto.UserDto) (*proto.User, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -228,93 +156,33 @@ func (s *serviceImpl) CreateOrUpdate(in *dto.UserDto) (result *proto.User, err *
 		CanSelectBaan:   *in.CanSelectBaan,
 	}
 
-	res, errRes := s.client.CreateOrUpdate(ctx, &proto.CreateOrUpdateUserRequest{User: usrDto})
-	if errRes != nil {
-		st, ok := status.FromError(errRes)
-		if ok {
-			switch st.Code() {
-			case codes.NotFound:
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusNotFound,
-					Message:    st.Message(),
-					Data:       nil,
-				}
-			default:
-
-				log.Error().
-					Err(errRes).
-					Str("service", "user").
-					Str("module", "create and update").
-					Str("student_id", usrDto.StudentID).
-					Msg("Error while connecting to service")
-
-				return nil, &dto.ResponseErr{
-					StatusCode: http.StatusServiceUnavailable,
-					Message:    "Service is down",
-					Data:       nil,
-				}
-			}
-		}
-
+	res, err := s.client.CreateOrUpdate(ctx, &proto.CreateOrUpdateUserRequest{User: usrDto})
+	if err != nil {
 		log.Error().
-			Err(errRes).
+			Err(err).
 			Str("service", "user").
-			Str("module", "create and update").
-			Str("student_id", usrDto.StudentID).
-			Msg("Error while connecting to service")
+			Str("method", "upsert user").
+			Msg("Error while upsert user")
 
-		return nil, &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res.User, nil
 }
 
-func (s *serviceImpl) Delete(id string) (result bool, err *dto.ResponseErr) {
+func (s *serviceImpl) Delete(id string) (bool, *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, errRes := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
-	if errRes != nil {
-		st, ok := status.FromError(errRes)
-		if ok {
-			switch st.Code() {
-			case codes.NotFound:
-				return false, &dto.ResponseErr{
-					StatusCode: http.StatusNotFound,
-					Message:    st.Message(),
-					Data:       nil,
-				}
-			default:
-
-				log.Error().
-					Err(errRes).
-					Str("service", "user").
-					Str("module", "delete").
-					Msg("Error while connecting to service")
-
-				return false, &dto.ResponseErr{
-					StatusCode: http.StatusServiceUnavailable,
-					Message:    "Service is down",
-					Data:       nil,
-				}
-			}
-		}
-
+	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
+	if err != nil {
 		log.Error().
-			Err(errRes).
+			Err(err).
 			Str("service", "user").
-			Str("module", "delete").
-			Msg("Error while connecting to service")
+			Str("method", "delete user").
+			Msg("Error while delete user")
 
-		return false, &dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    "Service is down",
-			Data:       nil,
-		}
+		return false, utils.ServiceErrorHandler(err)
 	}
 
 	return res.Success, nil
@@ -329,57 +197,13 @@ func (s *serviceImpl) GetUserEstamp(userid string) (*proto.GetUserEstampResponse
 	})
 
 	if err != nil {
-		st, ok := status.FromError(err)
+		log.Error().
+			Err(err).
+			Str("service", "user").
+			Str("method", "get user estamp").
+			Msg("Error while get user estamp")
 
-		if !ok {
-			log.Error().
-				Err(err).
-				Str("service", "estamp").
-				Str("module", "find_by_id").
-				Msg("\"Error parsing\" error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
-
-		switch st.Code() {
-		case codes.Unavailable:
-			log.Error().
-				Err(err).
-				Str("service", "checkin").
-				Str("module", "find_user_estamp").
-				Msg("Service is down")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusServiceUnavailable,
-				Message:    "Service is down",
-				Data:       nil,
-			}
-		case codes.NotFound:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusNotFound,
-				Message:    "User not found",
-				Data:       nil,
-			}
-		case codes.PermissionDenied:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusForbidden,
-				Message:    "Forbidden resource",
-				Data:       nil,
-			}
-		default:
-			log.Error().
-				Err(err).
-				Str("service", "checkin").
-				Str("module", "find_user_estamp").
-				Msg("Unhandled error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
 
 	return res, nil
@@ -395,63 +219,14 @@ func (s *serviceImpl) ConfirmEstamp(uid string, eid string) (*proto.ConfirmEstam
 	})
 
 	if err != nil {
-		st, ok := status.FromError(err)
+		log.Error().
+			Err(err).
+			Str("service", "user").
+			Str("method", "confirm estamp").
+			Msg("Error while confirm estamp")
 
-		if !ok {
-			log.Error().
-				Err(err).
-				Str("service", "estamp").
-				Str("module", "confirm_estamp").
-				Msg("\"Error parsing\" error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
-
-		switch st.Code() {
-		case codes.Unavailable:
-			log.Error().
-				Err(err).
-				Str("service", "estamp").
-				Str("module", "confirm_estamp").
-				Msg("Service is down")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusServiceUnavailable,
-				Message:    "Service is down",
-				Data:       nil,
-			}
-		case codes.NotFound:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusNotFound,
-				Message:    "User not found",
-				Data:       nil,
-			}
-		case codes.PermissionDenied:
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusForbidden,
-				Message:    "Forbidden resource",
-				Data:       nil,
-			}
-		default:
-			log.Error().
-				Err(err).
-				Str("service", "estamp").
-				Str("module", "confirm_estamp").
-				Msg("Unhandled error")
-			return nil, &dto.ResponseErr{
-				StatusCode: http.StatusInternalServerError,
-				Message:    "Internal Server Error",
-				Data:       nil,
-			}
-		}
+		return nil, utils.ServiceErrorHandler(err)
 	}
-
-	log.Info().
-		Str("service", "estamp").
-		Str("module", "confirm_estamp").
-		Msg("Successfully confirm estamp")
 
 	return res, nil
 }

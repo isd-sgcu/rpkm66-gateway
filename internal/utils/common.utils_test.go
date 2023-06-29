@@ -1,9 +1,15 @@
 package utils
 
 import (
+	"errors"
+	"net/http"
+	"testing"
+
+	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type UtilTest struct {
@@ -122,4 +128,95 @@ func testGetIDFromPath(t *testing.T, path string, want []string) {
 	actual := FindIDFromPath(path)
 
 	assert.Equal(t, want, actual)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerBadRequest() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusBadRequest,
+		Message:    "Invalid Input",
+	}
+
+	err := status.Error(codes.InvalidArgument, "")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerUnauthorized() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusUnauthorized,
+		Message:    "Unauthorized",
+	}
+
+	err := status.Error(codes.Unauthenticated, "")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerForbidden() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusForbidden,
+		Message:    "Forbidden",
+	}
+
+	err := status.Error(codes.PermissionDenied, "")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerNotFound() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusNotFound,
+		Message:    "Not Found",
+	}
+
+	err := status.Error(codes.NotFound, "")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerDuplicated() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusConflict,
+		Message:    "Duplicated Entity",
+	}
+
+	err := status.Error(codes.AlreadyExists, "")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerInternal() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusInternalServerError,
+		Message:    "Internal Error",
+	}
+
+	err := status.Error(codes.Internal, "")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
+}
+
+func (u *UtilTest) TestServiceErrorHandlerNonGrpcError() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusInternalServerError,
+		Message:    "Internal Error",
+	}
+
+	err := errors.New("Other error")
+
+	newErr := ServiceErrorHandler(err)
+
+	assert.Equal(u.T(), want, newErr)
 }

@@ -57,13 +57,13 @@ func (t *CheckinServiceTest) SetupTest() {
 
 	t.BadRequestErr = &dto.ResponseErr{
 		StatusCode: http.StatusBadRequest,
-		Message:    "Invalid ID",
+		Message:    "Invalid Input",
 		Data:       nil,
 	}
 
 	t.InternalErr = &dto.ResponseErr{
 		StatusCode: http.StatusInternalServerError,
-		Message:    "Internal Server Error",
+		Message:    "Internal Error",
 		Data:       nil,
 	}
 
@@ -151,7 +151,7 @@ func (t *CheckinServiceTest) TestCheckinConfirmInvalidCheckinType() {
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), &dto.ResponseErr{
 		StatusCode: http.StatusBadRequest,
-		Message:    "Invalid Checkin type",
+		Message:    "Invalid Input",
 		Data:       nil,
 	}, err)
 }
@@ -167,7 +167,7 @@ func (t *CheckinServiceTest) TestCheckinConfirmInvalidToken() {
 	assert.Nil(t.T(), actual)
 	assert.Equal(t.T(), &dto.ResponseErr{
 		StatusCode: http.StatusForbidden,
-		Message:    "Invalid Token",
+		Message:    "Forbidden",
 		Data:       nil,
 	}, err)
 }

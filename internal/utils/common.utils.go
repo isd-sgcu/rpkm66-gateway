@@ -2,9 +2,14 @@ package utils
 
 import (
 	"fmt"
-	"github.com/google/uuid"
+	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func IsExisted(e map[string]struct{}, key string) bool {
@@ -66,4 +71,51 @@ func FindIDFromPath(path string) []string {
 
 func BoolAdr(b bool) *bool {
 	return &b
+}
+
+func ServiceErrorHandler(err error) *dto.ResponseErr {
+	st, ok := status.FromError(err)
+	if !ok {
+		return &dto.ResponseErr{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Internal Error",
+		}
+	}
+	switch st.Code() {
+	case codes.InvalidArgument:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid Input",
+		}
+	case codes.Unauthenticated:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusUnauthorized,
+			Message:    "Unauthorized",
+		}
+	case codes.PermissionDenied:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusForbidden,
+			Message:    "Forbidden",
+		}
+	case codes.NotFound:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusNotFound,
+			Message:    "Not Found",
+		}
+	case codes.AlreadyExists:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusConflict,
+			Message:    "Duplicated Entity",
+		}
+	case codes.Internal:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Internal Error",
+		}
+	default:
+		return &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+		}
+	}
 }

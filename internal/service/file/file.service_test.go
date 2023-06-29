@@ -9,9 +9,10 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/file"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type FileServiceTest struct {
@@ -62,7 +63,7 @@ func (t *FileServiceTest) TestUploadFailed() {
 
 	c := mock.ClientMock{}
 	c.On("Upload", &proto.UploadRequest{
-		Filename: t.fileDecomposed.Filename, Data: t.fileDecomposed.Data, Tag: 1, UserId: t.userId, Type: file.Image}).Return(nil, errors.New("Cannot connect to service"))
+		Filename: t.fileDecomposed.Filename, Data: t.fileDecomposed.Data, Tag: 1, UserId: t.userId, Type: file.Image}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(&c)
 

@@ -10,7 +10,6 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/group"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -78,24 +77,24 @@ func (t *GroupServiceTest) SetupTest() {
 
 	t.NotFoundErr = &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Message:    "Group not found",
+		Message:    "Not Found",
 		Data:       nil,
 	}
 
 	t.InvalidIdErr = &dto.ResponseErr{
 		StatusCode: http.StatusBadRequest,
-		Message:    "Invalid user id",
+		Message:    "Invalid Input",
 		Data:       nil,
 	}
 
 	t.ForbiddenErr = &dto.ResponseErr{
 		StatusCode: http.StatusForbidden,
-		Message:    "Not allowed",
+		Message:    "Forbidden",
 		Data:       nil,
 	}
 	t.InternalErr = &dto.ResponseErr{
 		StatusCode: http.StatusInternalServerError,
-		Message:    "Fail to create group",
+		Message:    "Internal Error",
 		Data:       nil,
 	}
 }
@@ -143,7 +142,7 @@ func (t *GroupServiceTest) TestFindOneGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("FindOne", &proto.FindOneGroupRequest{UserId: t.User.Id}).Return(nil, errors.New("Service is down"))
+	c.On("FindOne", &proto.FindOneGroupRequest{UserId: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 	actual, err := srv.FindOne(t.User.Id)
@@ -183,7 +182,7 @@ func (t *GroupServiceTest) TestFindByTokenGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("FindByToken", &proto.FindByTokenGroupRequest{Token: t.Group.Token}).Return(nil, errors.New("Server is down"))
+	c.On("FindByToken", &proto.FindByTokenGroupRequest{Token: t.Group.Token}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -239,7 +238,7 @@ func (t *GroupServiceTest) TestUpdateGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("Update", &proto.UpdateGroupRequest{Group: t.Group, LeaderId: t.Group.LeaderID}).Return(nil, errors.New("Service is down"))
+	c.On("Update", &proto.UpdateGroupRequest{Group: t.Group, LeaderId: t.Group.LeaderID}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -309,7 +308,7 @@ func (t *GroupServiceTest) TestJoinGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id}).Return(nil, errors.New("Service is down"))
+	c.On("Join", &proto.JoinGroupRequest{Token: t.Group.Token, UserId: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -379,7 +378,7 @@ func (t *GroupServiceTest) TestDeleteMemberGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("DeleteMember", &proto.DeleteMemberGroupRequest{UserId: t.User.Id, LeaderId: t.Group.LeaderID}).Return(nil, errors.New("Service is down"))
+	c.On("DeleteMember", &proto.DeleteMemberGroupRequest{UserId: t.User.Id, LeaderId: t.Group.LeaderID}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -463,7 +462,7 @@ func (t *GroupServiceTest) TestLeaveGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &group.ClientMock{}
-	c.On("Leave", &proto.LeaveGroupRequest{UserId: t.User.Id}).Return(nil, errors.New("Service is down"))
+	c.On("Leave", &proto.LeaveGroupRequest{UserId: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -519,8 +518,8 @@ func (t *GroupServiceTest) TestUpdateSelectBaanSuccess() {
 
 func (t *GroupServiceTest) TestUpdateSelectBaanInvalidInput() {
 	want := &dto.ResponseErr{
-		StatusCode: http.StatusBadRequest,
-		Message:    "Invalid numbers of baan or bann is duplicated",
+		StatusCode: http.StatusConflict,
+		Message:    "Duplicated Entity",
 		Data:       nil,
 	}
 
@@ -530,7 +529,7 @@ func (t *GroupServiceTest) TestUpdateSelectBaanInvalidInput() {
 	c.On("SelectBaan", &proto.SelectBaanRequest{
 		UserId: t.Group.Id,
 		Baans:  baanIds,
-	}).Return(nil, status.Error(codes.InvalidArgument, "Duplicated baan"))
+	}).Return(nil, status.Error(codes.AlreadyExists, "Duplicated baan"))
 
 	srv := NewService(c)
 
@@ -543,7 +542,7 @@ func (t *GroupServiceTest) TestUpdateSelectBaanInvalidInput() {
 func (t *GroupServiceTest) TestUpdateSelectBaanForbbidenInput() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusForbidden,
-		Message:    "Forbidden Action",
+		Message:    "Forbidden",
 		Data:       nil,
 	}
 
@@ -566,7 +565,7 @@ func (t *GroupServiceTest) TestUpdateSelectBaanForbbidenInput() {
 func (t *GroupServiceTest) TestUpdateSelectBaanInternalServiceErr() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusInternalServerError,
-		Message:    "Service is down",
+		Message:    "Internal Error",
 		Data:       nil,
 	}
 

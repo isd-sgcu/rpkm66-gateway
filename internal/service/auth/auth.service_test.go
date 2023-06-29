@@ -8,7 +8,6 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/proto"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -47,13 +46,13 @@ func (t *AuthServiceTest) SetupTest() {
 
 	t.NotFoundErr = &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Message:    "User not found",
+		Message:    "Not Found",
 		Data:       nil,
 	}
 
 	t.Unauthorized = &dto.ResponseErr{
 		StatusCode: http.StatusUnauthorized,
-		Message:    "UnAuthorize",
+		Message:    "Unauthorized",
 		Data:       nil,
 	}
 }
@@ -76,7 +75,7 @@ func (t *AuthServiceTest) TestVerifyTicketSuccess() {
 func (t *AuthServiceTest) TestVerifyTicketInvalid() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusUnauthorized,
-		Message:    "Invalid ticket",
+		Message:    "Unauthorized",
 		Data:       nil,
 	}
 	ticket := faker.Word()
@@ -97,7 +96,7 @@ func (t *AuthServiceTest) TestVerifyTicketGrpcErr() {
 	ticket := faker.Word()
 
 	c := mock.ClientMock{}
-	c.On("VerifyTicket", &proto.VerifyTicketRequest{Ticket: ticket}).Return(nil, errors.New("cannot connect to auth service"))
+	c.On("VerifyTicket", &proto.VerifyTicketRequest{Ticket: ticket}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(&c)
 
@@ -129,7 +128,7 @@ func (t *AuthServiceTest) TestValidateGrpcErr() {
 	token := faker.Word()
 
 	c := mock.ClientMock{}
-	c.On("Validate", &proto.ValidateRequest{Token: token}).Return(nil, errors.New("cannot connect to auth service"))
+	c.On("Validate", &proto.ValidateRequest{Token: token}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(&c)
 
@@ -174,7 +173,7 @@ func (t *AuthServiceTest) TestRefreshTokenGrpcErr() {
 	token := faker.Word()
 
 	c := mock.ClientMock{}
-	c.On("RefreshToken", &proto.RefreshTokenRequest{RefreshToken: token}).Return(nil, errors.New("cannot connect to auth service"))
+	c.On("RefreshToken", &proto.RefreshTokenRequest{RefreshToken: token}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(&c)
 
