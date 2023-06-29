@@ -17,15 +17,10 @@ type App struct {
 	Phase       string `mapstructure:"phase"`
 	MaxFileSize int    `mapstructure:"max_file_size"`
 }
-type Vaccine struct {
-	Host   string `mapstructure:"host"`
-	ApiKey string `mapstructure:"api_key"`
-}
 
 type Config struct {
 	Service Service `mapstructure:"service"`
 	App     App     `mapstructure:"app"`
-	Vaccine Vaccine `mapstructure:"vaccine"`
 }
 
 func LoadConfig() (config *Config, err error) {

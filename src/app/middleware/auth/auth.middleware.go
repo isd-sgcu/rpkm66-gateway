@@ -1,129 +1,166 @@
 package auth
 
 import (
-	"net/http"
-	"strings"
+	"errors"
 
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/auth"
-	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
-	"github.com/isd-sgcu/rpkm66-gateway/src/config"
-	phase "github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 )
 
 type Guard struct {
-	service    auth.IService
-	excludes   map[string]struct{}
-	conf       config.App
-	isValidate bool
+	authSvc auth.IService
 }
 
-func NewAuthGuard(s auth.IService, e map[string]struct{}, conf config.App) Guard {
+func NewAuthGuard(authSvc auth.IService) Guard {
 	return Guard{
-		service:    s,
-		excludes:   e,
-		conf:       conf,
-		isValidate: true,
+		authSvc,
 	}
 }
 
-func (m *Guard) Use(ctx rctx.Context) {
-	m.isValidate = true
-
-	m.Validate(ctx)
-
-	if !m.isValidate {
-		return
-	}
-
-	if !m.conf.Debug {
-		m.CheckConfig(ctx)
-
-		if !m.isValidate {
-			return
-		}
-	}
-
-	ctx.Next()
-
-}
-
-func (m *Guard) Validate(ctx rctx.Context) {
-	method := ctx.Method()
-	path := ctx.Path()
-
-	ids := utils.FindIDFromPath(path)
-
-	path = utils.FormatPath(method, path, ids)
-	if utils.IsExisted(m.excludes, path) {
-		ctx.Next()
-		return
-	}
-
+func (g *Guard) Validate(ctx rctx.Context) error {
 	token := ctx.Token()
+
 	if token == "" {
-		ctx.JSON(http.StatusUnauthorized, &dto.ResponseErr{
-			StatusCode: http.StatusUnauthorized,
-			Message:    "Invalid token",
-		})
-		m.isValidate = false
-		return
+		return nil
 	}
 
-	payload, errRes := m.service.Validate(token)
-	if errRes != nil {
-		ctx.JSON(errRes.StatusCode, errRes)
-		m.isValidate = false
-		return
+	payload, err := g.authSvc.Validate(token)
+	if err != nil {
+		return errors.New("Unable to validate token")
 	}
 
 	ctx.StoreValue("UserId", payload.UserId)
+	ctx.StoreValue("Role", payload.Role)
+
 	ctx.Next()
+
+	return nil
 }
 
-func (m *Guard) CheckConfig(ctx rctx.Context) {
-	method := ctx.Method()
-	path := ctx.Path()
+// import (
+// 	"net/http"
+// 	"strings"
 
-	//check whether there is a token in path
-	//if token exist, replace token with ":token"
-	pathSlice := strings.Split(path, "/")
-	//paths which can have a token is "/group/token"
-	if pathSlice[1] == "group" {
-		if len(pathSlice) > 2 && pathSlice[2] != "members" && pathSlice[2] != "leave" {
-			token := pathSlice[2]
-			path = strings.Replace(path, token, ":token", 1)
-		}
-	}
+// 	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+// 	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/auth"
+// 	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
+// 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+// 	phase "github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
+// 	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
+// )
 
-	ids := utils.FindIDFromPath(path)
+// type Guard struct {
+// 	service    auth.IService
+// 	excludes   map[string]struct{}
+// 	conf       config.App
+// 	isValidate bool
+// }
 
-	path = utils.FormatPath(method, path, ids)
+// func NewAuthGuard(s auth.IService, e map[string]struct{}, conf config.App) Guard {
+// 	return Guard{
+// 		service:    s,
+// 		excludes:   e,
+// 		conf:       conf,
+// 		isValidate: true,
+// 	}
+// }
 
-	if utils.IsExisted(m.excludes, path) {
-		ctx.Next()
-		return
-	}
+// func (m *Guard) Use(ctx rctx.Context) {
+// 	m.isValidate = true
 
-	phses, ok := phase.MapPath2Phase[path]
-	if !ok {
-		ctx.Next()
-		return
-	}
+// 	m.Validate(ctx)
 
-	currentPhase := m.conf.Phase
-	for _, phs := range phses {
-		if phs == currentPhase {
-			ctx.Next()
-			return
-		}
-	}
+// 	if !m.isValidate {
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusForbidden, &dto.ResponseErr{
-		StatusCode: http.StatusForbidden,
-		Message:    "Forbidden Resource",
-		Data:       nil,
-	})
-	m.isValidate = false
-}
+// 	if !m.conf.Debug {
+// 		m.CheckConfig(ctx)
+
+// 		if !m.isValidate {
+// 			return
+// 		}
+// 	}
+
+// 	ctx.Next()
+
+// }
+
+// func (m *Guard) Validate(ctx rctx.Context) {
+// method := ctx.Method()
+// path := ctx.Path()
+
+// 	ids := utils.FindIDFromPath(path)
+
+// 	path = utils.FormatPath(method, path, ids)
+// 	if utils.IsExisted(m.excludes, path) {
+// 		ctx.Next()
+// 		return
+// 	}
+
+// 	token := ctx.Token()
+// 	if token == "" {
+// 		ctx.JSON(http.StatusUnauthorized, &dto.ResponseErr{
+// 			StatusCode: http.StatusUnauthorized,
+// 			Message:    "Invalid token",
+// 		})
+// 		m.isValidate = false
+// 		return
+// 	}
+
+// 	payload, errRes := m.service.Validate(token)
+// 	if errRes != nil {
+// 		ctx.JSON(errRes.StatusCode, errRes)
+// 		m.isValidate = false
+// 		return
+// 	}
+
+// 	ctx.StoreValue("UserId", payload.UserId)
+// 	ctx.Next()
+// }
+
+// func (m *Guard) CheckConfig(ctx rctx.Context) {
+// 	method := ctx.Method()
+// 	path := ctx.Path()
+
+// 	//check whether there is a token in path
+// 	//if token exist, replace token with ":token"
+// 	pathSlice := strings.Split(path, "/")
+// 	//paths which can have a token is "/group/token"
+// 	if pathSlice[1] == "group" {
+// 		if len(pathSlice) > 2 && pathSlice[2] != "members" && pathSlice[2] != "leave" {
+// 			token := pathSlice[2]
+// 			path = strings.Replace(path, token, ":token", 1)
+// 		}
+// 	}
+
+// 	ids := utils.FindIDFromPath(path)
+
+// 	path = utils.FormatPath(method, path, ids)
+
+// 	if utils.IsExisted(m.excludes, path) {
+// 		ctx.Next()
+// 		return
+// 	}
+
+// 	phses, ok := phase.MapPath2Phase[path]
+// 	if !ok {
+// 		ctx.Next()
+// 		return
+// 	}
+
+// 	currentPhase := m.conf.Phase
+// 	for _, phs := range phses {
+// 		if phs == currentPhase {
+// 			ctx.Next()
+// 			return
+// 		}
+// 	}
+
+// 	ctx.JSON(http.StatusForbidden, &dto.ResponseErr{
+// 		StatusCode: http.StatusForbidden,
+// 		Message:    "Forbidden Resource",
+// 		Data:       nil,
+// 	})
+// 	m.isValidate = false
+// }

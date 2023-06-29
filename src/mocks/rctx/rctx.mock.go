@@ -32,8 +32,6 @@ func (c *ContextMock) Bind(v interface{}) error {
 			*v.(*dto.UpdateUserDto) = *args.Get(0).(*dto.UpdateUserDto)
 		case *dto.CheckinVerifyRequest:
 			*v.(*dto.CheckinVerifyRequest) = *args.Get(0).(*dto.CheckinVerifyRequest)
-		case *dto.Verify:
-			*v.(*dto.Verify) = *args.Get(0).(*dto.Verify)
 		case *dto.CheckinConfirmRequest:
 			*v.(*dto.CheckinConfirmRequest) = *args.Get(0).(*dto.CheckinConfirmRequest)
 		case *dto.ConfirmEstampRequest:
@@ -84,6 +82,12 @@ func (c *ContextMock) Method() string {
 	return args.String(0)
 }
 
+func (c *ContextMock) Role() string {
+	args := c.Called()
+
+	return args.String(0)
+}
+
 func (c *ContextMock) Path() string {
 	args := c.Called()
 
@@ -112,8 +116,8 @@ func (c *ContextMock) GetFormData(key string) string {
 	return args.String(0)
 }
 
-func (c *ContextMock) Param(string) (string, error) {
+func (c *ContextMock) Param(string) string {
 	args := c.Called()
 
-	return args.String(0), args.Error(1)
+	return args.String(0)
 }

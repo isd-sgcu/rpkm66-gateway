@@ -11,7 +11,6 @@ import (
 	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/group"
 	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -318,7 +317,8 @@ func (t *GroupHandlerTest) TestDeleteMemberInvalidID() {
 	want := t.InvalidIdErr
 
 	c := &rctx.ContextMock{}
-	c.On("Param").Return("", errors.New(t.InvalidIdErr.Message))
+	c.On("Param").Return("")
+	c.On("UserID").Return("")
 
 	srv := new(mock.ServiceMock)
 

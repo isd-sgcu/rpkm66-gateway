@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	vaccineClient "github.com/isd-sgcu/rpkm66-gateway/src/app/client/vaccine"
 	authHdr "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/auth"
 	baanHdr "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/baan"
 	ciHdr "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/checkin"
@@ -19,7 +18,6 @@ import (
 	grpHdr "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/group"
 	health_check "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/health-check"
 	usrHdr "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/user"
-	vaccineHdr "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/vaccine"
 	guard "github.com/isd-sgcu/rpkm66-gateway/src/app/middleware/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/router"
 	authSrv "github.com/isd-sgcu/rpkm66-gateway/src/app/service/auth"
@@ -29,10 +27,8 @@ import (
 	fileSrv "github.com/isd-sgcu/rpkm66-gateway/src/app/service/file"
 	grpSrv "github.com/isd-sgcu/rpkm66-gateway/src/app/service/group"
 	usrSrv "github.com/isd-sgcu/rpkm66-gateway/src/app/service/user"
-	vaccineSrv "github.com/isd-sgcu/rpkm66-gateway/src/app/service/vaccine"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/src/config"
-	"github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
 	_ "github.com/isd-sgcu/rpkm66-gateway/src/docs"
 	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/rs/zerolog/log"
@@ -60,9 +56,6 @@ import (
 // @tag.docs.description Chula SSO documentation
 
 // @tag.name health check
-// @tag.description.markdown
-
-// @tag.name vaccine
 // @tag.description.markdown
 
 // @tag.name auth
@@ -138,9 +131,6 @@ func main() {
 	fleSrv := fileSrv.NewService(fileClient)
 	fleHdr := fileHdr.NewHandler(fleSrv, userSrv, conf.App.MaxFileSize)
 
-	vacClient := vaccineClient.NewClient(conf.Vaccine)
-	vacSrv := vaccineSrv.NewService(userSrv, vacClient)
-	vacHdr := vaccineHdr.NewHandler(vacSrv, v)
 	gClient := proto.NewGroupServiceClient(backendConn)
 	gSrv := grpSrv.NewService(gClient)
 	gHdr := grpHdr.NewHandler(gSrv, v)
@@ -157,51 +147,47 @@ func main() {
 	estampHdr := eHdr.NewHandler(estampSrv, v)
 
 	ciHandler := ciHdr.NewHandler(checkinSrv, v)
-	authGuard := guard.NewAuthGuard(athSrv, auth.ExcludePath, conf.App)
+	authGuard := guard.NewAuthGuard(athSrv)
 
-	r := router.NewFiberRouter(&authGuard, conf.App)
+	r := router.NewGinRouter(&authGuard, conf.App)
 
-	r.GetHealthCheck("/", hc.HealthCheck)
-
-	r.PutUser("/", userHdr.CreateOrUpdate)
-	r.PatchUser("/", userHdr.Update)
+	r.SetHandler("GET /", hc.HealthCheck)
+	r.SetHandler("PUT /user", userHdr.CreateOrUpdate)
+	r.SetHandler("PATCH /user", userHdr.Update)
+	r.SetHandler("GET /auth/me", athHdr.Validate)
+	r.SetHandler("POST /auth/verify", athHdr.VerifyTicket)
+	r.SetHandler("POST /auth/refreshToken", athHdr.RefreshToken)
+	r.SetHandler("PUT /file/upload", fleHdr.Upload)
+	r.SetHandler("GET /baan", bnHdr.FindAll)
+	r.SetHandler("GET /baan/:id", bnHdr.FindOne)
+	r.SetHandler("GET /group", gHdr.FindOne)
+	r.SetHandler("GET /group/:token", gHdr.FindByToken)
+	r.SetHandler("POST /group/:token", gHdr.Join)
+	r.SetHandler("DELETE /group/leave", gHdr.Leave)
+	r.SetHandler("PUT /group/select", gHdr.SelectBaan)
+	r.SetHandler("DELETE /members/:member_id", gHdr.DeleteMember)
+	r.SetHandler("POST /qr/checkin/verify", ciHandler.CheckinVerify)
+	r.SetHandler("POST /qr/checkin/confirm", ciHandler.CheckinConfirm)
+	r.SetHandler("POST /qr/estamp/verify", estampHdr.VerifyEstamp)
+	r.SetHandler("POST /qr/estamp/confirm", userHdr.ConfirmEstamp)
+	r.SetHandler("POST /qr/ticket", userHdr.VerifyTicket)
+	r.SetHandler("GET /estamp/:id", estampHdr.FindEventByID)
+	r.SetHandler("GET /estamp", estampHdr.FindAllEventWithType)
+	r.SetHandler("GET /estamp/user", userHdr.GetUserEstamp)
 
 	if conf.App.Debug {
-		r.GetUser("/:id", userHdr.FindOne)
-		r.PostUser("/", userHdr.Create)
-		r.DeleteUser("/:id", userHdr.Delete)
+		r.SetHandler("GET /user/:id", userHdr.FindOne)
+		r.SetHandler("POST /user", userHdr.Create)
+		r.SetHandler("DELETE /user/:id", userHdr.Delete)
 	}
 
-	r.GetAuth("/me", athHdr.Validate)
-	r.PostAuth("/verify", athHdr.VerifyTicket)
-	r.PostAuth("/refreshToken", athHdr.RefreshToken)
-
-	r.PostFile("/upload", fleHdr.Upload)
-
-	r.PostVaccine("/verify", vacHdr.Verify)
-
-	r.GetBaan("/", bnHdr.FindAll)
-	r.GetBaan("/:id", bnHdr.FindOne)
-
-	r.GetGroup("/", gHdr.FindOne)
-	r.GetGroup("/:token", gHdr.FindByToken)
-	r.PostGroup("/:token", gHdr.Join)
-	r.DeleteGroup("/leave", gHdr.Leave)
-	r.PutGroup("/select", gHdr.SelectBaan)
-	r.DeleteGroup("/members/:member_id", gHdr.DeleteMember)
-
-	r.PostQr("/checkin/verify", ciHandler.CheckinVerify)
-	r.PostQr("/checkin/confirm", ciHandler.CheckinConfirm)
-	r.PostQr("/estamp/verify", estampHdr.VerifyEstamp)
-	r.PostQr("/estamp/confirm", userHdr.ConfirmEstamp)
-	r.PostQr("/ticket", userHdr.VerifyTicket)
-
-	r.GetEstamp("/:id", estampHdr.FindEventByID)
-	r.GetEstamp("/", estampHdr.FindAllEventWithType)
-	r.GetEstamp("/user", userHdr.GetUserEstamp)
+	server := http.Server{
+		Addr:    fmt.Sprintf(":%v", conf.App.Port),
+		Handler: r,
+	}
 
 	go func() {
-		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal().
 				Err(err).
 				Str("service", "rnkm-gateway").
@@ -211,7 +197,7 @@ func main() {
 
 	wait := gracefulShutdown(context.Background(), 2*time.Second, map[string]operation{
 		"server": func(ctx context.Context) error {
-			return r.Shutdown()
+			return server.Shutdown(ctx)
 		},
 	})
 

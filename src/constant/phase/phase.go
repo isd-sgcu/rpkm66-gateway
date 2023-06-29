@@ -1,8 +1,9 @@
 package phase
 
 const (
-	Register string = "register"
-	Select          = "select"
-	EventDay        = "eventDay"
-	Estamp          = "eStamp"
+	Register = "register"
+	Select   = "select"
+	EventDay = "eventDay"
+	Estamp   = "eStamp"
+	All      = "all"
 )

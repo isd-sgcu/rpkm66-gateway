@@ -71,15 +71,7 @@ func (h *Handler) FindOne(ctx rctx.Context) {
 // @Security     AuthToken
 // @Router /group/{token} [get]
 func (h *Handler) FindByToken(ctx rctx.Context) {
-	tokenUrl, err := ctx.Param("token")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "Invalid Token",
-			Data:       nil,
-		})
-		return
-	}
+	tokenUrl := ctx.Param("token")
 
 	token, _ := url.QueryUnescape(tokenUrl)
 
@@ -109,15 +101,7 @@ func (h *Handler) FindByToken(ctx rctx.Context) {
 // @Security     AuthToken
 // @Router /group/{token} [post]
 func (h *Handler) Join(ctx rctx.Context) {
-	tokenUrl, err := ctx.Param("token")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, &dto.ResponseErr{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "Invalid Token",
-			Data:       nil,
-		})
-		return
-	}
+	tokenUrl := ctx.Param("token")
 
 	userId := ctx.UserID()
 	token, _ := url.QueryUnescape(tokenUrl)
@@ -148,15 +132,7 @@ func (h *Handler) Join(ctx rctx.Context) {
 // @Security     AuthToken
 // @Router /group/members/{member_id} [delete]
 func (h *Handler) DeleteMember(ctx rctx.Context) {
-	userId, err := ctx.Param("member_id")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, &dto.ResponseErr{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Invalid User ID",
-			Data:       nil,
-		})
-		return
-	}
+	userId := ctx.Param("member_id")
 
 	leaderId := ctx.UserID()
 

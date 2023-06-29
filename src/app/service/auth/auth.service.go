@@ -167,6 +167,7 @@ func (s *Service) Validate(token string) (*dto.TokenPayloadAuth, *dto.ResponseEr
 
 	return &dto.TokenPayloadAuth{
 		UserId: res.UserId,
+		Role:   res.Role,
 	}, nil
 }
 
