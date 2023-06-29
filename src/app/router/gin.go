@@ -90,19 +90,8 @@ func getMiddlewares(ro route.RouteData) []Handler {
 }
 
 func getRoleMiddleware(allowRoles map[string]struct{}) Handler {
-	if _, exist := allowRoles[route.Any]; exist {
-		return func(ctx rctx.Context) bool {
-			return true
-		}
-	}
-
 	return func(ctx rctx.Context) bool {
 		userRole := ctx.Role()
-
-		if userRole == "" {
-			ctx.JSON(http.StatusForbidden, dto.ResponseForbiddenErr{})
-			return false
-		}
 
 		if _, exist := allowRoles[userRole]; exist {
 			return true
