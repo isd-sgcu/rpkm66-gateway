@@ -174,12 +174,9 @@ func main() {
 	r.SetHandler("GET /estamp/:id", estampHdr.FindEventByID)
 	r.SetHandler("GET /estamp", estampHdr.FindAllEventWithType)
 	r.SetHandler("GET /estamp/user", userHdr.GetUserEstamp)
-
-	if conf.App.Debug {
-		r.SetHandler("GET /user/:id", userHdr.FindOne)
-		r.SetHandler("POST /user", userHdr.Create)
-		r.SetHandler("DELETE /user/:id", userHdr.Delete)
-	}
+	r.SetHandler("GET /user/:id", userHdr.FindOne)
+	r.SetHandler("POST /user", userHdr.Create)
+	r.SetHandler("DELETE /user/:id", userHdr.Delete)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%v", conf.App.Port),
