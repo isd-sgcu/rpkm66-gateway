@@ -18,7 +18,7 @@ type GinRouter struct {
 	guard *auth.Guard
 }
 
-type Handler = func(rctx.Context)
+type Handler = func(rctx.Context) bool
 
 func NewGinRouter(guard *auth.Guard, conf config.App) *GinRouter {
 	r := gin.Default()
@@ -63,7 +63,9 @@ func (r *GinRouter) SetHandler(key string, handler func(rctx.Context)) {
 		r.guard.Validate(ctx)
 
 		for _, middleware := range handlers {
-			middleware(ctx)
+			if goNext := middleware(ctx); !goNext {
+				return
+			}
 		}
 
 		handler(ctx)
@@ -89,25 +91,24 @@ func getMiddlewares(ro route.RouteData) []Handler {
 
 func getRoleMiddleware(allowRoles map[string]struct{}) Handler {
 	if _, exist := allowRoles[route.Any]; exist {
-		return func(ctx rctx.Context) {
-			ctx.Next()
+		return func(ctx rctx.Context) bool {
+			return true
 		}
 	}
 
-	return func(ctx rctx.Context) {
+	return func(ctx rctx.Context) bool {
 		userRole := ctx.Role()
 
 		if userRole == "" {
 			ctx.JSON(http.StatusForbidden, dto.ResponseForbiddenErr{})
-			return
+			return false
 		}
 
 		if _, exist := allowRoles[userRole]; exist {
-			ctx.Next()
-			return
+			return true
 		} else {
 			ctx.JSON(http.StatusForbidden, dto.ResponseForbiddenErr{})
-			return
+			return false
 		}
 
 	}

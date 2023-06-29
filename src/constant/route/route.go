@@ -45,7 +45,7 @@ var Routes = map[string]RouteData{
 	"GET /": {
 		Path:       "/",
 		Method:     Get,
-		AllowPerms: Authenticated,
+		AllowPerms: AllRole,
 		Phases:     AllowAll,
 		Debug:      false,
 	},

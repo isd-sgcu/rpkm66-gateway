@@ -1,8 +1,9 @@
 package auth
 
 import (
-	"errors"
+	"net/http"
 
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/src/pkg/rctx"
 )
@@ -17,24 +18,23 @@ func NewAuthGuard(authSvc auth.IService) Guard {
 	}
 }
 
-func (g *Guard) Validate(ctx rctx.Context) error {
+func (g *Guard) Validate(ctx rctx.Context) bool {
 	token := ctx.Token()
 
 	if token == "" {
-		return nil
+		return true
 	}
 
 	payload, err := g.authSvc.Validate(token)
 	if err != nil {
-		return errors.New("Unable to validate token")
+		ctx.JSON(http.StatusInternalServerError, dto.ResponseInternalErr{})
+		return false
 	}
 
 	ctx.StoreValue("UserId", payload.UserId)
 	ctx.StoreValue("Role", payload.Role)
 
-	ctx.Next()
-
-	return nil
+	return true
 }
 
 // import (
