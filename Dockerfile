@@ -1,20 +1,23 @@
 # Base Image
-FROM golang:1.18.3-alpine3.16 as base
+FROM golang:1.20.5-bullseye as base
 
 # Working directory
 WORKDIR /app
+
+# Setup credential
+ENV GOPRIVATE=github.com/isd-sgcu/*
 
 # Copy go.mod and go.sum files
 COPY go.mod go.sum ./
 
 # Download dependencies
-RUN go mod download
+RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc go mod download
 
 # Copy the source code
 COPY . .
 
 # Build the application
-RUN go build -o server ./src/.
+RUN --mount=type=secret,id=netrcConf,required=true,target=/root/.netrc go build -o server ./src/.
 
 # Create master image
 FROM alpine AS master
