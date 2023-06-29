@@ -6,11 +6,11 @@ import (
 
 	"net/http"
 
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/estamp"
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/isd-sgcu/rnkm65-gateway/src/interfaces/qr"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/estamp"
+	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/interfaces/qr"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
 type Handler struct {

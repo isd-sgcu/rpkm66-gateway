@@ -1,14 +1,15 @@
 package router
 
 import (
-	health_check "github.com/isd-sgcu/rnkm65-gateway/src/app/handler/health-check"
-	"github.com/isd-sgcu/rnkm65-gateway/src/config"
-	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/common"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	health_check "github.com/isd-sgcu/rpkm66-gateway/src/app/handler/health-check"
+	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type HealthCheckRouterTest struct {

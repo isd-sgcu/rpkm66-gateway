@@ -1,17 +1,18 @@
 package auth
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/bxcodec/faker/v3"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/auth"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
-	"testing"
 )
 
 type AuthServiceTest struct {

@@ -1,15 +1,16 @@
 package vaccine
 
 import (
-	"github.com/bxcodec/faker/v3"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/vaccine"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"testing"
+
+	"github.com/bxcodec/faker/v3"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/vaccine"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type HandlerTest struct {

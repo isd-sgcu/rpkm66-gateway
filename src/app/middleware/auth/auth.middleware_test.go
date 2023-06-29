@@ -1,15 +1,16 @@
 package auth
 
 import (
-	"github.com/bxcodec/faker/v3"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/config"
-	role "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
-	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/auth"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"testing"
+
+	"github.com/bxcodec/faker/v3"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+	role "github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/mocks/auth"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type AuthGuardTest struct {

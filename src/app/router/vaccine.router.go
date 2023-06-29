@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/vaccine"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/vaccine"
 )
 
 func (r *FiberRouter) PostVaccine(path string, h func(ctx vaccine.IContext)) {

@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/user"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/user"
 )
 
 func (r *FiberRouter) GetUser(path string, h func(ctx user.IContext)) {

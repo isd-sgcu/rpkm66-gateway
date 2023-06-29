@@ -1,11 +1,12 @@
 package group
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"net/http"
 	"net/url"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
 type Handler struct {

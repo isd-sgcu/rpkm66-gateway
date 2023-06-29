@@ -1,12 +1,13 @@
 package file
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/constant/file"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
-	"github.com/rs/zerolog/log"
 	"net/http"
 	"strings"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/constant/file"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
+	"github.com/rs/zerolog/log"
 )
 
 type Handler struct {

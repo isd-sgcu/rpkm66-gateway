@@ -1,14 +1,15 @@
 package router
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/vaccine"
-	"github.com/isd-sgcu/rnkm65-gateway/src/config"
-	mock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/common"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/vaccine"
+	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+	mock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/common"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type VaccineRouterTest struct {

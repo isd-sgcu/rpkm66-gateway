@@ -1,10 +1,11 @@
 package health_check
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/mocks/health-check"
+	"testing"
+
+	health_check "github.com/isd-sgcu/rpkm66-gateway/src/mocks/health-check"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type HealthCheckHandlerTest struct {

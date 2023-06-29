@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/group"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/group"
 )
 
 func (r *FiberRouter) GetGroup(path string, h func(ctx group.IContext)) {

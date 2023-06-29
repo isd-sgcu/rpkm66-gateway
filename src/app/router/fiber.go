@@ -3,17 +3,18 @@ package router
 import (
 	"bytes"
 	"fmt"
+	"io"
+
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/google/uuid"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
-	"github.com/isd-sgcu/rnkm65-gateway/src/config"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	guard "github.com/isd-sgcu/rpkm66-gateway/src/app/middleware/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
+	"github.com/isd-sgcu/rpkm66-gateway/src/config"
 	"github.com/pkg/errors"
-	"io"
 )
 
 type FiberRouter struct {
@@ -35,7 +36,7 @@ type IGuard interface {
 func NewFiberRouter(authGuard IGuard, conf config.App) *FiberRouter {
 	r := fiber.New(fiber.Config{
 		StrictRouting: true,
-		AppName:       "RNKM65 API",
+		AppName:       "rpkm66 API",
 		BodyLimit:     conf.MaxFileSize * 1024 * 1024,
 	})
 

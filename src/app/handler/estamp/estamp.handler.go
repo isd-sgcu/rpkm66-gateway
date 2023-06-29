@@ -3,11 +3,11 @@ package estamp
 import (
 	"net/http"
 
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/isd-sgcu/rnkm65-gateway/src/interfaces/qr"
+	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/interfaces/qr"
 )
 
 type Handler struct {

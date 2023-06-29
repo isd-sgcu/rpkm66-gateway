@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
 	"net/http"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 )
 
 type Handler struct {

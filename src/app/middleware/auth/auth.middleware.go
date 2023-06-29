@@ -1,13 +1,14 @@
 package auth
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/auth"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/utils"
-	"github.com/isd-sgcu/rnkm65-gateway/src/config"
-	phase "github.com/isd-sgcu/rnkm65-gateway/src/constant/auth"
 	"net/http"
 	"strings"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/auth"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/utils"
+	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+	phase "github.com/isd-sgcu/rpkm66-gateway/src/constant/auth"
 )
 
 type Guard struct {

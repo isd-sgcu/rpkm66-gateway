@@ -1,7 +1,7 @@
 package common
 
 import (
-	guard "github.com/isd-sgcu/rnkm65-gateway/src/app/middleware/auth"
+	guard "github.com/isd-sgcu/rpkm66-gateway/src/app/middleware/auth"
 	"github.com/stretchr/testify/mock"
 )
 

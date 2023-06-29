@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/handler/estamp"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/handler/estamp"
 )
 
 func (r *FiberRouter) GetEstamp(path string, h func(ctx estamp.IContext)) {

@@ -1,11 +1,12 @@
 package vaccine
 
 import (
-	"github.com/go-resty/resty/v2"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/config"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/config"
+	"github.com/pkg/errors"
 )
 
 type Client struct {

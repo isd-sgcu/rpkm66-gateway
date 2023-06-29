@@ -1,9 +1,10 @@
 package vaccine
 
 import (
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	validate "github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
 	"net/http"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	validate "github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
 )
 
 type Handler struct {

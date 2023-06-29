@@ -1,15 +1,16 @@
 package validator
 
 import (
+	"net/http"
+
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/google/uuid"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"net/http"
 )
 
 type DtoValidator struct {

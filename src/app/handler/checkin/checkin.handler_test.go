@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/validator"
-	cst "github.com/isd-sgcu/rnkm65-gateway/src/constant/checkin"
-	cmock "github.com/isd-sgcu/rnkm65-gateway/src/mocks/checkin"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/validator"
+	cst "github.com/isd-sgcu/rpkm66-gateway/src/constant/checkin"
+	cmock "github.com/isd-sgcu/rpkm66-gateway/src/mocks/checkin"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

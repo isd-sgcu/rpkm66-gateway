@@ -2,8 +2,9 @@ package baan
 
 import (
 	"context"
-	"github.com/isd-sgcu/rnkm65-gateway/src/app/dto"
-	"github.com/isd-sgcu/rnkm65-gateway/src/proto"
+
+	"github.com/isd-sgcu/rpkm66-gateway/src/app/dto"
+	"github.com/isd-sgcu/rpkm66-gateway/src/proto"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 )
