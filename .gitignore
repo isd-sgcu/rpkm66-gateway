@@ -43,7 +43,7 @@ volumes
 .env.production
 
 # Config
-config.yaml
+config.toml
 
 # Generated
 generated
