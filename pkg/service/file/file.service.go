@@ -4,7 +4,7 @@ import (
 	fileConst "github.com/isd-sgcu/rpkm66-gateway/constant/file"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/service/file"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/file/file/v1"
 )
 
 type Service interface {

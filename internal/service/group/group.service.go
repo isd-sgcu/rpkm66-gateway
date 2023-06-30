@@ -6,7 +6,7 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/utils"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/group/v1"
 	"github.com/rs/zerolog/log"
 )
 

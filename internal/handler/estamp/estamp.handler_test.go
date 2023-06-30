@@ -10,7 +10,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/estamp"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/rctx"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/event/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

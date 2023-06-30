@@ -10,14 +10,15 @@ import (
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/user"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/auth/auth/v1"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
 type AuthHandlerTest struct {
 	suite.Suite
-	UserDto         *proto.User
+	UserDto         *userProto.User
 	Credential      *proto.Credential
 	Payload         *dto.TokenPayloadAuth
 	BadRequestErr   *dto.ResponseErr
@@ -31,7 +32,7 @@ func TestAuthHandler(t *testing.T) {
 }
 
 func (t *AuthHandlerTest) SetupTest() {
-	t.UserDto = &proto.User{
+	t.UserDto = &userProto.User{
 		Id:              faker.UUIDDigit(),
 		Firstname:       faker.FirstName(),
 		Lastname:        faker.LastName(),

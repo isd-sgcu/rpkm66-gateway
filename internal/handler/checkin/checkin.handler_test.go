@@ -11,14 +11,15 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	cmock "github.com/isd-sgcu/rpkm66-gateway/mocks/checkin"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/rctx"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	checkinProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/checkin/v1"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
 type CheckinHandlerTest struct {
 	suite.Suite
-	User           *proto.User
+	User           *userProto.User
 	BadRequestErr  *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 	Token          string
@@ -31,7 +32,7 @@ func TestCheckinHandler(t *testing.T) {
 }
 
 func (t *CheckinHandlerTest) SetupTest() {
-	t.User = &proto.User{
+	t.User = &userProto.User{
 		Id:              faker.UUIDDigit(),
 		Title:           faker.Word(),
 		Firstname:       faker.FirstName(),
@@ -69,13 +70,13 @@ func (t *CheckinHandlerTest) SetupTest() {
 }
 
 func (t *CheckinHandlerTest) TestCheckinVerifySuccess() {
-	want := &proto.CheckinVerifyResponse{
+	want := &checkinProto.CheckinVerifyResponse{
 		CheckinToken: t.Token,
 		CheckinType:  t.CheckinType,
 	}
 
 	s := &cmock.ServiceMock{}
-	s.On("CheckinVerify", t.User.Id, t.EventType).Return(&proto.CheckinVerifyResponse{
+	s.On("CheckinVerify", t.User.Id, t.EventType).Return(&checkinProto.CheckinVerifyResponse{
 		CheckinToken: t.Token,
 		CheckinType:  t.CheckinType,
 	}, nil)
@@ -98,7 +99,7 @@ func (t *CheckinHandlerTest) TestCheckinVerifySuccess() {
 
 func (t *CheckinHandlerTest) TestCheckinVerifyBadRequest() {
 	s := &cmock.ServiceMock{}
-	s.On("CheckinVerify", t.User.Id, t.EventType).Return(&proto.CheckinVerifyResponse{
+	s.On("CheckinVerify", t.User.Id, t.EventType).Return(&checkinProto.CheckinVerifyResponse{
 		CheckinToken: t.Token,
 		CheckinType:  t.CheckinType,
 	}, nil)
@@ -137,12 +138,12 @@ func (t *CheckinHandlerTest) TestCheckinVerifyThrowInnerError() {
 }
 
 func (t *CheckinHandlerTest) TestCheckinConfirmSuccess() {
-	want := &proto.CheckinConfirmResponse{
+	want := &checkinProto.CheckinConfirmResponse{
 		Success: true,
 	}
 
 	s := &cmock.ServiceMock{}
-	s.On("CheckinConfirm", t.Token).Return(&proto.CheckinConfirmResponse{
+	s.On("CheckinConfirm", t.Token).Return(&checkinProto.CheckinConfirmResponse{
 		Success: true,
 	}, nil)
 
@@ -164,7 +165,7 @@ func (t *CheckinHandlerTest) TestCheckinConfirmSuccess() {
 
 func (t *CheckinHandlerTest) TestCheckinConfirmBadRequest() {
 	s := &cmock.ServiceMock{}
-	s.On("CheckinConfirm", t.Token).Return(&proto.CheckinConfirmResponse{
+	s.On("CheckinConfirm", t.Token).Return(&checkinProto.CheckinConfirmResponse{
 		Success: true,
 	}, nil)
 

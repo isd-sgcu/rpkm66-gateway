@@ -8,7 +8,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/constant/file"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/file"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/file/file/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"

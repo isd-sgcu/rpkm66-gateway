@@ -3,7 +3,7 @@ package estamp
 import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/service/estamp"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/event/v1"
 )
 
 type Service interface {

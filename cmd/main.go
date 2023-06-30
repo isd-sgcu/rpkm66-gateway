@@ -12,25 +12,11 @@ import (
 
 	"github.com/isd-sgcu/rpkm66-gateway/cfgldr"
 	_ "github.com/isd-sgcu/rpkm66-gateway/docs"
-	authHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/auth"
-	baanHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/baan"
-	ciHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/checkin"
-	eHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/estamp"
-	fileHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/file"
-	grpHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/group"
 	health_check "github.com/isd-sgcu/rpkm66-gateway/internal/handler/health-check"
-	usrHdr "github.com/isd-sgcu/rpkm66-gateway/internal/handler/user"
 	guard "github.com/isd-sgcu/rpkm66-gateway/internal/middleware/auth"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/router"
 	authSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/auth"
-	baanSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/baan"
-	ciSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/checkin"
-	eSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/estamp"
-	fileSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/file"
-	grpSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/group"
-	usrSrv "github.com/isd-sgcu/rpkm66-gateway/internal/service/user"
-	"github.com/isd-sgcu/rpkm66-gateway/internal/validator"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/auth/auth/v1"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -85,21 +71,21 @@ func main() {
 			Msg("Failed to start service")
 	}
 
-	v, err := validator.NewValidator()
-	if err != nil {
-		log.Fatal().
-			Err(err).
-			Str("service", "validator").
-			Msg("Failed to start service")
-	}
+	// v, err := validator.NewValidator()
+	// if err != nil {
+	// 	log.Fatal().
+	// 		Err(err).
+	// 		Str("service", "validator").
+	// 		Msg("Failed to start service")
+	// }
 
-	backendConn, err := grpc.Dial(conf.Service.Backend, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatal().
-			Err(err).
-			Str("service", "rnkm-backend").
-			Msg("Cannot connect to service")
-	}
+	// backendConn, err := grpc.Dial(conf.Service.Backend, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// if err != nil {
+	// 	log.Fatal().
+	// 		Err(err).
+	// 		Str("service", "rnkm-backend").
+	// 		Msg("Cannot connect to service")
+	// }
 
 	authConn, err := grpc.Dial(conf.Service.Auth, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -109,74 +95,74 @@ func main() {
 			Msg("Cannot connect to service")
 	}
 
-	fileConn, err := grpc.Dial(conf.Service.File, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatal().
-			Err(err).
-			Str("service", "rnkm-file").
-			Msg("Cannot connect to service")
-	}
+	// fileConn, err := grpc.Dial(conf.Service.File, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// if err != nil {
+	// 	log.Fatal().
+	// 		Err(err).
+	// 		Str("service", "rnkm-file").
+	// 		Msg("Cannot connect to service")
+	// }
 
 	hc := health_check.NewHandler()
 
-	usrClient := proto.NewUserServiceClient(backendConn)
-	userSrv := usrSrv.NewService(usrClient)
-	userHdr := usrHdr.NewHandler(userSrv, v)
+	// usrClient := proto.NewUserServiceClient(backendConn)
+	// userSrv := usrSrv.NewService(usrClient)
+	// userHdr := usrHdr.NewHandler(userSrv, v)
 
 	authClient := proto.NewAuthServiceClient(authConn)
 	athSrv := authSrv.NewService(authClient)
-	athHdr := authHdr.NewHandler(athSrv, userSrv, v)
+	// athHdr := authHdr.NewHandler(athSrv, userSrv, v)
 
-	fileClient := proto.NewFileServiceClient(fileConn)
-	fleSrv := fileSrv.NewService(fileClient)
-	fleHdr := fileHdr.NewHandler(fleSrv, userSrv, conf.App.MaxFileSize)
+	// fileClient := proto.NewFileServiceClient(fileConn)
+	// fleSrv := fileSrv.NewService(fileClient)
+	// fleHdr := fileHdr.NewHandler(fleSrv, userSrv, conf.App.MaxFileSize)
 
-	gClient := proto.NewGroupServiceClient(backendConn)
-	gSrv := grpSrv.NewService(gClient)
-	gHdr := grpHdr.NewHandler(gSrv, v)
+	// gClient := proto.NewGroupServiceClient(backendConn)
+	// gSrv := grpSrv.NewService(gClient)
+	// gHdr := grpHdr.NewHandler(gSrv, v)
 
-	bnClient := proto.NewBaanServiceClient(backendConn)
-	bnSrv := baanSrv.NewService(bnClient)
-	bnHdr := baanHdr.NewHandler(bnSrv, userSrv)
+	// bnClient := proto.NewBaanServiceClient(backendConn)
+	// bnSrv := baanSrv.NewService(bnClient)
+	// bnHdr := baanHdr.NewHandler(bnSrv, userSrv)
 
-	checkinClient := proto.NewCheckinServiceClient(backendConn)
-	checkinSrv := ciSrv.NewService(checkinClient)
+	// checkinClient := proto.NewCheckinServiceClient(backendConn)
+	// checkinSrv := ciSrv.NewService(checkinClient)
 
-	estampClient := proto.NewEventServiceClient(backendConn)
-	estampSrv := eSrv.NewService(estampClient)
-	estampHdr := eHdr.NewHandler(estampSrv, v)
+	// estampClient := proto.NewEventServiceClient(backendConn)
+	// estampSrv := eSrv.NewService(estampClient)
+	// estampHdr := eHdr.NewHandler(estampSrv, v)
 
-	ciHandler := ciHdr.NewHandler(checkinSrv, v)
+	// ciHandler := ciHdr.NewHandler(checkinSrv, v)
 	authGuard := guard.NewAuthGuard(athSrv)
 
 	r := router.NewGinRouter(&authGuard, conf.App)
 
 	r.SetHandler("GET /", hc.HealthCheck)
-	r.SetHandler("PUT /user", userHdr.CreateOrUpdate)
-	r.SetHandler("PATCH /user", userHdr.Update)
-	r.SetHandler("GET /auth/me", athHdr.Validate)
-	r.SetHandler("POST /auth/verify", athHdr.VerifyTicket)
-	r.SetHandler("POST /auth/refreshToken", athHdr.RefreshToken)
-	r.SetHandler("PUT /file/upload", fleHdr.Upload)
-	r.SetHandler("GET /baan", bnHdr.FindAll)
-	r.SetHandler("GET /baan/:id", bnHdr.FindOne)
-	r.SetHandler("GET /group", gHdr.FindOne)
-	r.SetHandler("GET /group/:token", gHdr.FindByToken)
-	r.SetHandler("POST /group/:token", gHdr.Join)
-	r.SetHandler("DELETE /group/leave", gHdr.Leave)
-	r.SetHandler("PUT /group/select", gHdr.SelectBaan)
-	r.SetHandler("DELETE /members/:member_id", gHdr.DeleteMember)
-	r.SetHandler("POST /qr/checkin/verify", ciHandler.CheckinVerify)
-	r.SetHandler("POST /qr/checkin/confirm", ciHandler.CheckinConfirm)
-	r.SetHandler("POST /qr/estamp/verify", estampHdr.VerifyEstamp)
-	r.SetHandler("POST /qr/estamp/confirm", userHdr.ConfirmEstamp)
-	r.SetHandler("POST /qr/ticket", userHdr.VerifyTicket)
-	r.SetHandler("GET /estamp/:id", estampHdr.FindEventByID)
-	r.SetHandler("GET /estamp", estampHdr.FindAllEventWithType)
-	r.SetHandler("GET /estamp/user", userHdr.GetUserEstamp)
-	r.SetHandler("GET /user/:id", userHdr.FindOne)
-	r.SetHandler("POST /user", userHdr.Create)
-	r.SetHandler("DELETE /user/:id", userHdr.Delete)
+	// r.SetHandler("PUT /user", userHdr.CreateOrUpdate)
+	// r.SetHandler("PATCH /user", userHdr.Update)
+	// r.SetHandler("GET /auth/me", athHdr.Validate)
+	// r.SetHandler("POST /auth/verify", athHdr.VerifyTicket)
+	// r.SetHandler("POST /auth/refreshToken", athHdr.RefreshToken)
+	// r.SetHandler("PUT /file/upload", fleHdr.Upload)
+	// r.SetHandler("GET /baan", bnHdr.FindAll)
+	// r.SetHandler("GET /baan/:id", bnHdr.FindOne)
+	// r.SetHandler("GET /group", gHdr.FindOne)
+	// r.SetHandler("GET /group/:token", gHdr.FindByToken)
+	// r.SetHandler("POST /group/:token", gHdr.Join)
+	// r.SetHandler("DELETE /group/leave", gHdr.Leave)
+	// r.SetHandler("PUT /group/select", gHdr.SelectBaan)
+	// r.SetHandler("DELETE /members/:member_id", gHdr.DeleteMember)
+	// r.SetHandler("POST /qr/checkin/verify", ciHandler.CheckinVerify)
+	// r.SetHandler("POST /qr/checkin/confirm", ciHandler.CheckinConfirm)
+	// r.SetHandler("POST /qr/estamp/verify", estampHdr.VerifyEstamp)
+	// r.SetHandler("POST /qr/estamp/confirm", userHdr.ConfirmEstamp)
+	// r.SetHandler("POST /qr/ticket", userHdr.VerifyTicket)
+	// r.SetHandler("GET /estamp/:id", estampHdr.FindEventByID)
+	// r.SetHandler("GET /estamp", estampHdr.FindAllEventWithType)
+	// r.SetHandler("GET /estamp/user", userHdr.GetUserEstamp)
+	// r.SetHandler("GET /user/:id", userHdr.FindOne)
+	// r.SetHandler("POST /user", userHdr.Create)
+	// r.SetHandler("DELETE /user/:id", userHdr.Delete)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%v", conf.App.Port),

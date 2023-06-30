@@ -10,7 +10,7 @@ import (
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/file"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/rctx"
 	mockUsr "github.com/isd-sgcu/rpkm66-gateway/mocks/user"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

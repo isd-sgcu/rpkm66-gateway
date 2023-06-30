@@ -8,7 +8,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
 	fileSvc "github.com/isd-sgcu/rpkm66-gateway/pkg/service/file"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,7 +19,7 @@ type Handler struct {
 }
 
 type IUserService interface {
-	FindOne(string) (*proto.User, *dto.ResponseErr)
+	FindOne(string) (*userProto.User, *dto.ResponseErr)
 }
 
 func NewHandler(service fileSvc.Service, usrService IUserService, maxFileSize int) *Handler {

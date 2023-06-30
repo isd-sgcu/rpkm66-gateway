@@ -9,7 +9,8 @@ import (
 	constant "github.com/isd-sgcu/rpkm66-gateway/constant/baan"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/group"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	baanProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/baan/v1"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/group/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -472,12 +473,12 @@ func (t *GroupServiceTest) TestLeaveGrpcErr() {
 	assert.Equal(t.T(), want, err)
 }
 
-func createBaanSlices() ([]*proto.Baan, []string) {
-	var result []*proto.Baan
+func createBaanSlices() ([]*baanProto.Baan, []string) {
+	var result []*baanProto.Baan
 	var baanIds []string
 
 	for i := 0; i < 3; i++ {
-		b := &proto.Baan{
+		b := &baanProto.Baan{
 			Id:            uuid.New().String(),
 			NameTH:        faker.Word(),
 			DescriptionTH: faker.Paragraph(),

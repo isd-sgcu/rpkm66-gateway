@@ -8,7 +8,8 @@ import (
 	cst "github.com/isd-sgcu/rpkm66-gateway/constant/checkin"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/checkin"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/checkin/v1"
+	usrProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -17,7 +18,7 @@ import (
 
 type CheckinServiceTest struct {
 	suite.Suite
-	User           *proto.User
+	User           *usrProto.User
 	Token          string
 	ServiceDownErr *dto.ResponseErr
 	BadRequestErr  *dto.ResponseErr
@@ -29,7 +30,7 @@ func TestCheckin(t *testing.T) {
 }
 
 func (t *CheckinServiceTest) SetupTest() {
-	t.User = &proto.User{
+	t.User = &usrProto.User{
 		Id:              faker.UUIDDigit(),
 		Title:           faker.Word(),
 		Firstname:       faker.FirstName(),

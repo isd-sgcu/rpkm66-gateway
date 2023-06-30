@@ -8,7 +8,8 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/utils"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/user"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	eventProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/event/v1"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -17,12 +18,12 @@ import (
 
 type UserServiceTest struct {
 	suite.Suite
-	User           *proto.User
-	UserReq        *proto.User
-	Events         []*proto.Event
+	User           *userProto.User
+	UserReq        *userProto.User
+	Events         []*eventProto.Event
 	UserDto        *dto.UserDto
 	UpdateUserDto  *dto.UpdateUserDto
-	UpdateUserReq  *proto.UpdateUserRequest
+	UpdateUserReq  *userProto.UpdateUserRequest
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 	InternalErr    *dto.ResponseErr
@@ -33,7 +34,7 @@ func TestUserService(t *testing.T) {
 }
 
 func (t *UserServiceTest) SetupTest() {
-	t.User = &proto.User{
+	t.User = &userProto.User{
 		Id:              faker.UUIDDigit(),
 		Firstname:       faker.FirstName(),
 		Lastname:        faker.LastName(),
@@ -52,7 +53,7 @@ func (t *UserServiceTest) SetupTest() {
 		BaanId:          faker.UUIDDigit(),
 	}
 
-	t.UserReq = &proto.User{
+	t.UserReq = &userProto.User{
 		Firstname:       t.User.Firstname,
 		Lastname:        t.User.Lastname,
 		Nickname:        t.User.Nickname,
@@ -67,9 +68,9 @@ func (t *UserServiceTest) SetupTest() {
 		CanSelectBaan:   t.User.CanSelectBaan,
 	}
 
-	t.Events = make([]*proto.Event, 3)
+	t.Events = make([]*eventProto.Event, 3)
 
-	t.Events[0] = &proto.Event{
+	t.Events[0] = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -78,7 +79,7 @@ func (t *UserServiceTest) SetupTest() {
 		Code:          faker.Word(),
 	}
 
-	t.Events[1] = &proto.Event{
+	t.Events[1] = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -87,7 +88,7 @@ func (t *UserServiceTest) SetupTest() {
 		Code:          faker.Word(),
 	}
 
-	t.Events[2] = &proto.Event{
+	t.Events[2] = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -125,7 +126,7 @@ func (t *UserServiceTest) SetupTest() {
 		Disease:         t.User.Disease,
 	}
 
-	t.UpdateUserReq = &proto.UpdateUserRequest{
+	t.UpdateUserReq = &userProto.UpdateUserRequest{
 		Id:              t.User.Id,
 		Title:           t.User.Title,
 		Firstname:       t.User.Firstname,
@@ -164,7 +165,7 @@ func (t *UserServiceTest) TestFindOneSuccess() {
 	want := t.User
 
 	c := &user.ClientMock{}
-	c.On("FindOne", &proto.FindOneUserRequest{Id: t.User.Id}).Return(&proto.FindOneUserResponse{User: want}, nil)
+	c.On("FindOne", &userProto.FindOneUserRequest{Id: t.User.Id}).Return(&userProto.FindOneUserResponse{User: want}, nil)
 	srv := NewService(c)
 
 	actual, err := srv.FindOne(t.User.Id)
@@ -177,7 +178,7 @@ func (t *UserServiceTest) TestFindOneNotFound() {
 	want := t.NotFoundErr
 
 	c := &user.ClientMock{}
-	c.On("FindOne", &proto.FindOneUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.NotFound, "User not found"))
+	c.On("FindOne", &userProto.FindOneUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.NotFound, "User not found"))
 
 	srv := NewService(c)
 
@@ -191,7 +192,7 @@ func (t *UserServiceTest) TestFindOneGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &user.ClientMock{}
-	c.On("FindOne", &proto.FindOneUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
+	c.On("FindOne", &userProto.FindOneUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 	srv := NewService(c)
 
 	actual, err := srv.FindOne(t.User.Id)
@@ -204,7 +205,7 @@ func (t *UserServiceTest) TestCreateSuccess() {
 	want := t.User
 
 	c := &user.ClientMock{}
-	c.On("Create", t.UserReq).Return(&proto.CreateUserResponse{User: want}, nil)
+	c.On("Create", t.UserReq).Return(&userProto.CreateUserResponse{User: want}, nil)
 
 	srv := NewService(c)
 
@@ -230,7 +231,7 @@ func (t *UserServiceTest) TestCreateGrpcErr() {
 
 func (t *UserServiceTest) TestVerifySuccess() {
 	c := &user.ClientMock{}
-	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID, VerifyType: "vaccine"}).Return(&proto.VerifyUserResponse{Success: true}, nil)
+	c.On("Verify", &userProto.VerifyUserRequest{StudentId: t.User.StudentID, VerifyType: "vaccine"}).Return(&userProto.VerifyUserResponse{Success: true}, nil)
 
 	srv := NewService(c)
 
@@ -244,7 +245,7 @@ func (t *UserServiceTest) TestVerifyFailed() {
 	want := t.NotFoundErr
 
 	c := &user.ClientMock{}
-	c.On("Verify", &proto.VerifyUserRequest{StudentId: t.User.StudentID, VerifyType: "vaccine"}).Return(&proto.VerifyUserResponse{Success: true}, status.Error(codes.NotFound, "User not found"))
+	c.On("Verify", &userProto.VerifyUserRequest{StudentId: t.User.StudentID, VerifyType: "vaccine"}).Return(&userProto.VerifyUserResponse{Success: true}, status.Error(codes.NotFound, "User not found"))
 
 	srv := NewService(c)
 
@@ -258,7 +259,7 @@ func (t *UserServiceTest) TestUpdateSuccess() {
 	want := t.User
 
 	c := &user.ClientMock{}
-	c.On("Update", t.UpdateUserReq).Return(&proto.UpdateUserResponse{User: t.User}, nil)
+	c.On("Update", t.UpdateUserReq).Return(&userProto.UpdateUserResponse{User: t.User}, nil)
 
 	srv := NewService(c)
 
@@ -302,7 +303,7 @@ func (t *UserServiceTest) TestCreateOrUpdateSuccess() {
 	t.UserReq.Id = t.User.Id
 
 	c := &user.ClientMock{}
-	c.On("CreateOrUpdate", &proto.CreateOrUpdateUserRequest{User: t.UserReq}).Return(&proto.CreateOrUpdateUserResponse{User: t.User}, nil)
+	c.On("CreateOrUpdate", &userProto.CreateOrUpdateUserRequest{User: t.UserReq}).Return(&userProto.CreateOrUpdateUserResponse{User: t.User}, nil)
 
 	srv := NewService(c)
 
@@ -318,7 +319,7 @@ func (t *UserServiceTest) TestCreateOrUpdateGrpcErr() {
 	t.UserReq.Id = t.User.Id
 
 	c := &user.ClientMock{}
-	c.On("CreateOrUpdate", &proto.CreateOrUpdateUserRequest{User: t.UserReq}).Return(nil, status.Error(codes.Unavailable, ""))
+	c.On("CreateOrUpdate", &userProto.CreateOrUpdateUserRequest{User: t.UserReq}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -330,7 +331,7 @@ func (t *UserServiceTest) TestCreateOrUpdateGrpcErr() {
 
 func (t *UserServiceTest) TestDeleteSuccess() {
 	c := &user.ClientMock{}
-	c.On("Delete", &proto.DeleteUserRequest{Id: t.User.Id}).Return(&proto.DeleteUserResponse{Success: true}, nil)
+	c.On("Delete", &userProto.DeleteUserRequest{Id: t.User.Id}).Return(&userProto.DeleteUserResponse{Success: true}, nil)
 
 	srv := NewService(c)
 
@@ -344,7 +345,7 @@ func (t *UserServiceTest) TestDeleteNotFound() {
 	want := t.NotFoundErr
 
 	c := &user.ClientMock{}
-	c.On("Delete", &proto.DeleteUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.NotFound, "User not found"))
+	c.On("Delete", &userProto.DeleteUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.NotFound, "User not found"))
 
 	srv := NewService(c)
 
@@ -358,7 +359,7 @@ func (t *UserServiceTest) TestDeleteGrpcErr() {
 	want := t.ServiceDownErr
 
 	c := &user.ClientMock{}
-	c.On("Delete", &proto.DeleteUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
+	c.On("Delete", &userProto.DeleteUserRequest{Id: t.User.Id}).Return(nil, status.Error(codes.Unavailable, ""))
 
 	srv := NewService(c)
 
@@ -369,11 +370,11 @@ func (t *UserServiceTest) TestDeleteGrpcErr() {
 }
 
 func (t *UserServiceTest) TestConfirmEstampSuccess() {
-	want := &proto.ConfirmEstampResponse{}
+	want := &userProto.ConfirmEstampResponse{}
 
 	c := &user.ClientMock{}
 
-	c.On("ConfirmEstamp", &proto.ConfirmEstampRequest{
+	c.On("ConfirmEstamp", &userProto.ConfirmEstampRequest{
 		UId: t.User.Id,
 		EId: t.Events[0].Id,
 	}).Return(want, nil)
@@ -388,7 +389,7 @@ func (t *UserServiceTest) TestConfirmEstampSuccess() {
 func (t *UserServiceTest) TestConfirmEstampNotFound() {
 	c := &user.ClientMock{}
 
-	c.On("ConfirmEstamp", &proto.ConfirmEstampRequest{
+	c.On("ConfirmEstamp", &userProto.ConfirmEstampRequest{
 		UId: t.User.Id,
 		EId: t.Events[0].Id,
 	}).Return(nil, status.Error(codes.NotFound, "User not found"))
@@ -403,7 +404,7 @@ func (t *UserServiceTest) TestConfirmEstampNotFound() {
 func (t *UserServiceTest) TestConfirmEstampInternal() {
 	c := &user.ClientMock{}
 
-	c.On("ConfirmEstamp", &proto.ConfirmEstampRequest{
+	c.On("ConfirmEstamp", &userProto.ConfirmEstampRequest{
 		UId: t.User.Id,
 		EId: t.Events[0].Id,
 	}).Return(nil, status.Error(codes.Internal, "Internal Server Error"))
@@ -418,7 +419,7 @@ func (t *UserServiceTest) TestConfirmEstampInternal() {
 func (t *UserServiceTest) TestConfirmEstampUnavailable() {
 	c := &user.ClientMock{}
 
-	c.On("ConfirmEstamp", &proto.ConfirmEstampRequest{
+	c.On("ConfirmEstamp", &userProto.ConfirmEstampRequest{
 		UId: t.User.Id,
 		EId: t.Events[0].Id,
 	}).Return(nil, status.Error(codes.Unavailable, "Service is down"))
@@ -431,8 +432,8 @@ func (t *UserServiceTest) TestConfirmEstampUnavailable() {
 }
 
 func (t *UserServiceTest) TestGetUserEstampSuccess() {
-	want := &proto.GetUserEstampResponse{
-		EventList: []*proto.Event{
+	want := &userProto.GetUserEstampResponse{
+		EventList: []*eventProto.Event{
 			t.Events[0],
 			t.Events[1],
 		},
@@ -440,7 +441,7 @@ func (t *UserServiceTest) TestGetUserEstampSuccess() {
 
 	c := &user.ClientMock{}
 
-	c.On("GetUserEstamp", &proto.GetUserEstampRequest{
+	c.On("GetUserEstamp", &userProto.GetUserEstampRequest{
 		UId: t.User.Id,
 	}).Return(want, nil)
 
@@ -454,7 +455,7 @@ func (t *UserServiceTest) TestGetUserEstampSuccess() {
 func (t *UserServiceTest) TestGetUserEstampUnavailable() {
 	c := &user.ClientMock{}
 
-	c.On("GetUserEstamp", &proto.GetUserEstampRequest{
+	c.On("GetUserEstamp", &userProto.GetUserEstampRequest{
 		UId: t.User.Id,
 	}).Return(nil, status.Error(codes.Unavailable, "Service is down"))
 
@@ -468,7 +469,7 @@ func (t *UserServiceTest) TestGetUserEstampUnavailable() {
 func (t *UserServiceTest) TestGetUserEstampNotFound() {
 	c := &user.ClientMock{}
 
-	c.On("GetUserEstamp", &proto.GetUserEstampRequest{
+	c.On("GetUserEstamp", &userProto.GetUserEstampRequest{
 		UId: t.User.Id,
 	}).Return(nil, status.Error(codes.NotFound, "User not found"))
 
@@ -482,7 +483,7 @@ func (t *UserServiceTest) TestGetUserEstampNotFound() {
 func (t *UserServiceTest) TestGetUserEstampInternal() {
 	c := &user.ClientMock{}
 
-	c.On("GetUserEstamp", &proto.GetUserEstampRequest{
+	c.On("GetUserEstamp", &userProto.GetUserEstampRequest{
 		UId: t.User.Id,
 	}).Return(nil, status.Error(codes.Internal, "Internal Server Error"))
 

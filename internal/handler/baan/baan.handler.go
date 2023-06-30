@@ -6,7 +6,7 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/baan"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 )
 
 type Handler struct {
@@ -15,7 +15,7 @@ type Handler struct {
 }
 
 type IUserService interface {
-	FindOne(string) (*proto.User, *dto.ResponseErr)
+	FindOne(string) (*userProto.User, *dto.ResponseErr)
 }
 
 func NewHandler(service baan.Service, userService IUserService) *Handler {

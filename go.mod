@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/google/uuid v1.3.0
+	github.com/isd-sgcu/rpkm66-go-proto v0.0.0-20230630055326-ebe9af180145
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/viper v1.16.0

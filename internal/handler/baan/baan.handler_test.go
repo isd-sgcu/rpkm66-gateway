@@ -9,7 +9,8 @@ import (
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/baan"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/rctx"
 	mockUsr "github.com/isd-sgcu/rpkm66-gateway/mocks/user"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	baanProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/baan/v1"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -17,8 +18,8 @@ import (
 
 type BaanHandlerTest struct {
 	suite.Suite
-	Baan           *proto.Baan
-	User           *proto.User
+	Baan           *baanProto.Baan
+	User           *userProto.User
 	userId         string
 	BindErr        *dto.ResponseErr
 	NotFoundErr    *dto.ResponseErr
@@ -30,13 +31,13 @@ func TestBaanHandler(t *testing.T) {
 }
 
 func (t *BaanHandlerTest) SetupTest() {
-	t.Baan = &proto.Baan{
+	t.Baan = &baanProto.Baan{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Paragraph(),
 		NameEN:        faker.Word(),
 		DescriptionEN: faker.Paragraph(),
-		Size:          proto.BaanSize_M,
+		Size:          baanProto.BaanSize_M,
 		Facebook:      faker.URL(),
 		FacebookUrl:   faker.URL(),
 		Instagram:     faker.URL(),
@@ -46,7 +47,7 @@ func (t *BaanHandlerTest) SetupTest() {
 		ImageUrl:      faker.URL(),
 	}
 
-	t.User = &proto.User{
+	t.User = &userProto.User{
 		Id:              faker.UUIDDigit(),
 		Title:           faker.Word(),
 		Firstname:       faker.FirstName(),
@@ -86,18 +87,18 @@ func (t *BaanHandlerTest) SetupTest() {
 	}
 }
 
-func createBaans(baan *proto.Baan) []*proto.Baan {
-	var baans []*proto.Baan
+func createBaans(baan *baanProto.Baan) []*baanProto.Baan {
+	var baans []*baanProto.Baan
 	baans = append(baans, baan)
 
 	for i := 0; i < 2; i++ {
-		b := proto.Baan{
+		b := baanProto.Baan{
 			Id:            faker.UUIDDigit(),
 			NameTH:        faker.Word(),
 			DescriptionTH: faker.Paragraph(),
 			NameEN:        faker.Word(),
 			DescriptionEN: faker.Paragraph(),
-			Size:          proto.BaanSize_M,
+			Size:          baanProto.BaanSize_M,
 			Facebook:      faker.URL(),
 			FacebookUrl:   faker.URL(),
 			Instagram:     faker.URL(),

@@ -7,7 +7,9 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/isd-sgcu/rpkm66-gateway/internal/dto"
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/estamp"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	eventProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/event/v1"
+	proto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/event/v1"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -17,10 +19,10 @@ import (
 type EStampServiceTest struct {
 	suite.Suite
 	UId            string
-	Event1         *proto.Event
-	Event2         *proto.Event
-	Event3         *proto.Event
-	User           *proto.User
+	Event1         *eventProto.Event
+	Event2         *eventProto.Event
+	Event3         *eventProto.Event
+	User           *userProto.User
 	EventType      string
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
@@ -34,7 +36,7 @@ func TestEStampService(t *testing.T) {
 func (t *EStampServiceTest) SetupTest() {
 	t.UId = faker.UUIDDigit()
 
-	t.User = &proto.User{
+	t.User = &userProto.User{
 		Id:              faker.UUIDDigit(),
 		Firstname:       faker.FirstName(),
 		Lastname:        faker.LastName(),
@@ -52,7 +54,7 @@ func (t *EStampServiceTest) SetupTest() {
 		CanSelectBaan:   true,
 	}
 
-	t.Event1 = &proto.Event{
+	t.Event1 = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -62,7 +64,7 @@ func (t *EStampServiceTest) SetupTest() {
 		ImageURL:      faker.URL(),
 	}
 
-	t.Event2 = &proto.Event{
+	t.Event2 = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -72,7 +74,7 @@ func (t *EStampServiceTest) SetupTest() {
 		ImageURL:      faker.URL(),
 	}
 
-	t.Event3 = &proto.Event{
+	t.Event3 = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -165,7 +167,7 @@ func (t *EStampServiceTest) TestFindByIdInternal() {
 
 func (t *EStampServiceTest) TestFindAllEventWithTypeSuccess() {
 	want := &proto.FindAllEventWithTypeResponse{
-		Event: []*proto.Event{
+		Event: []*eventProto.Event{
 			t.Event1,
 			t.Event2,
 		},

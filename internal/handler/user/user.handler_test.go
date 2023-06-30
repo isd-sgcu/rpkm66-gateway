@@ -10,7 +10,8 @@ import (
 	"github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/mocks/rctx"
 	mock "github.com/isd-sgcu/rpkm66-gateway/mocks/user"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	eventProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/event/v1"
+	userProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -18,8 +19,8 @@ import (
 
 type UserHandlerTest struct {
 	suite.Suite
-	User           *proto.User
-	Events         []*proto.Event
+	User           *userProto.User
+	Events         []*eventProto.Event
 	UserDto        *dto.UserDto
 	UpdateUserDto  *dto.UpdateUserDto
 	BindErr        *dto.ResponseErr
@@ -33,7 +34,7 @@ func TestUserHandler(t *testing.T) {
 }
 
 func (t *UserHandlerTest) SetupTest() {
-	t.User = &proto.User{
+	t.User = &userProto.User{
 		Id:              faker.UUIDDigit(),
 		Title:           faker.Word(),
 		Firstname:       faker.FirstName(),
@@ -54,9 +55,9 @@ func (t *UserHandlerTest) SetupTest() {
 		BaanId:          faker.UUIDDigit(),
 	}
 
-	t.Events = make([]*proto.Event, 3)
+	t.Events = make([]*eventProto.Event, 3)
 
-	t.Events[0] = &proto.Event{
+	t.Events[0] = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -65,7 +66,7 @@ func (t *UserHandlerTest) SetupTest() {
 		Code:          faker.Word(),
 	}
 
-	t.Events[1] = &proto.Event{
+	t.Events[1] = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -74,7 +75,7 @@ func (t *UserHandlerTest) SetupTest() {
 		Code:          faker.Word(),
 	}
 
-	t.Events[2] = &proto.Event{
+	t.Events[2] = &eventProto.Event{
 		Id:            faker.UUIDDigit(),
 		NameTH:        faker.Word(),
 		DescriptionTH: faker.Word(),
@@ -479,8 +480,8 @@ func (t *UserHandlerTest) TestDeleteGrpcErr() {
 }
 
 func (t *UserHandlerTest) TestGetUserEstampSuccess() {
-	want := &proto.GetUserEstampResponse{
-		EventList: []*proto.Event{
+	want := &userProto.GetUserEstampResponse{
+		EventList: []*eventProto.Event{
 			t.Events[0],
 			t.Events[1],
 		},
@@ -537,7 +538,7 @@ func (t *UserHandlerTest) TestFindUserUnavailable() {
 }
 
 func (t *UserHandlerTest) TestConfirmEstampSuccess() {
-	want := &proto.ConfirmEstampResponse{}
+	want := &userProto.ConfirmEstampResponse{}
 
 	s := &mock.ServiceMock{}
 	s.On("ConfirmEstamp", t.User.Id, t.Events[0].Id).Return(want, nil)

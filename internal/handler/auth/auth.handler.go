@@ -7,7 +7,7 @@ import (
 	validate "github.com/isd-sgcu/rpkm66-gateway/internal/validator"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/rctx"
 	"github.com/isd-sgcu/rpkm66-gateway/pkg/service/auth"
-	"github.com/isd-sgcu/rpkm66-gateway/proto"
+	usrProto "github.com/isd-sgcu/rpkm66-go-proto/rpkm66/backend/user/v1"
 )
 
 type Handler struct {
@@ -17,7 +17,7 @@ type Handler struct {
 }
 
 type IUserService interface {
-	FindOne(string) (*proto.User, *dto.ResponseErr)
+	FindOne(string) (*usrProto.User, *dto.ResponseErr)
 }
 
 func NewHandler(service auth.Service, usrService IUserService, validate *validate.DtoValidator) *Handler {
