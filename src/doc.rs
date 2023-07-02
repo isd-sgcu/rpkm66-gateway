@@ -10,12 +10,17 @@ use utoipa::{
         crate::handler::auth::validate,
         crate::handler::auth::verify_ticket,
         crate::handler::auth::refresh_token,
+        crate::handler::baan::find_one,
+        crate::handler::baan::find_all,
+        crate::handler::baan::get_user_baan,
     ),
     components(schemas(
         crate::dto::Validate,
         crate::dto::RedeemNewToken,
         crate::dto::VerifyTicket,
         crate::dto::User,
+        crate::dto::BaanSize,
+        crate::dto::Baan,
     ))
 )]
 pub struct ApiDoc;

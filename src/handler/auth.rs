@@ -29,9 +29,6 @@ impl Handler {
     responses(
         (status = 200, description = "Success"),
     ),
-    security(
-        (),
-    )
 )]
 pub async fn verify_ticket(
     State(handler): State<Handler>,
@@ -49,9 +46,8 @@ pub async fn verify_ticket(
         (status = 401, description = "Unauthorized"),
     ),
     security(
-        (),
         ("api_key" = []),
-    )
+    ),
 )]
 pub async fn validate(State(handler): State<Handler>, cred: Cred) -> impl IntoResponse {
     handler
@@ -68,9 +64,6 @@ pub async fn validate(State(handler): State<Handler>, cred: Cred) -> impl IntoRe
     responses(
         (status = 200, description = "Success"),
     ),
-    security(
-        (),
-    )
 )]
 pub async fn refresh_token(
     State(handler): State<Handler>,
