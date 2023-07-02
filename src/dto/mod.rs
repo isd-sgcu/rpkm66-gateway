@@ -1,24 +1,40 @@
-macro_rules! direct_map {
-    ($dto:ty, $proto:ty; $($field:ident),*) => {
-        impl From<$proto> for $dto {
-            fn from(value: $proto) -> Self {
-                Self {
-                    $($field: value.$field),*
+use axum::{response::IntoResponse, Json};
+use serde::Serialize;
+
+macro_rules! into_dto {
+    ($proto:ty, $dto:ty, $($field:ident),*) => {
+        const _: () = {
+            use crate::dto::IntoDto;
+
+            impl IntoDto for $proto {
+                type Target = $dto;
+
+                fn into_dto(self) -> Self::Target {
+                    Self::Target {
+                        $(
+                            $field: self.$field,
+                        )*
+                    }
                 }
             }
-        }
-        impl From<$dto> for $proto {
-            fn from(value: $dto) -> Self {
-                Self {
-                    $($field: value.$field),*
-                }
-            }
-        }
+        };
     };
 }
 
+pub trait IntoDto: Sized {
+    type Target: Serialize;
+
+    fn into_dto(self) -> Self::Target;
+
+    fn into_response(self) -> axum::response::Response {
+        Json(self.into_dto()).into_response()
+    }
+}
+
 mod auth;
+mod baan;
 mod user;
 
 pub use auth::*;
+pub use baan::*;
 pub use user::*;

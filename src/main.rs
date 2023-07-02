@@ -32,6 +32,7 @@ pub async fn health_check() -> impl IntoResponse {
 #[derive(FromRef, Clone)]
 pub struct AppState {
     pub auth_hdr: handler::auth::Handler,
+    pub baan_hdr: handler::baan::Handler,
     pub auth_svc: service::auth::Service,
 }
 
@@ -55,19 +56,26 @@ async fn main() {
         rpkm66_rust_proto::rpkm66::auth::auth::v1::auth_service_client::AuthServiceClient::new(
             auth_conn,
         );
-    let backend_client =
+    let user_client =
         rpkm66_rust_proto::rpkm66::backend::user::v1::user_service_client::UserServiceClient::new(
+            backend_conn.clone(),
+        );
+    let baan_client =
+        rpkm66_rust_proto::rpkm66::backend::baan::v1::baan_service_client::BaanServiceClient::new(
             backend_conn,
         );
 
     let auth_svc = service::auth::Service::new(auth_client);
-    let user_svc = service::user::Service::new(backend_client);
+    let user_svc = service::user::Service::new(user_client);
+    let baan_svc = service::baan::Service::new(baan_client);
 
-    let auth_handler = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
+    let auth_hdr = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
+    let baan_hdr = handler::baan::Handler::new(baan_svc.clone(), user_svc.clone());
 
     let state = AppState {
-        auth_hdr: auth_handler.clone(),
+        auth_hdr: auth_hdr.clone(),
         auth_svc: auth_svc.clone(),
+        baan_hdr: baan_hdr.clone(),
     };
 
     let app = Router::new()
@@ -76,6 +84,9 @@ async fn main() {
         .route("/auth/verify", post(handler::auth::verify_ticket))
         .route("/auth/me", get(handler::auth::validate))
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
+        .route("/baan", get(handler::baan::find_all))
+        .route("/baan/:id", get(handler::baan::find_one))
+        .route("/baan/user", get(handler::baan::get_user_baan))
         .layer(cors)
         .with_state(state);
 

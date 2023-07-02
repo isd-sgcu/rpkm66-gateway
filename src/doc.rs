@@ -15,6 +15,7 @@ use utoipa::{
         crate::dto::Validate,
         crate::dto::RedeemNewToken,
         crate::dto::VerifyTicket,
+        crate::dto::User,
     ))
 )]
 pub struct ApiDoc;

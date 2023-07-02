@@ -1,5 +1,5 @@
-use crate::dto;
 use crate::dto::RedeemNewToken;
+use crate::dto::{self, IntoDto};
 use crate::middleware::auth::Cred;
 use crate::service::auth::Service;
 use axum::{
@@ -58,8 +58,7 @@ pub async fn validate(State(handler): State<Handler>, cred: Cred) -> impl IntoRe
         .user_service
         .find_one(cred.user_id)
         .await
-        .map(<dto::User as From<_>>::from)
-        .map(Json)
+        .map(IntoDto::into_response)
 }
 
 #[utoipa::path(

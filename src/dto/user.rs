@@ -24,4 +24,27 @@ pub struct User {
     is_got_ticket: bool,
 }
 
-direct_map!(User, rpkm66_rust_proto::rpkm66::backend::user::v1::User;id, title, firstname, lastname, nickname, student_id, faculty, year, phone, line_id, email, allergy_food, food_restriction, allergy_medicine, disease, image_url, can_select_baan, is_verify, baan_id, is_got_ticket);
+into_dto!(
+    rpkm66_rust_proto::rpkm66::backend::user::v1::User,
+    User,
+    id,
+    title,
+    firstname,
+    lastname,
+    nickname,
+    student_id,
+    faculty,
+    year,
+    phone,
+    line_id,
+    email,
+    allergy_food,
+    food_restriction,
+    allergy_medicine,
+    disease,
+    image_url,
+    can_select_baan,
+    is_verify,
+    baan_id,
+    is_got_ticket
+);
