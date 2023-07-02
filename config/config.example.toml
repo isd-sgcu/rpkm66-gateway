@@ -1,0 +1,10 @@
+[app]
+port = 3000
+debug = true
+max_file_size = 10
+phase = "register"
+
+[service]
+backend = "localhost:3001"
+auth = "localhost:3002"
+file = "localhost:3003"
