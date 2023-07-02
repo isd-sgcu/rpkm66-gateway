@@ -10,6 +10,7 @@ pub enum Error {
     Unauthorized,
     Forbidden,
     NotFound,
+    WithMessage(StatusCode, String),
 }
 
 impl std::fmt::Display for Error {
@@ -46,18 +47,26 @@ impl From<tonic::Status> for Error {
     }
 }
 
+impl From<axum::extract::multipart::MultipartError> for Error {
+    fn from(value: axum::extract::multipart::MultipartError) -> Self {
+        Error::WithMessage(value.status(), value.body_text())
+    }
+}
+
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
         match self {
-            Error::ServiceDown => (StatusCode::SERVICE_UNAVAILABLE, "Service down"),
-            Error::InternalServer => (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error"),
-            Error::Timeout => (StatusCode::REQUEST_TIMEOUT, "Request time out"),
-            Error::Duplicated => (StatusCode::CONFLICT, "Duplicated"),
-            Error::BadRequest => (StatusCode::BAD_REQUEST, "Bad request"),
-            Error::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized"),
-            Error::Forbidden => (StatusCode::FORBIDDEN, "Forbidden"),
-            Error::NotFound => (StatusCode::NOT_FOUND, "Not found"),
+            Error::ServiceDown => (StatusCode::SERVICE_UNAVAILABLE, "Service down").into_response(),
+            Error::InternalServer => {
+                (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response()
+            }
+            Error::Timeout => (StatusCode::REQUEST_TIMEOUT, "Request time out").into_response(),
+            Error::Duplicated => (StatusCode::CONFLICT, "Duplicated").into_response(),
+            Error::BadRequest => (StatusCode::BAD_REQUEST, "Bad request").into_response(),
+            Error::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized").into_response(),
+            Error::Forbidden => (StatusCode::FORBIDDEN, "Forbidden").into_response(),
+            Error::NotFound => (StatusCode::NOT_FOUND, "Not found").into_response(),
+            Error::WithMessage(code, text) => (code, text).into_response(),
         }
-        .into_response()
     }
 }

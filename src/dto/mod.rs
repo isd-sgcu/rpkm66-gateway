@@ -33,8 +33,10 @@ pub trait IntoDto: Sized {
 
 mod auth;
 mod baan;
+mod file;
 mod user;
 
 pub use auth::*;
 pub use baan::*;
+pub use file::*;
 pub use user::*;

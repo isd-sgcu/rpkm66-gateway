@@ -13,6 +13,7 @@ use utoipa::{
         crate::handler::baan::find_one,
         crate::handler::baan::find_all,
         crate::handler::baan::get_user_baan,
+        crate::handler::file::upload,
     ),
     components(schemas(
         crate::dto::Validate,
@@ -21,6 +22,8 @@ use utoipa::{
         crate::dto::User,
         crate::dto::BaanSize,
         crate::dto::Baan,
+        crate::dto::FileResponse,
+        crate::dto::FileUploadRequest,
     ))
 )]
 pub struct ApiDoc;
