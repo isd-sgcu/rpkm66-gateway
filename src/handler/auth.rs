@@ -10,11 +10,15 @@ use axum::{
 #[derive(Clone)]
 pub struct Handler {
     service: Service,
+    user_service: crate::service::user::Service,
 }
 
 impl Handler {
-    pub fn new(service: Service) -> Self {
-        Self { service }
+    pub fn new(service: Service, user_service: crate::service::user::Service) -> Self {
+        Self {
+            service,
+            user_service,
+        }
     }
 }
 
@@ -49,10 +53,13 @@ pub async fn verify_ticket(
         ("api_key" = []),
     )
 )]
-pub async fn validate(State(_handler): State<Handler>, cred: Cred) -> impl IntoResponse {
-    println!("{}: {}", cred.user_id, cred.role);
-
-    "TODO"
+pub async fn validate(State(handler): State<Handler>, cred: Cred) -> impl IntoResponse {
+    handler
+        .user_service
+        .find_one(cred.user_id)
+        .await
+        .map(<dto::User as From<_>>::from)
+        .map(Json)
 }
 
 #[utoipa::path(

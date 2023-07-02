@@ -1,5 +1,5 @@
 use utoipa::{
-    openapi::security::{SecurityScheme, Http},
+    openapi::security::{Http, SecurityScheme},
     OpenApi,
 };
 
@@ -11,13 +11,11 @@ use utoipa::{
         crate::handler::auth::verify_ticket,
         crate::handler::auth::refresh_token,
     ),
-    components(
-        schemas(
-            crate::dto::Validate,
-            crate::dto::RedeemNewToken,
-            crate::dto::VerifyTicket,
-        )
-    )
+    components(schemas(
+        crate::dto::Validate,
+        crate::dto::RedeemNewToken,
+        crate::dto::VerifyTicket,
+    ))
 )]
 pub struct ApiDoc;
 

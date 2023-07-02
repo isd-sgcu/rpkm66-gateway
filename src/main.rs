@@ -2,6 +2,7 @@ use axum::extract::FromRef;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Router, Server};
+use tonic::transport::Channel;
 use tower_http::cors::Any;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -43,14 +44,26 @@ async fn main() {
         .allow_methods(Any)
         .allow_origin(Any);
 
+    let auth_conn = Channel::from_shared(format!("http://{}", config.service.auth))
+        .expect("Unable to connect to auth service")
+        .connect_lazy();
+    let backend_conn = Channel::from_shared(format!("http://{}", config.service.backend))
+        .expect("Unable to connect to backend service")
+        .connect_lazy();
+
     let auth_client =
-        rpkm66_rust_proto::rpkm66::auth::auth::v1::auth_service_client::AuthServiceClient::connect(
-            format!("http://{}", config.service.auth),
-        )
-        .await
-        .expect("Unable to connect to auth service");
+        rpkm66_rust_proto::rpkm66::auth::auth::v1::auth_service_client::AuthServiceClient::new(
+            auth_conn,
+        );
+    let backend_client =
+        rpkm66_rust_proto::rpkm66::backend::user::v1::user_service_client::UserServiceClient::new(
+            backend_conn,
+        );
+
     let auth_svc = service::auth::Service::new(auth_client);
-    let auth_handler = handler::auth::Handler::new(auth_svc.clone());
+    let user_svc = service::user::Service::new(backend_client);
+
+    let auth_handler = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
 
     let state = AppState {
         auth_hdr: auth_handler.clone(),
