@@ -28,6 +28,8 @@ impl Handler {
     request_body = VerifyTicket,
     responses(
         (status = 200, description = "Success"),
+        (status = 400, description = "Bad request"),
+        (status = 401, description = "Unauthorized"),
     ),
 )]
 pub async fn verify_ticket(

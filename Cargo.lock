@@ -1003,6 +1003,7 @@ dependencies = [
  "config",
  "rpkm66-rust-proto",
  "serde",
+ "serde_json",
  "tokio",
  "tonic",
  "tower",

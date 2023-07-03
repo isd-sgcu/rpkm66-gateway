@@ -2,6 +2,7 @@ use utoipa::ToSchema;
 
 #[derive(serde::Deserialize, ToSchema)]
 pub struct VerifyTicket {
+    #[schema(example = "AAAAAAAAAAo2NTQwMDAwMDIxAAAAAAAAAARKb2huAAAAAAAAAANEb2UAAAAAAAAAFAu8DXGVMGlZFIP0MlQSHIOkOxLE")]
     pub ticket: String,
 }
 
