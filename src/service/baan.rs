@@ -17,7 +17,9 @@ impl Service {
         Ok(self
             .client
             .clone()
-            .find_all_baan(FindAllBaanRequest {})
+            .find_all_baan(FindAllBaanRequest {
+                ..Default::default()
+            })
             .await?
             .into_inner()
             .baans)
@@ -26,7 +28,10 @@ impl Service {
     pub async fn find_one(&self, baan_id: String) -> Result<Baan> {
         self.client
             .clone()
-            .find_one_baan(FindOneBaanRequest { id: baan_id })
+            .find_one_baan(FindOneBaanRequest {
+                id: baan_id,
+                ..Default::default()
+            })
             .await?
             .into_inner()
             .baan

@@ -53,8 +53,8 @@ async fn main() {
         .expect("Unable to connect to backend service")
         .connect_lazy();
     let file_conn = Channel::from_shared(format!("http://{}", config.service.file))
-    .expect("Unable to connect to file service")
-    .connect_lazy();
+        .expect("Unable to connect to file service")
+        .connect_lazy();
 
     let auth_client =
         rpkm66_rust_proto::rpkm66::auth::auth::v1::auth_service_client::AuthServiceClient::new(
@@ -68,8 +68,10 @@ async fn main() {
         rpkm66_rust_proto::rpkm66::backend::baan::v1::baan_service_client::BaanServiceClient::new(
             backend_conn,
         );
-    let file_client = 
-        rpkm66_rust_proto::rpkm66::file::file::v1::file_service_client::FileServiceClient::new(file_conn);
+    let file_client =
+        rpkm66_rust_proto::rpkm66::file::file::v1::file_service_client::FileServiceClient::new(
+            file_conn,
+        );
 
     let auth_svc = service::auth::Service::new(auth_client);
     let user_svc = service::user::Service::new(user_client);

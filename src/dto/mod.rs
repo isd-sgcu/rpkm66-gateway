@@ -21,6 +21,32 @@ macro_rules! into_dto {
     };
 }
 
+macro_rules! direct_map {
+    ($a:ty, $b:ty, $($field:ident),*) => {
+        const _: () = {
+            impl From<$a> for $b {
+                fn from(value: $a) -> Self {
+                    Self {
+                        $(
+                            $field: value.$field,
+                        )*
+                    }
+                }
+            }
+
+            impl From<$b> for $a {
+                fn from(value: $b) -> Self {
+                    Self {
+                        $(
+                            $field: value.$field,
+                        )*
+                    }
+                }
+            }
+        };
+    };
+}
+
 pub trait IntoDto: Sized {
     type Target: Serialize;
 

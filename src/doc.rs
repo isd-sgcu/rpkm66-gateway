@@ -14,6 +14,7 @@ use utoipa::{
         crate::handler::baan::find_all,
         crate::handler::baan::get_user_baan,
         crate::handler::file::upload,
+        crate::handler::user::update,
     ),
     components(schemas(
         crate::dto::Validate,
@@ -24,6 +25,7 @@ use utoipa::{
         crate::dto::Baan,
         crate::dto::FileResponse,
         crate::dto::FileUploadRequest,
+        crate::dto::UpdateUser,
     ))
 )]
 pub struct ApiDoc;

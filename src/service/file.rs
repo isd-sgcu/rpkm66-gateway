@@ -30,6 +30,7 @@ impl Service {
                 user_id,
                 tag,
                 r#type,
+                ..Default::default()
             })
             .await?
             .into_inner()

@@ -19,7 +19,10 @@ impl Service {
     pub async fn verify_ticket(&self, ticket: String) -> Result<Credential> {
         self.client
             .clone()
-            .verify_ticket(VerifyTicketRequest { ticket })
+            .verify_ticket(VerifyTicketRequest {
+                ticket,
+                ..Default::default()
+            })
             .await?
             .into_inner()
             .credential
@@ -30,7 +33,10 @@ impl Service {
         let response = self
             .client
             .clone()
-            .validate(ValidateRequest { token })
+            .validate(ValidateRequest {
+                token,
+                ..Default::default()
+            })
             .await?
             .into_inner();
 
@@ -43,7 +49,10 @@ impl Service {
     pub async fn refresh_token(&self, refresh_token: String) -> Result<Credential> {
         self.client
             .clone()
-            .refresh_token(RefreshTokenRequest { refresh_token })
+            .refresh_token(RefreshTokenRequest {
+                refresh_token,
+                ..Default::default()
+            })
             .await?
             .into_inner()
             .credential
