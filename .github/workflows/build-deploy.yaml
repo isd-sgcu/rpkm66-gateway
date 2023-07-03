@@ -1,0 +1,83 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+      - dev
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to the Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Cred
+        shell: bash
+        env:
+          NETRC_CONFIG: ${{ secrets.NETRC_CONFIG }}
+        run: |
+          echo "$NETRC_CONFIG" >> /home/runner/.netrc
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }},${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+          secret-files: |
+            "netrcConf=/home/runner/.netrc"
+
+  deploy:
+    name: Deploy to deploys.app
+    runs-on: ubuntu-latest
+
+    needs:
+      - build
+
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - uses: deploys-app/deploys-action@v1
+        with:
+          project: rpkm66
+          location: gke.cluster-rcf2
+          name: rpkm66-gateway-${{ steps.extract_branch.outputs.branch }}
+          image: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        env:
+          DEPLOYS_AUTH_USER: ${{ secrets.DEPLOYS_AUTH_USER }}
+          DEPLOYS_AUTH_PASS: ${{ secrets.DEPLOYS_AUTH_PASS }}
