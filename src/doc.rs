@@ -26,7 +26,18 @@ use utoipa::{
         crate::dto::FileResponse,
         crate::dto::FileUploadRequest,
         crate::dto::UpdateUser,
-    ))
+    )),
+    info(
+        title = "RPKM66",
+        contact(name = "isd.team.sgcu@gmail.com"),
+    ),
+    servers(
+        (url = "http://localhost:{port}", description = "Local server", variables(
+            ("port" = (default= "3000", description = "port"))
+        )),
+        (url = "https://pbeta.freshmen2023.sgcu.in.th", description = "beta server"),
+        (url = "https://pdev.freshmen2023.sgcu.in.th", description = "dev server")
+    )
 )]
 pub struct ApiDoc;
 
