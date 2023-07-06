@@ -965,7 +965,7 @@ dependencies = [
 [[package]]
 name = "rpkm66-rust-proto"
 version = "0.1.0"
-source = "git+https://github.com/isd-sgcu/rpkm66-rust-proto?branch=beta#20ea0bcc96337b07205c1322d17c5211356122b0"
+source = "git+https://github.com/isd-sgcu/rpkm66-rust-proto?branch=dev#20ea0bcc96337b07205c1322d17c5211356122b0"
 dependencies = [
  "prost",
  "serde",
