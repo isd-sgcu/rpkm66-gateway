@@ -17,6 +17,9 @@ pub struct User {
     food_restriction: String,
     allergy_medicine: String,
     disease: String,
+    emer_phone: String,
+    emer_relation: String,
+    want_bottle: bool,
     image_url: String,
     can_select_baan: bool,
     is_verify: bool,
@@ -42,6 +45,9 @@ into_dto!(
     food_restriction,
     allergy_medicine,
     disease,
+    emer_phone,
+    emer_relation,
+    want_bottle,
     image_url,
     can_select_baan,
     is_verify,
@@ -67,6 +73,9 @@ direct_map!(
     food_restriction,
     allergy_medicine,
     disease,
+    emer_phone,
+    emer_relation,
+    want_bottle,
     image_url,
     can_select_baan,
     is_verify,
@@ -76,6 +85,7 @@ direct_map!(
 
 #[derive(serde::Deserialize, ToSchema)]
 pub struct UpdateUser {
+    id: String,
     title: String,
     firstname: String,
     lastname: String,
@@ -87,6 +97,9 @@ pub struct UpdateUser {
     food_restriction: String,
     allergy_medicine: String,
     disease: String,
+    emer_phone: String,
+    emer_relation: String,
+    want_bottle: bool,
 }
 
 impl UpdateUser {
@@ -107,6 +120,9 @@ impl UpdateUser {
             food_restriction: self.food_restriction,
             allergy_medicine: self.allergy_medicine,
             disease: self.disease,
+            emer_phone: self.emer_phone,
+            emer_relation: self.emer_relation,
+            want_bottle: self.want_bottle,
         }
     }
 }

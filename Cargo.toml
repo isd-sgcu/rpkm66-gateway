@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 axum = { version = "0.6.18", features = ["json", "headers", "macros", "multipart"] }
 config = { version = "0.13.3", features = ["toml"] }
-rpkm66-rust-proto = { git = "https://github.com/isd-sgcu/rpkm66-rust-proto" }
+rpkm66-rust-proto = { git = "https://github.com/isd-sgcu/rpkm66-rust-proto", branch = "beta" }
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.99"
 tokio = { version = "1.29.1", features = ["rt-multi-thread", "macros"] }
