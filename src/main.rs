@@ -1,3 +1,4 @@
+use axum::body::Body;
 use axum::extract::FromRef;
 use axum::response::IntoResponse;
 use axum::routing::{get, post, patch};
@@ -92,19 +93,22 @@ async fn main() {
         file_hdr: file_hdr.clone(),
     };
 
-    let app = Router::new()
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", doc::get_doc()))
+    let mut non_state_app: Router<AppState, Body> = Router::new();
+
+    if config.app.debug {
+        non_state_app = non_state_app.merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", doc::get_doc()));
+    }
+
+    non_state_app = non_state_app
         .route("/", get(health_check))
         .route("/auth/verify", post(handler::auth::verify_ticket))
         .route("/auth/me", get(handler::auth::validate))
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
-        .route("/baan", get(handler::baan::find_all))
-        .route("/baan/:id", get(handler::baan::find_one))
-        .route("/baan/user", get(handler::baan::get_user_baan))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
-        .layer(cors)
-        .with_state(state);
+        .layer(cors);
+    
+    let app = non_state_app.with_state(state);
 
     let addr = format!("0.0.0.0:{}", config.app.port);
 
