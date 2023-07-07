@@ -36,7 +36,6 @@ pub async fn verify_ticket(
     State(handler): State<Handler>,
     Json(ticket): Json<dto::VerifyTicket>,
 ) -> impl IntoResponse {
-    println!("Sending: {}", ticket.ticket);
     handler.service.verify_ticket(ticket.ticket).await.map(Json)
 }
 
