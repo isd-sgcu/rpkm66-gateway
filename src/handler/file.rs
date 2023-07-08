@@ -25,7 +25,7 @@ impl Handler {
         content_type = "multipart/form-data",
     ),
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = FileResponse),
         (status = 400, description = "Bad request"),
         (status = 401, description = "Unauthorized"),
     ),
