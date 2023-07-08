@@ -27,7 +27,7 @@ impl Handler {
     path = "/auth/verify",
     request_body = VerifyTicket,
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = Credential),
         (status = 400, description = "Bad request"),
         (status = 401, description = "Unauthorized"),
     ),
@@ -36,14 +36,18 @@ pub async fn verify_ticket(
     State(handler): State<Handler>,
     Json(ticket): Json<dto::VerifyTicket>,
 ) -> impl IntoResponse {
-    handler.service.verify_ticket(ticket.ticket).await.map(Json)
+    handler
+        .service
+        .verify_ticket(ticket.ticket)
+        .await
+        .map(IntoDto::into_response)
 }
 
 #[utoipa::path(
     get,
     path = "/auth/me",
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = User),
         (status = 401, description = "Unauthorized"),
     ),
     security(
@@ -63,7 +67,7 @@ pub async fn validate(State(handler): State<Handler>, cred: Cred) -> impl IntoRe
     path = "/auth/refreshToken",
     request_body = RedeemNewToken,
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = Credential),
     ),
 )]
 pub async fn refresh_token(
@@ -74,5 +78,5 @@ pub async fn refresh_token(
         .service
         .refresh_token(token.refresh_token)
         .await
-        .map(Json)
+        .map(IntoDto::into_response)
 }

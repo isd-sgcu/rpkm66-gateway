@@ -1,7 +1,7 @@
 use axum::body::Body;
 use axum::extract::FromRef;
 use axum::response::IntoResponse;
-use axum::routing::{get, post, patch};
+use axum::routing::{get, patch, post};
 use axum::{Router, Server};
 use tonic::transport::Channel;
 use tower_http::cors::Any;
@@ -96,7 +96,8 @@ async fn main() {
     let mut non_state_app: Router<AppState, Body> = Router::new();
 
     if config.app.debug {
-        non_state_app = non_state_app.merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", doc::get_doc()));
+        non_state_app = non_state_app
+            .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", doc::get_doc()));
     }
 
     non_state_app = non_state_app
@@ -107,7 +108,7 @@ async fn main() {
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
         .layer(cors);
-    
+
     let app = non_state_app.with_state(state);
 
     let addr = format!("0.0.0.0:{}", config.app.port);

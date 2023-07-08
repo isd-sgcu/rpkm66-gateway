@@ -17,6 +17,7 @@ use utoipa::{
         crate::dto::Validate,
         crate::dto::RedeemNewToken,
         crate::dto::VerifyTicket,
+        crate::dto::Credential,
         crate::dto::User,
         crate::dto::FileResponse,
         crate::dto::FileUploadRequest,
