@@ -33,13 +33,15 @@ where
             TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await
         {
             if let Ok(x) = auth_svc.validate(token.token().to_owned()).await {
-                return Ok(Cred {
+                Ok(Cred {
                     role: x.role,
                     user_id: x.user_id,
-                });
+                })
+            } else {
+                Err(Error::InternalServer)
             }
+        } else {
+            Err(Error::Unauthorized)
         }
-
-        Err(Error::Unauthorized)
     }
 }
