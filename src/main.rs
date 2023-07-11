@@ -50,6 +50,8 @@ async fn main() {
         .allow_methods(Any)
         .allow_origin(Any);
 
+    let body_limit_layer = axum::extract::DefaultBodyLimit::max((config.app.max_file_size * 1024 * 1024).try_into().expect("Unable to calculate max file size"));
+
     let trace = tower_http::trace::TraceLayer::new_for_http();
 
     let auth_conn = Channel::from_shared(format!("http://{}", config.service.auth))
@@ -111,6 +113,7 @@ async fn main() {
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
+        .layer(body_limit_layer)
         .layer(trace)
         .layer(cors);
 
