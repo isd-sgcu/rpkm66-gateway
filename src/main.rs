@@ -41,12 +41,16 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
+
     let config = config::get_config();
 
     let cors = tower_http::cors::CorsLayer::new()
         .allow_headers(Any)
         .allow_methods(Any)
         .allow_origin(Any);
+
+    let trace = tower_http::trace::TraceLayer::new_for_http();
 
     let auth_conn = Channel::from_shared(format!("http://{}", config.service.auth))
         .expect("Unable to connect to auth service")
@@ -107,6 +111,7 @@ async fn main() {
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
+        .layer(trace)
         .layer(cors);
 
     let app = non_state_app.with_state(state);
