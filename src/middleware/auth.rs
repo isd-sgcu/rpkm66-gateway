@@ -38,7 +38,18 @@ where
                     user_id: x.user_id,
                 })
             } else {
-                Err(Error::InternalServer)
+                // remove signature from token
+                let token = token.token().to_string();
+                let token: Vec<_> = token.split(".").collect();
+
+                if token.len() != 3 {
+                    tracing::error!("invalid token");
+                    Err(Error::InternalServer)
+                } else {
+                    let token = [token[0], token[1], "REDACTED"].join(".");
+                    tracing::error!("Unable to validate token: {token:?}");
+                    Err(Error::InternalServer)
+                }
             }
         } else {
             Err(Error::Unauthorized)
