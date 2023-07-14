@@ -116,6 +116,8 @@ pub async fn delete_member(
 }
 
 /// Leave group
+///
+/// Leader of the group cannot leave group
 #[utoipa::path(
     delete,
     path = "/group/leave",
@@ -123,6 +125,7 @@ pub async fn delete_member(
     responses(
         (status = 200, description = "Success", body = Group),
         (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Forbidden"),
     ),
     security(
         ("api_key" = [])
