@@ -19,6 +19,14 @@ pub struct Baan {
     image_url: String,
 }
 
+#[derive(ToSchema, serde::Deserialize, serde::Serialize)]
+pub struct BaanInfo {
+    id: String,
+    name_th: String,
+    name_en: String,
+    image_url: String,
+}
+
 #[derive(serde::Serialize, serde::Deserialize, ToSchema)]
 #[repr(i32)]
 pub enum BaanSize {
@@ -64,3 +72,12 @@ impl IntoDto for rpkm66_rust_proto::rpkm66::backend::baan::v1::Baan {
         }
     }
 }
+
+into_dto!(
+    rpkm66_rust_proto::rpkm66::backend::baan::v1::BaanInfo,
+    BaanInfo,
+    id,
+    name_th,
+    name_en,
+    image_url
+);

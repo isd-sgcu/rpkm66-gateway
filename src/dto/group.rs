@@ -9,6 +9,7 @@ pub struct Group {
     leader_id: String,
     token: String,
     members: Vec<UserInfo>,
+    baans: Vec<crate::dto::BaanInfo>,
 }
 
 #[derive(ToSchema, serde::Serialize, serde::Deserialize, Default)]
@@ -59,6 +60,7 @@ impl IntoDto for rpkm66_rust_proto::rpkm66::backend::group::v1::Group {
             leader_id: self.leader_id,
             members: self.members.into_iter().map(IntoDto::into_dto).collect(),
             token: self.token,
+            baans: self.baans.into_iter().map(IntoDto::into_dto).collect(),
         }
     }
 }

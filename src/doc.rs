@@ -35,6 +35,7 @@ use utoipa::{
         crate::dto::GroupOverview,
         crate::dto::BaanSize,
         crate::dto::Baan,
+        crate::dto::BaanInfo,
     )),
     info(
         title = "RPKM66",
