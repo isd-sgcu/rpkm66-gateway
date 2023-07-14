@@ -1,7 +1,7 @@
 use axum::body::Body;
 use axum::extract::FromRef;
 use axum::response::IntoResponse;
-use axum::routing::{get, patch, post};
+use axum::routing::{get, patch, post, delete};
 use axum::{Router, Server};
 use tonic::transport::Channel;
 use tower_http::cors::Any;
@@ -22,6 +22,7 @@ pub(crate) use result::Result;
 #[utoipa::path(
     get,
     path = "/",
+    tag = "Health check",
     responses(
         (status = 200, description = "Success")
     )
@@ -36,6 +37,7 @@ pub struct AppState {
     pub baan_hdr: handler::baan::Handler,
     pub file_hdr: handler::file::Handler,
     pub user_hdr: handler::user::Handler,
+    pub group_hdr: handler::group::Handler,
     pub auth_svc: service::auth::Service,
 }
 
@@ -50,7 +52,11 @@ async fn main() {
         .allow_methods(Any)
         .allow_origin(Any);
 
-    let body_limit_layer = axum::extract::DefaultBodyLimit::max((config.app.max_file_size * 1024 * 1024).try_into().expect("Unable to calculate max file size"));
+    let body_limit_layer = axum::extract::DefaultBodyLimit::max(
+        (config.app.max_file_size * 1024 * 1024)
+            .try_into()
+            .expect("Unable to calculate max file size"),
+    );
 
     let trace = tower_http::trace::TraceLayer::new_for_http();
 
@@ -74,22 +80,27 @@ async fn main() {
         );
     let baan_client =
         rpkm66_rust_proto::rpkm66::backend::baan::v1::baan_service_client::BaanServiceClient::new(
-            backend_conn,
+            backend_conn.clone(),
         );
     let file_client =
         rpkm66_rust_proto::rpkm66::file::file::v1::file_service_client::FileServiceClient::new(
             file_conn,
         );
+    let group_client = rpkm66_rust_proto::rpkm66::backend::group::v1::group_service_client::GroupServiceClient::new(
+        backend_conn,
+    );
 
     let auth_svc = service::auth::Service::new(auth_client);
     let user_svc = service::user::Service::new(user_client);
     let baan_svc = service::baan::Service::new(baan_client);
     let file_svc = service::file::Service::new(file_client);
+    let group_svc = service::group::Service::new(group_client);
 
     let auth_hdr = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
     let baan_hdr = handler::baan::Handler::new(baan_svc.clone(), user_svc.clone());
     let file_hdr = handler::file::Handler::new(file_svc.clone());
     let user_hdr = handler::user::Handler::new(user_svc.clone());
+    let group_hdr = handler::group::Handler::new(group_svc.clone());
 
     let state = AppState {
         auth_hdr: auth_hdr.clone(),
@@ -97,6 +108,7 @@ async fn main() {
         baan_hdr: baan_hdr.clone(),
         user_hdr: user_hdr.clone(),
         file_hdr: file_hdr.clone(),
+        group_hdr: group_hdr.clone(),
     };
 
     let mut non_state_app: Router<AppState, Body> = Router::new();
@@ -113,6 +125,14 @@ async fn main() {
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
+        .route("/group", get(handler::group::find_one))
+        .route("/group/:token", get(handler::group::find_by_token))
+        .route("/group/:token", post(handler::group::join))
+        .route("/group/members/:member_id", delete(handler::group::delete_member))
+        .route("/group/leave", delete(handler::group::leave))
+        .route("/baan", get(handler::baan::find_all))
+        .route("/baan/:id", get(handler::baan::find_one))
+        .route("/baan/user", get(handler::baan::get_user_baan))
         .layer(body_limit_layer)
         .layer(trace)
         .layer(cors);

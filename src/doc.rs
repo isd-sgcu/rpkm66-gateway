@@ -12,6 +12,14 @@ use utoipa::{
         crate::handler::auth::refresh_token,
         crate::handler::file::upload,
         crate::handler::user::update,
+        crate::handler::group::find_one,
+        crate::handler::group::find_by_token,
+        crate::handler::group::join,
+        crate::handler::group::delete_member,
+        crate::handler::group::leave,
+        crate::handler::baan::find_one,
+        crate::handler::baan::find_all,
+        crate::handler::baan::get_user_baan,
     ),
     components(schemas(
         crate::dto::Validate,
@@ -22,6 +30,12 @@ use utoipa::{
         crate::dto::FileResponse,
         crate::dto::FileUploadRequest,
         crate::dto::UpdateUser,
+        crate::dto::UserInfo,
+        crate::dto::Group,
+        crate::dto::GroupOverview,
+        crate::dto::BaanSize,
+        crate::dto::Baan,
+        crate::dto::BaanInfo,
     )),
     info(
         title = "RPKM66",
@@ -33,6 +47,14 @@ use utoipa::{
         )),
         (url = "https://pbeta.freshmen2023.sgcu.in.th", description = "beta server"),
         (url = "https://pdev.freshmen2023.sgcu.in.th", description = "dev server")
+    ),
+    tags(
+        (name = "Health check"),
+        (name = "Auth"),
+        (name = "User"),
+        (name = "File"),
+        (name = "Group"),
+        (name = "Baan"),
     )
 )]
 pub struct ApiDoc;
