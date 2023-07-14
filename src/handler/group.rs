@@ -16,9 +16,11 @@ impl Handler {
     }
 }
 
+/// Get user current group
 #[utoipa::path(
     get,
     path = "/group",
+    tag = "Group",
     responses(
         (status = 200, description = "Success", body = Group),
         (status = 401, description = "Unauthorized"),
@@ -36,9 +38,11 @@ pub async fn find_one(State(handler): State<Handler>, cred: Cred) -> impl IntoRe
         .map(IntoDto::into_response)
 }
 
+/// Get group by group's token
 #[utoipa::path(
     get,
     path = "/group/{token}",
+    tag = "Group",
     responses(
         (status = 200, description = "Success", body = GroupOverview),
         (status = 404, description = "Not found"),
@@ -55,9 +59,13 @@ pub async fn find_by_token(
         .map(IntoDto::into_response)
 }
 
+/// Join group
+/// 
+/// Join group by using group's token
 #[utoipa::path(
     post,
     path = "/group/{token}",
+    tag = "Group",
     responses(
         (status = 200, description = "Success", body = Group),
         (status = 401, description = "Unauthorized"),
@@ -79,9 +87,13 @@ pub async fn join(
         .map(IntoDto::into_response)
 }
 
+/// Delete member from group
+/// 
+/// must be leader to do this.
 #[utoipa::path(
     delete,
     path = "/group/members/{member_id}",
+    tag = "Group",
     responses(
         (status = 200, description = "Success", body = GroupOverview),
         (status = 401, description = "Unauthorized"),
@@ -103,9 +115,11 @@ pub async fn delete_member(
         .map(IntoDto::into_response)
 }
 
+/// Leave group
 #[utoipa::path(
     delete,
     path = "/group/leave",
+    tag = "Group",
     responses(
         (status = 200, description = "Success", body = Group),
         (status = 401, description = "Unauthorized"),

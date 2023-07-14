@@ -23,8 +23,9 @@ impl Handler {
 #[utoipa::path(
     get,
     path = "/baan",
+    tag = "Baan",
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = Vec<Baan>),
     ),
 )]
 pub async fn find_all(State(handler): State<Handler>) -> impl IntoResponse {
@@ -34,8 +35,9 @@ pub async fn find_all(State(handler): State<Handler>) -> impl IntoResponse {
 #[utoipa::path(
     get,
     path = "/baan/{id}",
+    tag = "Baan",
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = Baan),
         (status = 400, description = "Bad request"),
         (status = 404, description = "Not found"),
     ),
@@ -47,8 +49,9 @@ pub async fn find_one(State(handler): State<Handler>, Path(id): Path<String>) ->
 #[utoipa::path(
     get,
     path = "/baan/user",
+    tag = "Baan",
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = Baan),
         (status = 401, description = "Unauthorized"),
     ),
     security(

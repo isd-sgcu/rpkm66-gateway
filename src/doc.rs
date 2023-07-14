@@ -46,6 +46,14 @@ use utoipa::{
         )),
         (url = "https://pbeta.freshmen2023.sgcu.in.th", description = "beta server"),
         (url = "https://pdev.freshmen2023.sgcu.in.th", description = "dev server")
+    ),
+    tags(
+        (name = "Health check"),
+        (name = "Auth"),
+        (name = "User"),
+        (name = "File"),
+        (name = "Group"),
+        (name = "Baan"),
     )
 )]
 pub struct ApiDoc;

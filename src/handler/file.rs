@@ -20,6 +20,7 @@ impl Handler {
 #[utoipa::path(
     post,
     path = "/file/upload",
+    tag = "File",
     request_body(
         content = FileUploadRequest,
         content_type = "multipart/form-data",

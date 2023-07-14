@@ -22,6 +22,7 @@ pub(crate) use result::Result;
 #[utoipa::path(
     get,
     path = "/",
+    tag = "Health check",
     responses(
         (status = 200, description = "Success")
     )

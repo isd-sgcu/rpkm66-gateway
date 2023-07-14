@@ -25,6 +25,7 @@ impl Handler {
 #[utoipa::path(
     post,
     path = "/auth/verify",
+    tag = "Auth",
     request_body = VerifyTicket,
     responses(
         (status = 200, description = "Success", body = Credential),
@@ -46,6 +47,7 @@ pub async fn verify_ticket(
 #[utoipa::path(
     get,
     path = "/auth/me",
+    tag = "Auth",
     responses(
         (status = 200, description = "Success", body = User),
         (status = 401, description = "Unauthorized"),
@@ -65,6 +67,7 @@ pub async fn validate(State(handler): State<Handler>, cred: Cred) -> impl IntoRe
 #[utoipa::path(
     post,
     path = "/auth/refreshToken",
+    tag = "Auth",
     request_body = RedeemNewToken,
     responses(
         (status = 200, description = "Success", body = Credential),

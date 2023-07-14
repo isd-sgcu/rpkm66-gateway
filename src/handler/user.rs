@@ -16,6 +16,7 @@ impl Handler {
 #[utoipa::path(
     patch,
     path = "/user",
+    tag = "User",
     request_body = UpdateUser,
     responses(
         (status = 200, description = "Success", body = User),
