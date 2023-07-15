@@ -2,6 +2,7 @@ use crate::{Error, Result};
 use rpkm66_rust_proto::rpkm66::backend::group::v1::{
     group_service_client::GroupServiceClient, DeleteMemberGroupRequest, FindByTokenGroupRequest,
     FindByTokenGroupResponse, FindOneGroupRequest, Group, JoinGroupRequest, LeaveGroupRequest,
+    SelectBaanRequest,
 };
 use tonic::transport::Channel;
 
@@ -12,9 +13,7 @@ pub struct Service {
 
 impl Service {
     pub fn new(client: GroupServiceClient<Channel>) -> Self {
-        Self {
-            client,
-        }
+        Self { client }
     }
 
     pub async fn find_one(&self, user_id: String) -> Result<Group> {
@@ -81,5 +80,19 @@ impl Service {
             .into_inner()
             .group
             .ok_or(Error::NotFound)
+    }
+
+    pub async fn select_baans(&self, user_id: String, baans: Vec<String>) -> Result<bool> {
+        Ok(self
+            .client
+            .clone()
+            .select_baan(SelectBaanRequest {
+                baans,
+                user_id,
+                ..Default::default()
+            })
+            .await?
+            .into_inner()
+            .success)
     }
 }

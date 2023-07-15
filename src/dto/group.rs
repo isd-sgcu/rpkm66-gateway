@@ -27,6 +27,15 @@ pub struct GroupOverview {
     leader: UserInfo,
 }
 
+#[derive(ToSchema, serde::Serialize, serde::Deserialize)]
+pub struct SelectBaan {
+    /// list of baan ids
+    #[schema(
+        example = json!(["3e61876e-ba6e-4e04-9f9c-118c3b1184fa"]),
+    )]
+    pub baans: Vec<String>,
+}
+
 impl IntoDto for FindByTokenGroupResponse {
     type Target = GroupOverview;
 
