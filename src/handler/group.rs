@@ -1,9 +1,9 @@
 use axum::{
     extract::{Path, State},
-    response::IntoResponse,
+    response::IntoResponse, Json,
 };
 
-use crate::{dto::IntoDto, middleware::auth::Cred};
+use crate::{dto::{IntoDto, SelectBaan}, middleware::auth::Cred};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -60,7 +60,7 @@ pub async fn find_by_token(
 }
 
 /// Join group
-/// 
+///
 /// Join group by using group's token
 #[utoipa::path(
     post,
@@ -88,7 +88,7 @@ pub async fn join(
 }
 
 /// Delete member from group
-/// 
+///
 /// must be leader to do this.
 #[utoipa::path(
     delete,
@@ -137,4 +137,29 @@ pub async fn leave(State(handler): State<Handler>, cred: Cred) -> impl IntoRespo
         .leave(cred.user_id)
         .await
         .map(IntoDto::into_response)
+}
+
+/// Select baan
+/// 
+/// Must be leader to select baan
+#[utoipa::path(
+    put,
+    path = "/group/select",
+    tag = "Group",
+    request_body = SelectBaan,
+    responses(
+        (status = 200, description = "Success"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Forbidden"),
+    ),
+    security(
+        ("api_key" = [])
+    )
+)]
+pub async fn select_baans(State(handler): State<Handler>, cred: Cred, Json(baans): Json<SelectBaan>) -> impl IntoResponse {
+    handler
+        .service
+        .select_baans(cred.user_id, baans.baans)
+        .await
+        .map(|_| "success")
 }

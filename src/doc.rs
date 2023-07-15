@@ -17,6 +17,7 @@ use utoipa::{
         crate::handler::group::join,
         crate::handler::group::delete_member,
         crate::handler::group::leave,
+        crate::handler::group::select_baans,
         crate::handler::baan::find_one,
         crate::handler::baan::find_all,
         crate::handler::baan::get_user_baan,
@@ -36,6 +37,7 @@ use utoipa::{
         crate::dto::BaanSize,
         crate::dto::Baan,
         crate::dto::BaanInfo,
+        crate::dto::SelectBaan,
     )),
     info(
         title = "RPKM66",

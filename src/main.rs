@@ -1,7 +1,7 @@
 use axum::body::Body;
 use axum::extract::FromRef;
 use axum::response::IntoResponse;
-use axum::routing::{get, patch, post, delete};
+use axum::routing::{delete, get, patch, post, put};
 use axum::{Router, Server};
 use tonic::transport::Channel;
 use tower_http::cors::Any;
@@ -128,8 +128,12 @@ async fn main() {
         .route("/group", get(handler::group::find_one))
         .route("/group/:token", get(handler::group::find_by_token))
         .route("/group/:token", post(handler::group::join))
-        .route("/group/members/:member_id", delete(handler::group::delete_member))
+        .route(
+            "/group/members/:member_id",
+            delete(handler::group::delete_member),
+        )
         .route("/group/leave", delete(handler::group::leave))
+        .route("/group/select", put(handler::group::select_baans))
         .route("/baan", get(handler::baan::find_all))
         .route("/baan/:id", get(handler::baan::find_one))
         .route("/baan/user", get(handler::baan::get_user_baan))
