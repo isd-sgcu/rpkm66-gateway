@@ -25,6 +25,7 @@ pub struct BaanInfo {
     name_th: String,
     name_en: String,
     image_url: String,
+    baan_size: BaanSize,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, ToSchema)]
@@ -73,11 +74,16 @@ impl IntoDto for rpkm66_rust_proto::rpkm66::backend::baan::v1::Baan {
     }
 }
 
-into_dto!(
-    rpkm66_rust_proto::rpkm66::backend::baan::v1::BaanInfo,
-    BaanInfo,
-    id,
-    name_th,
-    name_en,
-    image_url
-);
+impl IntoDto for rpkm66_rust_proto::rpkm66::backend::baan::v1::BaanInfo {
+    type Target = BaanInfo;
+    
+    fn into_dto(self) -> Self::Target {
+        BaanInfo {
+            id: self.id,
+            baan_size: self.size.into(),
+            image_url: self.image_url,
+            name_en: self.name_en,
+            name_th: self.name_th,
+        }
+    }
+}
