@@ -41,6 +41,7 @@ pub struct AppState {
     pub ci_staff_hdr: handler::staff::Handler,
     pub ci_user_hdr: handler::ci_user::Handler,
     pub estamp_hdr: handler::estamp::Handler,
+    pub checkin_hdr: handler::checkin::Handler,
     pub auth_svc: service::auth::Service,
 }
 
@@ -115,6 +116,7 @@ async fn main() {
     let ci_staff_svc = service::staff::Service::new(ci_staff_client.clone());
     let ci_user_svc = service::ci_user::Service::new(ci_user_client.clone());
     let estamp_svc = service::estamp::Service::new(event_client.clone(), ci_user_client.clone());
+    let checkin_svc = service::checkin::Service::new(ci_user_client.clone(), config.app.clone());
 
     let auth_hdr = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
     let baan_hdr = handler::baan::Handler::new(baan_svc.clone(), user_svc.clone());
@@ -124,6 +126,7 @@ async fn main() {
     let ci_staff_hdr = handler::staff::Handler::new(ci_staff_svc.clone());
     let ci_user_hdr = handler::ci_user::Handler::new(ci_user_svc.clone());
     let estamp_hdr = handler::estamp::Handler::new(estamp_svc.clone());
+    let checkin_hdr = handler::checkin::Handler::new(checkin_svc.clone());
 
     let state = AppState {
         auth_hdr: auth_hdr.clone(),
@@ -135,6 +138,7 @@ async fn main() {
         ci_user_hdr: ci_user_hdr.clone(),
         estamp_hdr: estamp_hdr.clone(),
         group_hdr: group_hdr.clone(),
+        checkin_hdr: checkin_hdr.clone(),
     };
 
     let mut non_state_app: Router<AppState, Body> = Router::new();
@@ -175,6 +179,8 @@ async fn main() {
         .route("/estamp", get(handler::estamp::get_all_estamps))
         .route("/estamp/my", get(handler::estamp::get_user_estamps))
         .route("/estamp/:token", post(handler::estamp::claim_estamp))
+        .route("/checkin", get(handler::checkin::has_checkin))
+        .route("/checkin", post(handler::checkin::checkin))
         .layer(body_limit_layer)
         .layer(trace)
         .layer(cors);
