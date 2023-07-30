@@ -97,9 +97,10 @@ async fn main() {
     let ci_staff_client = rpkm66_rust_proto::rpkm66::checkin::staff::v1::staff_service_client::StaffServiceClient::new(
         ci_conn.clone(),
     );
-    let ci_user_client = rpkm66_rust_proto::rpkm66::checkin::user::v1::user_service_client::UserServiceClient::new(
-        ci_conn,
-    );
+    let ci_user_client =
+        rpkm66_rust_proto::rpkm66::checkin::user::v1::user_service_client::UserServiceClient::new(
+            ci_conn,
+        );
 
     let auth_svc = service::auth::Service::new(auth_client);
     let user_svc = service::user::Service::new(user_client);
@@ -159,7 +160,10 @@ async fn main() {
             "/staff/checkin_freshy_night/:user_id",
             post(handler::staff::checkin_freshy_night),
         )
-        .route("/freshy_night", get(handler::ci_user::is_freshy_night_ticket_redeemed))
+        .route(
+            "/freshy_night",
+            get(handler::ci_user::is_freshy_night_ticket_redeemed),
+        )
         .layer(body_limit_layer)
         .layer(trace)
         .layer(cors);
