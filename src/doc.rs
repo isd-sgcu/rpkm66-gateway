@@ -27,6 +27,8 @@ use utoipa::{
         crate::handler::estamp::get_all_estamps,
         crate::handler::estamp::get_user_estamps,
         crate::handler::estamp::claim_estamp,
+        crate::handler::checkin::has_checkin,
+        crate::handler::checkin::checkin,
     ),
     components(schemas(
         crate::dto::Validate,
@@ -51,6 +53,8 @@ use utoipa::{
         crate::dto::GetUserEstampsResponse,
         crate::dto::EstampEvent,
         crate::dto::UserEstampEvent,
+        crate::dto::HasCheckinResponse,
+        crate::dto::CheckinResponse,
     )),
     info(
         title = "RPKM66",
@@ -73,6 +77,7 @@ use utoipa::{
         (name = "Staff"),
         (name = "Freshy Night"),
         (name = "Estamp"),
+        (name = "Check in")
     )
 )]
 pub struct ApiDoc;

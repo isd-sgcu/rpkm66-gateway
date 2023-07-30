@@ -3,6 +3,7 @@ port = 3000
 debug = true
 max_file_size = 10
 phase = "register"
+event_day = 1
 
 [service]
 backend = "localhost:3001"

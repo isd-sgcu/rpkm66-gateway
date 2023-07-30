@@ -1,18 +1,19 @@
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct Config {
     pub app: AppConfig,
     pub service: ServiceConfig,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct AppConfig {
     pub port: i32,
     pub debug: bool,
     pub max_file_size: i32,
+    pub event_day: i32,
     pub phase: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct ServiceConfig {
     pub backend: String,
     pub auth: String,

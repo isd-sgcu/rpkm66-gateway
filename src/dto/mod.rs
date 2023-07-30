@@ -59,6 +59,7 @@ pub trait IntoDto: Sized {
 
 mod auth;
 mod baan;
+mod checkin;
 mod ci_user;
 mod estamp;
 mod file;
@@ -68,6 +69,7 @@ mod user;
 
 pub use auth::*;
 pub use baan::*;
+pub use checkin::*;
 pub use ci_user::*;
 pub use estamp::*;
 pub use file::*;

@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod baan;
+pub mod checkin;
 pub mod ci_user;
 pub mod estamp;
 pub mod file;
