@@ -55,34 +55,6 @@ into_dto!(
     is_got_ticket
 );
 
-direct_map!(
-    rpkm66_rust_proto::rpkm66::backend::user::v1::User,
-    User,
-    id,
-    title,
-    firstname,
-    lastname,
-    nickname,
-    student_id,
-    faculty,
-    year,
-    phone,
-    line_id,
-    email,
-    allergy_food,
-    food_restriction,
-    allergy_medicine,
-    disease,
-    emer_phone,
-    emer_relation,
-    want_bottle,
-    image_url,
-    can_select_baan,
-    is_verify,
-    baan_id,
-    is_got_ticket
-);
-
 #[derive(serde::Deserialize, ToSchema)]
 pub struct UpdateUser {
     id: String,
@@ -123,6 +95,7 @@ impl UpdateUser {
             emer_phone: self.emer_phone,
             emer_relation: self.emer_relation,
             want_bottle: self.want_bottle,
+            ..Default::default()
         }
     }
 }

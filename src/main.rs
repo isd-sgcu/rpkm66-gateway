@@ -38,6 +38,7 @@ pub struct AppState {
     pub file_hdr: handler::file::Handler,
     pub user_hdr: handler::user::Handler,
     pub group_hdr: handler::group::Handler,
+    pub ci_staff_hdr: handler::staff::Handler,
     pub auth_svc: service::auth::Service,
 }
 
@@ -69,6 +70,9 @@ async fn main() {
     let file_conn = Channel::from_shared(format!("http://{}", config.service.file))
         .expect("Unable to connect to file service")
         .connect_lazy();
+    let ci_conn = Channel::from_shared(format!("http://{}", config.service.checkin))
+        .expect("Unable to connect to checkin service")
+        .connect_lazy();
 
     let auth_client =
         rpkm66_rust_proto::rpkm66::auth::auth::v1::auth_service_client::AuthServiceClient::new(
@@ -89,18 +93,23 @@ async fn main() {
     let group_client = rpkm66_rust_proto::rpkm66::backend::group::v1::group_service_client::GroupServiceClient::new(
         backend_conn,
     );
+    let ci_staff_client = rpkm66_rust_proto::rpkm66::checkin::staff::v1::staff_service_client::StaffServiceClient::new(
+        ci_conn,
+    );
 
     let auth_svc = service::auth::Service::new(auth_client);
     let user_svc = service::user::Service::new(user_client);
     let baan_svc = service::baan::Service::new(baan_client);
     let file_svc = service::file::Service::new(file_client);
     let group_svc = service::group::Service::new(group_client);
+    let ci_staff_svc = service::staff::Service::new(ci_staff_client);
 
     let auth_hdr = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
     let baan_hdr = handler::baan::Handler::new(baan_svc.clone(), user_svc.clone());
     let file_hdr = handler::file::Handler::new(file_svc.clone());
     let user_hdr = handler::user::Handler::new(user_svc.clone());
     let group_hdr = handler::group::Handler::new(group_svc.clone());
+    let ci_staff_hdr = handler::staff::Handler::new(ci_staff_svc.clone());
 
     let state = AppState {
         auth_hdr: auth_hdr.clone(),
@@ -108,6 +117,7 @@ async fn main() {
         baan_hdr: baan_hdr.clone(),
         user_hdr: user_hdr.clone(),
         file_hdr: file_hdr.clone(),
+        ci_staff_hdr: ci_staff_hdr.clone(),
         group_hdr: group_hdr.clone(),
     };
 
@@ -137,6 +147,8 @@ async fn main() {
         .route("/baan", get(handler::baan::find_all))
         .route("/baan/:id", get(handler::baan::find_one))
         .route("/baan/user", get(handler::baan::get_user_baan))
+        .route("/staff/check", get(handler::staff::is_staff))
+        .route("/staff/checkin_freshy_night/:user_id", post(handler::staff::checkin_freshy_night))
         .layer(body_limit_layer)
         .layer(trace)
         .layer(cors);

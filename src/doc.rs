@@ -38,6 +38,8 @@ use utoipa::{
         crate::dto::Baan,
         crate::dto::BaanInfo,
         crate::dto::SelectBaan,
+        crate::dto::IsStaffResponse,
+        crate::dto::CheckingFreshyNightResponse,
     )),
     info(
         title = "RPKM66",
@@ -57,6 +59,7 @@ use utoipa::{
         (name = "File"),
         (name = "Group"),
         (name = "Baan"),
+        (name = "Staff"),
     )
 )]
 pub struct ApiDoc;

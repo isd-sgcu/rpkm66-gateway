@@ -17,6 +17,7 @@ pub struct ServiceConfig {
     pub backend: String,
     pub auth: String,
     pub file: String,
+    pub checkin: String,
 }
 
 pub fn get_config() -> Config {
