@@ -76,7 +76,7 @@ impl IntoDto for rpkm66_rust_proto::rpkm66::backend::baan::v1::Baan {
 
 impl IntoDto for rpkm66_rust_proto::rpkm66::backend::baan::v1::BaanInfo {
     type Target = BaanInfo;
-    
+
     fn into_dto(self) -> Self::Target {
         BaanInfo {
             id: self.id,

@@ -1,9 +1,13 @@
 use axum::{
     extract::{Path, State},
-    response::IntoResponse, Json,
+    response::IntoResponse,
+    Json,
 };
 
-use crate::{dto::{IntoDto, SelectBaan}, middleware::auth::Cred};
+use crate::{
+    dto::{IntoDto, SelectBaan},
+    middleware::auth::Cred,
+};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -140,7 +144,7 @@ pub async fn leave(State(handler): State<Handler>, cred: Cred) -> impl IntoRespo
 }
 
 /// Select baan
-/// 
+///
 /// Must be leader to select baan
 #[utoipa::path(
     put,
@@ -156,7 +160,11 @@ pub async fn leave(State(handler): State<Handler>, cred: Cred) -> impl IntoRespo
         ("api_key" = [])
     )
 )]
-pub async fn select_baans(State(handler): State<Handler>, cred: Cred, Json(baans): Json<SelectBaan>) -> impl IntoResponse {
+pub async fn select_baans(
+    State(handler): State<Handler>,
+    cred: Cred,
+    Json(baans): Json<SelectBaan>,
+) -> impl IntoResponse {
     handler
         .service
         .select_baans(cred.user_id, baans.baans)

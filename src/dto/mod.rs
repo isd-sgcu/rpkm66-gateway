@@ -61,10 +61,12 @@ mod auth;
 mod baan;
 mod file;
 mod group;
+mod staff;
 mod user;
 
 pub use auth::*;
 pub use baan::*;
 pub use file::*;
 pub use group::*;
+pub use staff::*;
 pub use user::*;
