@@ -1,4 +1,4 @@
-use rpkm66_rust_proto::rpkm66::{backend::user::v1::user_service_client::UserServiceClient, checkin::user::v1::GetUserEventByEventIdRequest};
+use rpkm66_rust_proto::rpkm66::{checkin::user::v1::user_service_client::UserServiceClient, checkin::user::v1::GetUserEventByEventIdRequest};
 use tonic::transport::Channel;
 
 use crate::Result;

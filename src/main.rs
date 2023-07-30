@@ -95,7 +95,7 @@ async fn main() {
         backend_conn,
     );
     let ci_staff_client = rpkm66_rust_proto::rpkm66::checkin::staff::v1::staff_service_client::StaffServiceClient::new(
-        ci_conn,
+        ci_conn.clone(),
     );
     let ci_user_client = rpkm66_rust_proto::rpkm66::checkin::user::v1::user_service_client::UserServiceClient::new(
         ci_conn,
