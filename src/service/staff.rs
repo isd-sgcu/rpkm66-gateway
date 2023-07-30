@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use crate::Result;
 use rpkm66_rust_proto::rpkm66::checkin::staff::v1::{
     staff_service_client::StaffServiceClient, AddEventToUserRequest, IsStaffRequest,
 };

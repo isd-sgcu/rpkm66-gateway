@@ -21,6 +21,8 @@ use utoipa::{
         crate::handler::baan::find_one,
         crate::handler::baan::find_all,
         crate::handler::baan::get_user_baan,
+        crate::handler::staff::is_staff,
+        crate::handler::staff::checkin_freshy_night,
     ),
     components(schemas(
         crate::dto::Validate,
