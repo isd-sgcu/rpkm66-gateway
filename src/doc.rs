@@ -23,6 +23,7 @@ use utoipa::{
         crate::handler::baan::get_user_baan,
         crate::handler::staff::is_staff,
         crate::handler::staff::checkin_freshy_night,
+        crate::handler::ci_user::is_freshy_night_ticket_redeemed,
     ),
     components(schemas(
         crate::dto::Validate,
@@ -42,6 +43,7 @@ use utoipa::{
         crate::dto::SelectBaan,
         crate::dto::IsStaffResponse,
         crate::dto::CheckingFreshyNightResponse,
+        crate::dto::IsFreshyNightTicketRedeemedResponse,
     )),
     info(
         title = "RPKM66",
@@ -62,6 +64,7 @@ use utoipa::{
         (name = "Group"),
         (name = "Baan"),
         (name = "Staff"),
+        (name = "Freshy Night"),
     )
 )]
 pub struct ApiDoc;
