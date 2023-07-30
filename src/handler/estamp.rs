@@ -24,7 +24,7 @@ impl Handler {
     path = "/estamp",
     tag = "Estamp",
     responses(
-        (status = 200, description = "Success", body = User),
+        (status = 200, description = "Success", body = GetAllEstampResponse),
     ),
 )]
 pub async fn get_all_estamps(State(handler): State<Handler>) -> impl IntoResponse {
@@ -66,7 +66,7 @@ pub async fn claim_estamp(
     path = "/estamp/my",
     tag = "Estamp",
     responses(
-        (status = 200, description = "Success"),
+        (status = 200, description = "Success", body = GetUserEstampsResponse),
         (status = 401, description = "Unauthorized"),
     ),
     security(
