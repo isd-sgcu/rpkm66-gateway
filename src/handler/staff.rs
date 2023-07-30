@@ -38,7 +38,7 @@ pub async fn is_staff(State(hdr): State<Handler>, cred: Cred) -> impl IntoRespon
 
 #[utoipa::path(
     post,
-    path = "/staff/checkin_freshy_night",
+    path = "/staff/checkin_freshy_night/{user_id}",
     tag = "Staff",
     responses(
         (status = 200, description = "Success", body = CheckingFreshyNightResponse),
