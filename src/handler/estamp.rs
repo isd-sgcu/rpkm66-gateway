@@ -37,7 +37,7 @@ pub async fn get_all_estamps(State(handler): State<Handler>) -> impl IntoRespons
 
 #[utoipa::path(
     post,
-    path = "/estamp/:token",
+    path = "/estamp/{token}",
     tag = "Estamp",
     responses(
         (status = 200, description = "Success"),
