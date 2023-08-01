@@ -178,6 +178,8 @@ async fn main() {
         )
         .route("/estamp", get(handler::estamp::get_all_estamps))
         .route("/estamp/my", get(handler::estamp::get_user_estamps))
+        .route("/estamp/redeem", get(handler::estamp::has_redeem_item))
+        .route("/estamp/redeem", post(handler::estamp::redeem_item))
         .route("/estamp/:token", post(handler::estamp::claim_estamp))
         .route("/checkin", get(handler::checkin::has_checkin))
         .route("/checkin", post(handler::checkin::checkin))
