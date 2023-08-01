@@ -26,6 +26,16 @@ pub struct UserEstampEvent {
     taken_at: i64,
 }
 
+#[derive(serde::Serialize, ToSchema)]
+pub struct RedeemItemResponse {
+    success: bool,
+}
+
+#[derive(serde::Serialize, ToSchema)]
+pub struct HasRedeemItemResponse {
+    redeemed: bool,
+}
+
 impl From<rpkm66_rust_proto::rpkm66::checkin::event::v1::Event> for EstampEvent {
     fn from(value: rpkm66_rust_proto::rpkm66::checkin::event::v1::Event) -> Self {
         Self {
@@ -43,6 +53,34 @@ impl From<rpkm66_rust_proto::rpkm66::checkin::event::v1::UserEvent> for UserEsta
             is_taken: value.is_taken,
             taken_at: value.taken_at,
         }
+    }
+}
+
+impl From<bool> for RedeemItemResponse {
+    fn from(value: bool) -> Self {
+        Self { success: value }
+    }
+}
+
+impl IntoDto for RedeemItemResponse {
+    type Target = Self;
+
+    fn into_dto(self) -> Self::Target {
+        self
+    }
+}
+
+impl From<bool> for HasRedeemItemResponse {
+    fn from(value: bool) -> Self {
+        Self { redeemed: value }
+    }
+}
+
+impl IntoDto for HasRedeemItemResponse {
+    type Target = Self;
+
+    fn into_dto(self) -> Self::Target {
+        self
     }
 }
 

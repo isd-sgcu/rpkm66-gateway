@@ -27,6 +27,8 @@ use utoipa::{
         crate::handler::estamp::get_all_estamps,
         crate::handler::estamp::get_user_estamps,
         crate::handler::estamp::claim_estamp,
+        crate::handler::estamp::has_redeem_item,
+        crate::handler::estamp::redeem_item,
         crate::handler::checkin::has_checkin,
         crate::handler::checkin::checkin,
     ),
@@ -55,6 +57,8 @@ use utoipa::{
         crate::dto::UserEstampEvent,
         crate::dto::HasCheckinResponse,
         crate::dto::CheckinResponse,
+        crate::dto::RedeemItemResponse,
+        crate::dto::HasRedeemItemResponse,
     )),
     info(
         title = "RPKM66",
