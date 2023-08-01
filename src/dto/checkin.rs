@@ -39,5 +39,3 @@ impl IntoDto for CheckinResponse {
         self
     }
 }
-
-
