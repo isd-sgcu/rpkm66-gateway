@@ -6,7 +6,7 @@ use rpkm66_rust_proto::rpkm66::{
         user::v1::{AddEventRequest, GetAllUserEventsByNamespaceIdRequest},
     },
 };
-use tonic::transport::Channel;
+use tonic::{transport::Channel, Code};
 
 use crate::{error::Error, handler::user, Result};
 
@@ -98,16 +98,22 @@ impl Service {
     }
 
     pub async fn has_redeem_item(&self, user_id: String) -> Result<bool> {
-        self.user_client
+        let req = self
+            .user_client
             .clone()
             .get_user_event_by_event_id(GetUserEventByEventIdRequest {
                 event_id: "redeem-item".to_string(),
                 user_id,
             })
-            .await?
-            .into_inner()
-            .user_event
-            .ok_or(Error::NotFound)
-            .map(|x| x.is_taken)
+            .await;
+
+        match req {
+            Ok(x) => match x.into_inner().user_event {
+                Some(y) => Ok(y.is_taken),
+                None => Ok(false),
+            },
+            Err(e) if e.code() == Code::NotFound => Ok(false),
+            Err(e) => Err(e.into()),
+        }
     }
 }
