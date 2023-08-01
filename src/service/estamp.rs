@@ -8,7 +8,7 @@ use rpkm66_rust_proto::rpkm66::{
 };
 use tonic::transport::Channel;
 
-use crate::{error::Error, Result};
+use crate::{error::Error, handler::user, Result};
 
 #[derive(Clone)]
 pub struct Service {
@@ -75,6 +75,12 @@ impl Service {
         let has_redeem = self.has_redeem_item(user_id.clone()).await?;
 
         if !has_redeem {
+            let stamps = self.get_user_estamp(user_id.clone()).await?;
+
+            if stamps.len() != 4 {
+                return Err(Error::Forbidden);
+            }
+
             self.user_client
                 .clone()
                 .add_event(AddEventRequest {
