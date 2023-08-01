@@ -1,6 +1,6 @@
 use rpkm66_rust_proto::rpkm66::{
     checkin::event::v1::event_service_client::EventServiceClient,
-    checkin::user::v1::user_service_client::UserServiceClient,
+    checkin::user::v1::{user_service_client::UserServiceClient, GetUserEventByEventIdRequest},
     checkin::{
         event::v1::GetEventsByNamespaceIdRequest,
         user::v1::{AddEventRequest, GetAllUserEventsByNamespaceIdRequest},
@@ -69,5 +69,39 @@ impl Service {
             .await?
             .into_inner()
             .event)
+    }
+
+    pub async fn redeem_item(&self, user_id: String) -> Result<bool> {
+        let has_redeem = self.has_redeem_item(user_id.clone()).await?;
+
+        if !has_redeem {
+            self.user_client
+                .clone()
+                .add_event(AddEventRequest {
+                    token: "redeem".to_string(),
+                    user_id,
+                })
+                .await?
+                .into_inner()
+                .event
+                .ok_or(Error::NotFound)
+                .map(|_| true)
+        } else {
+            Err(Error::Duplicated)
+        }
+    }
+
+    pub async fn has_redeem_item(&self, user_id: String) -> Result<bool> {
+        self.user_client
+            .clone()
+            .get_user_event_by_event_id(GetUserEventByEventIdRequest {
+                event_id: "redeem-item".to_string(),
+                user_id,
+            })
+            .await?
+            .into_inner()
+            .user_event
+            .ok_or(Error::NotFound)
+            .map(|x| x.is_taken)
     }
 }

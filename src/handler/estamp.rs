@@ -4,7 +4,10 @@ use axum::{
 };
 
 use crate::{
-    dto::{GetAllEstampResponse, GetUserEstampsResponse, IntoDto},
+    dto::{
+        GetAllEstampResponse, GetUserEstampsResponse, HasRedeemItemResponse, IntoDto,
+        RedeemItemResponse,
+    },
     middleware::auth::Cred,
 };
 
@@ -85,4 +88,46 @@ pub async fn get_user_estamps(State(handler): State<Handler>, cred: Cred) -> imp
             let response = GetUserEstampsResponse::from(user_events);
             response.into_response()
         })
+}
+
+#[utoipa::path(
+    post,
+    path = "/estamp/redeem",
+    tag = "Estamp",
+    responses(
+        (status = 200, description = "Success", body = RedeemItemResponse),
+        (status = 401, description = "Unauthorized"),
+    ),
+    security(
+        ("api_key" = []),
+    ),
+)]
+pub async fn redeem_item(State(handler): State<Handler>, cred: Cred) -> impl IntoResponse {
+    handler
+        .service
+        .redeem_item(cred.user_id)
+        .await
+        .map(RedeemItemResponse::from)
+        .map(IntoDto::into_response)
+}
+
+#[utoipa::path(
+    get,
+    path = "/estamp/redeem",
+    tag = "Estamp",
+    responses(
+        (status = 200, description = "Success", body = HasRedeemItemResponse),
+        (status = 401, description = "Unauthorized"),
+    ),
+    security(
+        ("api_key" = []),
+    ),
+)]
+pub async fn has_redeem_item(State(handler): State<Handler>, cred: Cred) -> impl IntoResponse {
+    handler
+        .service
+        .has_redeem_item(cred.user_id)
+        .await
+        .map(HasRedeemItemResponse::from)
+        .map(IntoDto::into_response)
 }
