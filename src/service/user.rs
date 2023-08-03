@@ -47,4 +47,21 @@ impl Service {
             .user
             .ok_or(Error::InternalServer)
     }
+
+    pub async fn update_personality(
+        &self,
+        user_id: String,
+        updated_personality: String,
+    ) -> Result<User> {
+        self.client
+            .clone()
+            .update_personality_game(UpdatePersonalityGameRequest {
+                id: user_id,
+                personality_game: updated_personality,
+            })
+            .await?
+            .into_inner()
+            .user
+            .ok_or(Error::InternalServer)
+    }
 }

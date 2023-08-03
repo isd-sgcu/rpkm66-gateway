@@ -12,6 +12,7 @@ use utoipa::{
         crate::handler::auth::refresh_token,
         crate::handler::file::upload,
         crate::handler::user::update,
+        crate::handler::user::update_personality,
         crate::handler::group::find_one,
         crate::handler::group::find_by_token,
         crate::handler::group::join,
@@ -59,6 +60,7 @@ use utoipa::{
         crate::dto::CheckinResponse,
         crate::dto::RedeemItemResponse,
         crate::dto::HasRedeemItemResponse,
+        crate::dto::UpdatePersonality
     )),
     info(
         title = "RPKM66",

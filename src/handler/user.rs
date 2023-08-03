@@ -1,6 +1,9 @@
 use axum::{extract::State, response::IntoResponse, Json};
 
-use crate::{dto::UpdateUser, middleware::auth::Cred};
+use crate::{
+    dto::{UpdatePersonality, UpdateUser},
+    middleware::auth::Cred,
+};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -37,6 +40,34 @@ pub async fn update(
     handler
         .service
         .update(user_id, updated_user)
+        .await
+        .map(Json)
+}
+
+#[utoipa::path(
+    patch,
+    path = "/user/personality",
+    tag = "User",
+    request_body = UpdatePersonality,
+    responses(
+        (status = 200, description = "Success", body = User),
+        (status = 400, description = "Bad format"),
+        (status = 401, description = "Unauthorized"),
+    ),
+    security(
+        ("api_key" = []),
+    ),
+)]
+pub async fn update_personality(
+    State(handler): State<Handler>,
+    cred: Cred,
+    Json(updated_personality): Json<UpdatePersonality>,
+) -> impl IntoResponse {
+    let user_id = cred.user_id;
+
+    handler
+        .service
+        .update_personality(user_id, updated_personality.personality)
         .await
         .map(Json)
 }

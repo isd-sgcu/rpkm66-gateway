@@ -115,7 +115,11 @@ async fn main() {
     let group_svc = service::group::Service::new(group_client.clone());
     let ci_staff_svc = service::staff::Service::new(ci_staff_client.clone());
     let ci_user_svc = service::ci_user::Service::new(ci_user_client.clone());
-    let estamp_svc = service::estamp::Service::new(event_client.clone(), ci_user_client.clone());
+    let estamp_svc = service::estamp::Service::new(
+        event_client.clone(),
+        ci_user_client.clone(),
+        config.app.clone(),
+    );
     let checkin_svc = service::checkin::Service::new(ci_user_client.clone(), config.app.clone());
 
     let auth_hdr = handler::auth::Handler::new(auth_svc.clone(), user_svc.clone());
@@ -155,6 +159,10 @@ async fn main() {
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
+        .route(
+            "/user/personality",
+            patch(handler::user::update_personality),
+        )
         .route("/group", get(handler::group::find_one))
         .route("/group/:token", get(handler::group::find_by_token))
         .route("/group/:token", post(handler::group::join))

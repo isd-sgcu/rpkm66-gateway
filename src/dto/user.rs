@@ -25,6 +25,7 @@ pub struct User {
     is_verify: bool,
     baan_id: String,
     is_got_ticket: bool,
+    personality_game: String,
 }
 
 into_dto!(
@@ -52,7 +53,8 @@ into_dto!(
     can_select_baan,
     is_verify,
     baan_id,
-    is_got_ticket
+    is_got_ticket,
+    personality_game
 );
 
 #[derive(serde::Deserialize, ToSchema)]
@@ -72,6 +74,11 @@ pub struct UpdateUser {
     emer_phone: String,
     emer_relation: String,
     want_bottle: bool,
+}
+
+#[derive(serde::Deserialize, ToSchema)]
+pub struct UpdatePersonality {
+    pub personality: String,
 }
 
 impl UpdateUser {
