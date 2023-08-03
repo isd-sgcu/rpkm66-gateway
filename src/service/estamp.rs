@@ -1,3 +1,4 @@
+use axum::http::StatusCode;
 use rpkm66_rust_proto::rpkm66::{
     checkin::event::v1::event_service_client::EventServiceClient,
     checkin::user::v1::{user_service_client::UserServiceClient, GetUserEventByEventIdRequest},
@@ -8,22 +9,25 @@ use rpkm66_rust_proto::rpkm66::{
 };
 use tonic::{transport::Channel, Code};
 
-use crate::{error::Error, handler::user, Result};
+use crate::{error::Error, Result};
 
 #[derive(Clone)]
 pub struct Service {
     event_client: EventServiceClient<Channel>,
     user_client: UserServiceClient<Channel>,
+    config: crate::config::AppConfig,
 }
 
 impl Service {
     pub fn new(
         event_client: EventServiceClient<Channel>,
         user_client: UserServiceClient<Channel>,
+        config: crate::config::AppConfig,
     ) -> Self {
         Service {
             event_client,
             user_client,
+            config,
         }
     }
 
@@ -72,12 +76,19 @@ impl Service {
     }
 
     pub async fn redeem_item(&self, user_id: String) -> Result<bool> {
+        if self.config.redeem_full {
+            return Err(Error::WithMessage(
+                StatusCode::TOO_MANY_REQUESTS,
+                "Item run out".to_string(),
+            ));
+        }
+
         let has_redeem = self.has_redeem_item(user_id.clone()).await?;
 
         if !has_redeem {
             let stamps = self.get_user_estamp(user_id.clone()).await?;
 
-            if stamps.len() != 4 {
+            if stamps.len() != self.config.e_stamp_count {
                 return Err(Error::Forbidden);
             }
 

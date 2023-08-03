@@ -11,6 +11,8 @@ pub struct AppConfig {
     pub max_file_size: i32,
     pub event_day: i32,
     pub phase: String,
+    pub e_stamp_count: usize,
+    pub redeem_full: bool,
 }
 
 #[derive(serde::Deserialize, Clone)]

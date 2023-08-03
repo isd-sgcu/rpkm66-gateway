@@ -4,6 +4,8 @@ debug = true
 max_file_size = 10
 phase = "register"
 event_day = 1
+e_stamp_count = 4
+redeem_full = false
 
 [service]
 backend = "localhost:3001"
