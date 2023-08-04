@@ -156,6 +156,8 @@ async fn main() {
         .route("/", get(health_check))
         .route("/auth/verify", post(handler::auth::verify_ticket))
         .route("/auth/me", get(handler::auth::validate))
+        .route("/auth/google", get(handler::auth::get_google_oauth_redirect_uri))
+        .route("/auth/google", post(handler::auth::get_token_from_google_oauth_code))
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))

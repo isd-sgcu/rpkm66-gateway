@@ -24,6 +24,11 @@ pub struct Validate {
     pub token: String,
 }
 
+#[derive(serde::Deserialize, ToSchema)]
+pub struct GoogleAuthorizationCodeQuery {
+    pub code: String,
+}
+
 #[derive(serde::Deserialize, serde::Serialize, ToSchema)]
 pub struct Credential {
     #[schema(example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BiZX...")]

@@ -10,6 +10,8 @@ use utoipa::{
         crate::handler::auth::validate,
         crate::handler::auth::verify_ticket,
         crate::handler::auth::refresh_token,
+        crate::handler::auth::get_google_oauth_redirect_uri,
+        crate::handler::auth::get_token_from_google_oauth_code,
         crate::handler::file::upload,
         crate::handler::user::update,
         crate::handler::user::update_personality,
@@ -60,7 +62,8 @@ use utoipa::{
         crate::dto::CheckinResponse,
         crate::dto::RedeemItemResponse,
         crate::dto::HasRedeemItemResponse,
-        crate::dto::UpdatePersonality
+        crate::dto::UpdatePersonality,
+        crate::dto::GoogleAuthorizationCodeQuery,
     )),
     info(
         title = "RPKM66",
