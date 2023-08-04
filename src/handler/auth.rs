@@ -108,6 +108,9 @@ pub async fn get_google_oauth_redirect_uri(State(handler): State<Handler>) -> im
     post,
     path = "/auth/google",
     tag = "Auth",
+    params(
+        GoogleAuthorizationCodeQuery,
+    ),
     responses(
         (status = 200, description = "Success", body = Credential),
         (status = 400, description = "Bad request"),

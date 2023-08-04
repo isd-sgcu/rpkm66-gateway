@@ -63,7 +63,6 @@ use utoipa::{
         crate::dto::RedeemItemResponse,
         crate::dto::HasRedeemItemResponse,
         crate::dto::UpdatePersonality,
-        crate::dto::GoogleAuthorizationCodeQuery,
     )),
     info(
         title = "RPKM66",

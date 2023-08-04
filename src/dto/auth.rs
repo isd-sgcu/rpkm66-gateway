@@ -1,4 +1,4 @@
-use utoipa::ToSchema;
+use utoipa::{ToSchema, IntoParams};
 
 #[derive(serde::Deserialize, ToSchema)]
 pub struct VerifyTicket {
@@ -24,7 +24,7 @@ pub struct Validate {
     pub token: String,
 }
 
-#[derive(serde::Deserialize, ToSchema)]
+#[derive(serde::Deserialize, IntoParams)]
 pub struct GoogleAuthorizationCodeQuery {
     pub code: String,
 }
