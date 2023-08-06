@@ -26,6 +26,7 @@ use utoipa::{
         crate::handler::baan::get_user_baan,
         crate::handler::staff::is_staff,
         crate::handler::staff::checkin_freshy_night,
+        crate::handler::staff::get_user,
         crate::handler::ci_user::is_freshy_night_ticket_redeemed,
         crate::handler::estamp::get_all_estamps,
         crate::handler::estamp::get_user_estamps,

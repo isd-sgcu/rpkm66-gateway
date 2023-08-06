@@ -127,7 +127,7 @@ async fn main() {
     let file_hdr = handler::file::Handler::new(file_svc.clone());
     let user_hdr = handler::user::Handler::new(user_svc.clone());
     let group_hdr = handler::group::Handler::new(group_svc.clone());
-    let ci_staff_hdr = handler::staff::Handler::new(ci_staff_svc.clone());
+    let ci_staff_hdr = handler::staff::Handler::new(ci_staff_svc.clone(), user_svc.clone());
     let ci_user_hdr = handler::ci_user::Handler::new(ci_user_svc.clone());
     let estamp_hdr = handler::estamp::Handler::new(estamp_svc.clone());
     let checkin_hdr = handler::checkin::Handler::new(checkin_svc.clone());
@@ -156,8 +156,14 @@ async fn main() {
         .route("/", get(health_check))
         .route("/auth/verify", post(handler::auth::verify_ticket))
         .route("/auth/me", get(handler::auth::validate))
-        .route("/auth/google", get(handler::auth::get_google_oauth_redirect_uri))
-        .route("/auth/google", post(handler::auth::get_token_from_google_oauth_code))
+        .route(
+            "/auth/google",
+            get(handler::auth::get_google_oauth_redirect_uri),
+        )
+        .route(
+            "/auth/google",
+            post(handler::auth::get_token_from_google_oauth_code),
+        )
         .route("/auth/refreshToken", post(handler::auth::refresh_token))
         .route("/file/upload", post(handler::file::upload))
         .route("/user", patch(handler::user::update))
@@ -182,6 +188,7 @@ async fn main() {
             "/staff/checkin_freshy_night/:user_id",
             post(handler::staff::checkin_freshy_night),
         )
+        .route("/staff/user/:user_id", get(handler::staff::get_user))
         .route(
             "/freshy_night",
             get(handler::ci_user::is_freshy_night_ticket_redeemed),

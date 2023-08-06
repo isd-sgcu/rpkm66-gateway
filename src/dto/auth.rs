@@ -1,4 +1,4 @@
-use utoipa::{ToSchema, IntoParams};
+use utoipa::{IntoParams, ToSchema};
 
 #[derive(serde::Deserialize, ToSchema)]
 pub struct VerifyTicket {
